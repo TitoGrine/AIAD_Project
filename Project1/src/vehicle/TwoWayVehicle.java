@@ -5,8 +5,4 @@ public class TwoWayVehicle extends SmartVehicle {
         super(currentCapacity, maxCapacity, altruistFactor, chargeGrid);
     }
 
-    @Override
-    protected void setup() {
-        System.out.println("I'm a Two Way Car!");
-    }
 }

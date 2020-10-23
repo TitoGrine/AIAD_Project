@@ -5,8 +5,5 @@ public class OneWayVehicle extends Vehicle {
         super(currentCapacity,maxCapacity);
     }
 
-    @Override
-    protected void setup() {
-        System.out.println("I'm a One Way Car!!");
-    }
+
 }

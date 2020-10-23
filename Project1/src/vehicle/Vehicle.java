@@ -1,6 +1,8 @@
 package vehicle;
 
+import jade.core.AID;
 import jade.core.Agent;
+import jade.lang.acl.ACLMessage;
 
 public abstract class Vehicle extends Agent {
     protected int currentCapacity; //in %.
@@ -18,4 +20,12 @@ public abstract class Vehicle extends Agent {
     public void setMaxCapacity(int maxCapacity) {
         this.maxCapacity = maxCapacity;
     }
+
+    public void setup(){
+        ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
+        msg.addReceiver(new AID("CHub", false));
+        msg.setContent("ola");
+        addBehaviour(new VehicleSubscription(this, msg));
+    }
+
 }

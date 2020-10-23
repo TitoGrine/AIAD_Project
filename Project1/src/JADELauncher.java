@@ -1,3 +1,4 @@
+import grid.ChargingHub;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -19,11 +20,18 @@ public class JADELauncher {
 
 		Profile p2 = new ProfileImpl();
 		//p2.setParameter(...);
-		ContainerController container = rt.createAgentContainer(p2);
+
+		AgentController acHub;
+		try {
+			acHub = mainContainer.acceptNewAgent("CHub", new ChargingHub(10, 2));
+			acHub.start();
+		} catch (StaleProxyException e) {
+			e.printStackTrace();
+		}
 
 		AgentController ac1;
 		try {
-			ac1 = container.acceptNewAgent("onev", new OneWayVehicle(30, 50));
+			ac1 = mainContainer.acceptNewAgent("onev", new OneWayVehicle(30, 50));
 			ac1.start();
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
@@ -31,7 +39,7 @@ public class JADELauncher {
 
 		AgentController ac2;
 		try {
-			ac2 = container.acceptNewAgent("twov", new TwoWayVehicle(50, 60, 0.8f, false));
+			ac2 = mainContainer.acceptNewAgent("twov", new TwoWayVehicle(50, 60, 0.8f, false));
 			ac2.start();
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
@@ -39,7 +47,7 @@ public class JADELauncher {
 
 		AgentController ac4;
 		try {
-			ac4 = container.acceptNewAgent("broadv", new BroadVehicle(10, 100, 0.1f, true));
+			ac4 = mainContainer.acceptNewAgent("broadv", new BroadVehicle(10, 100, 0.1f, true));
 			ac4.start();
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
