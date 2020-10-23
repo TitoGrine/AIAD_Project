@@ -1,13 +1,12 @@
 package grid;
 
-import jade.core.AID;
+import grid.behaviour.NotifyBehaviour;
+import grid.behaviour.RequestResponderBehaviour;
+import grid.behaviour.SubscriptionBehaviour;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.WakerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
-import vehicle.VehicleSubscription;
 
 import java.util.Vector;
 
@@ -16,18 +15,19 @@ public class ChargingHub extends Agent {
     //Grid simulator
     private int numStations;
     private int occupiedStations;
-    private ChargingSubscription chargingSubscription;
+    private SubscriptionBehaviour chargingSubscription;
 
     public ChargingHub(int availableLoad, int numStations) {
         this.availableLoad = availableLoad;
         this.numStations = numStations;
         this.occupiedStations = 0;
-        this.chargingSubscription = new ChargingSubscription(this, MessageTemplate.MatchAll());
+        this.chargingSubscription = new SubscriptionBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
     }
 
     public void setup(){
         addBehaviour(chargingSubscription);
         addBehaviour(new NotifyBehaviour(this, 5000));
+        addBehaviour(new RequestResponderBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
     }
 
     public void notifySubscribers(){
@@ -40,43 +40,22 @@ public class ChargingHub extends Agent {
 
     }
 
-    public class NotifyBehaviour extends WakerBehaviour{
-
-        public NotifyBehaviour(Agent a, long timeout) {
-            super(a, timeout);
-        }
-
-        public void onWake(){
-            notifySubscribers();
-        }
+    public int getOccupiedStations() {
+        return occupiedStations;
     }
 
-    public class ChargingSubscription extends SubscriptionResponder{
-
-        public ChargingSubscription(Agent a, MessageTemplate mt) {
-            super(a, mt);
-        }
-
-        public ACLMessage handleSubscription(ACLMessage subscription){
-            ACLMessage reply = subscription.createReply();
-            if(occupiedStations < numStations){
-                occupiedStations++;
-                reply.setPerformative(ACLMessage.AGREE);
-                reply.setContent("resposta");
-
-                createSubscription(subscription);
-            }
-            else{
-                reply.setPerformative(ACLMessage.REFUSE);
-                reply.setContent("no");
-            }
-            return reply;
-        }
-
-
+    public int getNumStations() {
+        return numStations;
     }
 
 
+    public void addVehicle(){
+        occupiedStations++;
+    }
+
+    public void removeVehicle(){
+        occupiedStations--;
+    }
 }
 
 

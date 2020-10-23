@@ -1,26 +1,33 @@
 package vehicle;
 
-import jade.core.AID;
-import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.proto.SubscriptionInitiator;
 
-public class VehicleSubscription extends SubscriptionInitiator {
+import java.io.IOException;
 
-    public VehicleSubscription(Agent a, ACLMessage msg) {
-        super(a, msg);
+public class VehicleSubscription extends SubscriptionInitiator {
+    private Vehicle vehicle;
+
+    public VehicleSubscription(Vehicle vehicle, ACLMessage msg) {
+        super(vehicle, msg);
+        this.vehicle = vehicle;
     }
 
     public void handleAgree(ACLMessage msg){
-        System.out.println(msg);
+        System.out.println("received agree");
     }
 
     public void handleRefuse(ACLMessage msg){
-        System.out.println(msg);
+        System.out.println("received refuse");
     }
 
     public void handleInform(ACLMessage msg){
-        System.out.println(msg);
+        try {
+            vehicle.initiateRequest(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("received inform");
     }
 
 }
