@@ -8,7 +8,6 @@ import jade.tools.sniffer.Sniffer;
 import jade.util.leap.ArrayList;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
-import jade.wrapper.StaleProxyException;
 import vehicle.BroadVehicle;
 import vehicle.OneWayVehicle;
 import vehicle.TwoWayVehicle;
