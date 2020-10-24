@@ -7,6 +7,8 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREResponder;
 
+import java.io.IOException;
+
 public class RequestResponderBehaviour extends AchieveREResponder {
     private ChargingHub chub;
 
@@ -17,14 +19,14 @@ public class RequestResponderBehaviour extends AchieveREResponder {
 
     public ACLMessage handleRequest(ACLMessage request){
         ACLMessage reply = request.createReply();
-        int capacity = -1;
+        double capacity = -1;
         try {
-            capacity = (int) request.getContentObject();
+            capacity = (double) request.getContentObject();
         } catch (UnreadableException e) {
             e.printStackTrace();
         }
         reply.setPerformative(ACLMessage.AGREE);
-        reply.setContent(String.format("Got your battery! It is %d", capacity));
+        reply.setContent(String.format("Got your battery! It is %f", capacity));
 
         System.out.println(chub.getLocalName() + " - handling request: " + request.getSender().getLocalName() + " has " + capacity + "kWh");
 
@@ -35,7 +37,11 @@ public class RequestResponderBehaviour extends AchieveREResponder {
     public ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response){
         ACLMessage reply = request.createReply();
         reply.setPerformative(ACLMessage.INFORM);
-        reply.setContent("I allocate to you 0 kWh");
+        try {
+            reply.setContentObject(chub.distributeLoad());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return reply;
     }
 }

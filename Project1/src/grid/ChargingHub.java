@@ -14,7 +14,7 @@ import jade.proto.SubscriptionResponder;
 import java.util.Vector;
 
 public class ChargingHub extends Agent {
-    private int availableLoad; // in kWh
+    private double availableLoad; // in kWh
     //Grid simulator
     private int numStations;
     private int occupiedStations;
@@ -24,7 +24,7 @@ public class ChargingHub extends Agent {
         this(10,10);
     }
 
-    public ChargingHub(int availableLoad, int numStations) {
+    public ChargingHub(double availableLoad, int numStations) {
         this.availableLoad = availableLoad;
         this.numStations = numStations;
         this.occupiedStations = 0;
@@ -46,6 +46,10 @@ public class ChargingHub extends Agent {
             subscription.notify(msg);
         }
 
+    }
+
+    public double distributeLoad(){
+        return availableLoad / occupiedStations;
     }
 
     public int getOccupiedStations() {

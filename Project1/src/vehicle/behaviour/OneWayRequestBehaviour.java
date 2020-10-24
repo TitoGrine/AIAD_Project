@@ -1,6 +1,7 @@
 package vehicle.behaviour;
 
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREInitiator;
 import vehicle.Vehicle;
 
@@ -25,6 +26,11 @@ public class OneWayRequestBehaviour extends AchieveREInitiator {
     }
 
     public void handleInform(ACLMessage msg){
-        System.out.println(vehicle.getLocalName() + " - received inform: " + msg.getContent());
+        try {
+            System.out.println(vehicle.getLocalName() + " - received inform: " + (double) msg.getContentObject());
+            vehicle.updateBattery((double) msg.getContentObject());
+        } catch (UnreadableException e) {
+            e.printStackTrace();
+        }
     }
 }

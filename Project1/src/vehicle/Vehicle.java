@@ -8,19 +8,24 @@ import vehicle.behaviour.OneWayRequestBehaviour;
 import java.io.IOException;
 
 public abstract class Vehicle extends Agent {
-    protected int currentCapacity; //in %.
-    protected int maxCapacity; // maximum amount in kWh
+    protected double currentCapacity; //in kWh.
+    protected double maxCapacity; // maximum amount in kWh
+    protected double currentLoad = 0;
 
-    protected Vehicle(int currentCapacity, int maxCapacity) {
+    public void setCurrentLoad(double currentLoad) {
+        this.currentLoad = currentLoad;
+    }
+
+    protected Vehicle(double currentCapacity, double maxCapacity) {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
     }
 
-    public void setCurrentCapacity(int currentCapacity) {
+    public void setCurrentCapacity(double currentCapacity) {
         this.currentCapacity = currentCapacity;
     }
 
-    public void setMaxCapacity(int maxCapacity) {
+    public void setMaxCapacity(double maxCapacity) {
         this.maxCapacity = maxCapacity;
     }
 
@@ -31,15 +36,8 @@ public abstract class Vehicle extends Agent {
         addBehaviour(new VehicleSubscription(this, msg));
     }
 
-    public void initiateRequest(ACLMessage msg) {
-        ACLMessage request = msg.createReply();
-        request.setPerformative(ACLMessage.REQUEST);
-        try {
-            request.setContentObject(this.currentCapacity);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        addBehaviour(new OneWayRequestBehaviour(this, request));
-    }
+    public abstract void updateBattery(double newLoad);
+
+    public abstract void initiateRequest(ACLMessage msg);
 
 }

@@ -33,7 +33,7 @@ public class JADELauncher {
 
 
             AgentController acHub;
-            Agent chub =  new ChargingHub(10, 3);
+            Agent chub =  new ChargingHub(100, 3);
 
             acHub = mainContainer.acceptNewAgent("CHub", chub);
             acHub.start();
