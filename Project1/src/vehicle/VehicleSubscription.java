@@ -3,8 +3,6 @@ package vehicle;
 import jade.lang.acl.ACLMessage;
 import jade.proto.SubscriptionInitiator;
 
-import java.io.IOException;
-
 public class VehicleSubscription extends SubscriptionInitiator {
     private Vehicle vehicle;
 
@@ -14,20 +12,16 @@ public class VehicleSubscription extends SubscriptionInitiator {
     }
 
     public void handleAgree(ACLMessage msg){
-        System.out.println("received agree");
+        System.out.println(vehicle.getLocalName() + " - subscription agree: " + msg.getContent());
     }
 
     public void handleRefuse(ACLMessage msg){
-        System.out.println("received refuse");
+        System.out.println(vehicle.getLocalName() + " - subscription refuse: " + msg.getContent());
     }
 
     public void handleInform(ACLMessage msg){
-        try {
-            vehicle.initiateRequest(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("received inform");
+        System.out.println(vehicle.getLocalName() + " - subscription inform: " + msg.getContent());
+        vehicle.initiateRequest(msg);
     }
 
 }

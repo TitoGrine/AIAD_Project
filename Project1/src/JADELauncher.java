@@ -24,19 +24,17 @@ public class JADELauncher {
         //p1.setParameter(...);
         ContainerController mainContainer = rt.createMainContainer(p1);
 
-        Profile p2 = new ProfileImpl();
+//        Profile p2 = new ProfileImpl();
         //p2.setParameter(...);
 
         try {
-
-
             AgentController acRMA;
             acRMA = mainContainer.acceptNewAgent("rma", new jade.tools.rma.rma());
             acRMA.start();
 
 
             AgentController acHub;
-            Agent chub =  new ChargingHub(10, 2);
+            Agent chub =  new ChargingHub(10, 3);
 
             acHub = mainContainer.acceptNewAgent("CHub", chub);
             acHub.start();
@@ -57,17 +55,17 @@ public class JADELauncher {
             ac3.start();
 
 
-            AgentController acSniffer;
-            Sniffer sniffer = new jade.tools.sniffer.Sniffer();
-            acSniffer = mainContainer.acceptNewAgent("sniffer", sniffer);
-            acSniffer.start();
-			ArrayList agentList = new ArrayList();
-			agentList.add(new jade.tools.sniffer.Agent("chub"));
-			agentList.add(new jade.tools.sniffer.Agent("onev"));
+//            AgentController acSniffer;
+//            Sniffer sniffer = new jade.tools.sniffer.Sniffer();
+//            acSniffer = mainContainer.acceptNewAgent("sniffer", sniffer);
+//            acSniffer.start();
+//			ArrayList agentList = new ArrayList();
+//			agentList.add(new jade.tools.sniffer.Agent("onev"));
+//			agentList.add(new jade.tools.sniffer.Agent("twov"));
+//			agentList.add(new jade.tools.sniffer.Agent("broadv"));
 
-            sniffer.sniffMsg(agentList, sniffer.SNIFF_ON);
-
-        } catch (StaleProxyException e) {
+//            sniffer.sniffMsg(agentList, sniffer.SNIFF_ON);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

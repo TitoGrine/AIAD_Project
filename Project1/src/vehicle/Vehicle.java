@@ -31,13 +31,15 @@ public abstract class Vehicle extends Agent {
         addBehaviour(new VehicleSubscription(this, msg));
     }
 
-    public void initiateRequest(ACLMessage msg) throws IOException {
+    public void initiateRequest(ACLMessage msg) {
         ACLMessage request = msg.createReply();
         request.setPerformative(ACLMessage.REQUEST);
-        request.setContent("this.currentCapacity");
-        addBehaviour(new OneWayRequestBehaviour(this, msg));
-        System.out.println("request initiator");
-
+        try {
+            request.setContentObject(this.currentCapacity);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        addBehaviour(new OneWayRequestBehaviour(this, request));
     }
 
 }
