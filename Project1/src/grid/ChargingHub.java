@@ -48,11 +48,19 @@ public class ChargingHub extends Agent {
 
     public void distributeLoad() {
         Map<AID, Double> loadDistribution = new HashMap<>();
-        double load = availableLoad / occupiedStations;
+
+        double totalNeededCapacity = 0.0;
+
+        for(AID vehicle : systemStatus.keySet())
+            totalNeededCapacity += systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity();
 
         for (AID vehicle : systemStatus.keySet())
-            loadDistribution.put(vehicle, load);
+            loadDistribution.put(vehicle, totalNeededCapacity == 0 ? 0 : availableLoad * ((systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity()) / totalNeededCapacity));
 
+        notifyVehicles(loadDistribution);
+    }
+
+    public void notifyVehicles(Map<AID, Double> loadDistribution){
         Vector<SubscriptionResponder.Subscription> subscriptions = chargingSubscription.getSubscriptions();
         ACLMessage msg;
 

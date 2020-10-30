@@ -20,6 +20,16 @@ public class SmartStatusResponseBehaviour extends AchieveREResponder {
     public ACLMessage handleRequest(ACLMessage request){
         ACLMessage reply = request.createReply();
         reply.setPerformative(ACLMessage.AGREE);
+        reply.setContent("Still connected.");
+
+        System.out.println(vehicle.getLocalName() + " - Received a request for status.");
+
+        return reply;
+    }
+
+    public ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response){
+        ACLMessage reply = request.createReply();
+        reply.setPerformative(ACLMessage.INFORM);
 
         try {
             reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getAltruistFactor()));
@@ -27,7 +37,7 @@ public class SmartStatusResponseBehaviour extends AchieveREResponder {
             e.printStackTrace();
         }
 
-        System.out.println(vehicle.getLocalName() + " - Received a request for status.");
+        System.out.println(vehicle.getLocalName() + " - Sent vehicle status.");
 
         return reply;
     }

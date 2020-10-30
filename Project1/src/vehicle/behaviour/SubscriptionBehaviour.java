@@ -5,10 +5,10 @@ import jade.lang.acl.UnreadableException;
 import jade.proto.SubscriptionInitiator;
 import vehicle.Vehicle;
 
-public class VehicleSubscription extends SubscriptionInitiator {
+public class SubscriptionBehaviour extends SubscriptionInitiator {
     private Vehicle vehicle;
 
-    public VehicleSubscription(Vehicle vehicle, ACLMessage msg) {
+    public SubscriptionBehaviour(Vehicle vehicle, ACLMessage msg) {
         super(vehicle, msg);
         this.vehicle = vehicle;
     }

@@ -4,7 +4,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import utils.Constants;
-import vehicle.behaviour.VehicleSubscription;
+import vehicle.behaviour.SubscriptionBehaviour;
 
 public abstract class Vehicle extends Agent {
     protected double currentCapacity; //in kWh.
@@ -40,7 +40,7 @@ public abstract class Vehicle extends Agent {
         ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
         msg.addReceiver(new AID("CHub", false));
         msg.setContent("I want to charge.");
-        addBehaviour(new VehicleSubscription(this, msg));
+        addBehaviour(new SubscriptionBehaviour(this, msg));
     }
 
     public void updateBattery(double newLoad) {

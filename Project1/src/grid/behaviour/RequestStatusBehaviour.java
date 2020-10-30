@@ -21,7 +21,7 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
     protected Vector prepareRequests(ACLMessage request) {
         Vector<ACLMessage> msgs = new Vector<>();
 
-        for(SubscriptionResponder.Subscription subscription : chub.getChargingVehicles()){
+        for (SubscriptionResponder.Subscription subscription : chub.getChargingVehicles()) {
             request = new ACLMessage((ACLMessage.REQUEST));
             request.setContent("Request car status.");
             request.addReceiver(subscription.getMessage().getSender());
@@ -32,32 +32,31 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
         return msgs;
     }
 
-    public void handleAgree(ACLMessage msg){
+    public void handleAgree(ACLMessage msg) {
+        System.out.println(chub.getLocalName() + " - received agree: " + msg.getContent());
+    }
+
+    public void handleRefuse(ACLMessage msg) {
+        System.out.println(chub.getLocalName() + " - received refuse: " + msg.getContent());
+    }
+
+    public void handleFailure(ACLMessage msg) {
+        System.out.println(chub.getLocalName() + " - received failure: " + msg.getContent());
+    }
+
+    public void handleInform(ACLMessage msg) {
         try {
-            System.out.println(chub.getLocalName() + " - received agree: " + msg.getContentObject());
+            System.out.println(chub.getLocalName() + " - received inform: " + msg.getContentObject());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }
     }
 
-    public void handleRefuse(ACLMessage msg){
-        System.out.println(chub.getLocalName() + " - received refuse: " + msg.getContent());
-    }
-
-    public void handleFailure(ACLMessage msg){
-        System.out.println(chub.getLocalName() + " - received failure: " + msg.getContent());
-    }
-
-    public void handleInform(ACLMessage msg){
-        System.out.println(chub.getLocalName() + " - received failure: " + msg.getContent());
-
-    }
-
     @Override
-    protected void handleAllResponses(Vector resultNotifications) {
+    protected void handleAllResultNotifications(Vector resultNotifications) {
         try {
-            for(Object response : resultNotifications) {
-                    chub.updateVehicleStatus(((ACLMessage) response).getSender(), (StatusResponse) ((ACLMessage) response).getContentObject());
+            for (Object response : resultNotifications) {
+                chub.updateVehicleStatus(((ACLMessage) response).getSender(), (StatusResponse) ((ACLMessage) response).getContentObject());
             }
         } catch (UnreadableException e) {
             e.printStackTrace();
