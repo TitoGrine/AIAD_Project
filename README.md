@@ -1,14 +1,23 @@
-# JADE Starter Pack for IntelliJ
+# AIAD Project
 
-This project is a starter project for creating a project with the binaries of JADE. 
+### TODO
 
-## Requirements
-- JDK 11
-
-## Usage
-1 - Clone the project:
-```shell
-git clone git@github.com:andrefmrocha/jade-starter-intellij.git
-```
-
-2 -  Open the project in IntelliJ
+- [ ] Improve load distribution algorithm
+- [ ] Add communication between broadcast vehicles
+  - [ ] Add consumption patterns to consensus
+  - [ ] Add protocol for communication
+- [ ] Simulate entrance and exit of vehicles
+  - [ ] Simulate environment based on inital parameters:
+    - Number of cars
+    - Car type distribution
+    - Altruism
+    - Battery
+    - Energy price
+- [ ] Register charging bill
+- [ ] Add grid fluctuations to charging hub available load
+- [ ] Add protocol for vehicle-to-grid charging
+- [ ] Write performance metric/stats to csv file:
+  - Maximum battery delta between charging cars
+  - Price
+  - Final battery status
+  - Grid fluctuations
