@@ -17,13 +17,14 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
         ACLMessage reply = subscription.createReply();
         if(chub.getOccupiedStations() < chub.getNumStations()){
             chub.addVehicle();
+            reply.setContent("Charging allowed.");
             reply.setPerformative(ACLMessage.AGREE);
 
             createSubscription(subscription);
         }
         else{
             reply.setPerformative(ACLMessage.REFUSE);
-            reply.setContent("no");
+            reply.setContent("Charging not allowed. There isn't enough charging stations.");
         }
         return reply;
     }

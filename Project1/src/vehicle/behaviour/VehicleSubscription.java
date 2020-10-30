@@ -23,8 +23,8 @@ public class VehicleSubscription extends SubscriptionInitiator {
     }
 
     public void handleInform(ACLMessage msg){
-        System.out.println(vehicle.getLocalName() + " - subscription inform: " + msg.getContent().toString());
         try {
+            System.out.println(vehicle.getLocalName() + " - subscription inform: " + msg.getContentObject());
             vehicle.updateBattery((double) msg.getContentObject());
         } catch (UnreadableException e) {
             e.printStackTrace();

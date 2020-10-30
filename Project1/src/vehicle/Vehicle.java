@@ -44,8 +44,8 @@ public abstract class Vehicle extends Agent {
     }
 
     public void updateBattery(double newLoad) {
-        currentCapacity = Math.min(this.maxCapacity, this.currentLoad * Constants.tick_ratio + this.currentCapacity);
         this.currentLoad = newLoad;
+        currentCapacity = Math.min(this.maxCapacity, this.currentLoad * Constants.tick_ratio + this.currentCapacity);
     }
 
     public abstract void addResponseBehaviour(ACLMessage msg);
