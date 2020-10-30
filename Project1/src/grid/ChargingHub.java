@@ -29,7 +29,9 @@ public class ChargingHub extends Agent {
         this.numStations = numStations;
         this.occupiedStations = 0;
         systemStatus = new HashMap<>();
-        this.chargingSubscription = new SubscriptionBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
+
+        MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.CANCEL), MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
+        this.chargingSubscription = new SubscriptionBehaviour(this, mt);
     }
 
     public void setup() {
