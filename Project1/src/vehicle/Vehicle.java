@@ -11,10 +11,6 @@ public abstract class Vehicle extends Agent {
     protected double maxCapacity; // maximum amount in kWh
     protected double currentLoad = 0;
 
-    public void setCurrentLoad(double currentLoad) {
-        this.currentLoad = currentLoad;
-    }
-
     protected Vehicle(double currentCapacity, double maxCapacity) {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
@@ -26,6 +22,10 @@ public abstract class Vehicle extends Agent {
 
     public double getMaxCapacity() {
         return maxCapacity;
+    }
+
+    public void setCurrentLoad(double currentLoad) {
+        this.currentLoad = currentLoad;
     }
 
     public void setCurrentCapacity(double currentCapacity) {
