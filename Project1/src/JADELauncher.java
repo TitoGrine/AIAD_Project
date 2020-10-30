@@ -25,7 +25,6 @@ public class JADELauncher {
             acRMA = mainContainer.acceptNewAgent("rma", new jade.tools.rma.rma());
             acRMA.start();
 
-
             AgentController acHub;
             Agent chub =  new ChargingHub(100, 3);
 

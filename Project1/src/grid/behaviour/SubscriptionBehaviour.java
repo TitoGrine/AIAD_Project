@@ -1,6 +1,7 @@
 package grid.behaviour;
 
 import grid.ChargingHub;
+import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
@@ -29,5 +30,12 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
         return reply;
     }
 
+    @Override
+    protected ACLMessage handleCancel(ACLMessage cancel) throws FailureException {
+        chub.removeVehicle();
 
+        System.out.println("Vehicle left the charging hub!");
+
+        return super.handleCancel(cancel);
+    }
 }
