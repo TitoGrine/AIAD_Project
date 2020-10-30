@@ -20,6 +20,8 @@ public class SubscriptionBehaviour extends SubscriptionInitiator {
 
     public void handleRefuse(ACLMessage msg){
         System.out.println(vehicle.getLocalName() + " - subscription refuse: " + msg.getContent());
+
+        vehicle.doDelete();
     }
 
     public void handleInform(ACLMessage msg){

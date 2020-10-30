@@ -5,4 +5,5 @@ public class Constants {
     public final static double tick_ratio = 0.25; // each tick is a quarter hour
 
     public final static float NO_FACTOR = -1.0f;
+    public final static int TRAFFIC_FREQUENCY = 1000;
 }

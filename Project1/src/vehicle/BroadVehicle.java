@@ -2,9 +2,6 @@ package vehicle;
 
 import jade.lang.acl.ACLMessage;
 import utils.Constants;
-import vehicle.behaviour.OneWayStatusResponseBehaviour;
-
-import java.io.IOException;
 
 public class BroadVehicle extends SmartVehicle {
     public BroadVehicle() {
