@@ -3,16 +3,10 @@ import jade.core.Agent;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
-import jade.tools.sniffer.AgentList;
-import jade.tools.sniffer.Sniffer;
-import jade.util.leap.ArrayList;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
-import vehicle.BroadVehicle;
 import vehicle.OneWayVehicle;
 import vehicle.TwoWayVehicle;
-
-import java.util.Arrays;
 
 public class JADELauncher {
 
@@ -46,12 +40,16 @@ public class JADELauncher {
 
 
             AgentController ac2;
-            ac2 = mainContainer.acceptNewAgent("twov", new TwoWayVehicle(50, 60, 0.8f, false));
+            ac2 = mainContainer.acceptNewAgent("twov1", new TwoWayVehicle(50, 60, 0.8f, false));
             ac2.start();
 
-
-            AgentController ac3 = mainContainer.acceptNewAgent("broadv", new BroadVehicle(10, 100, 0.1f, true));
+            AgentController ac3;
+            ac3 = mainContainer.acceptNewAgent("twov2", new TwoWayVehicle(50, 60, 0.8f, false));
             ac3.start();
+
+
+            /*AgentController ac3 = mainContainer.acceptNewAgent("broadv", new BroadVehicle(10, 100, 0.1f, true));
+            ac3.start();*/
 
 
 //            AgentController acSniffer;

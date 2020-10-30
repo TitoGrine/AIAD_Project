@@ -3,9 +3,8 @@ package vehicle;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
-import vehicle.behaviour.OneWayRequestBehaviour;
-
-import java.io.IOException;
+import utils.Constants;
+import vehicle.behaviour.VehicleSubscription;
 
 public abstract class Vehicle extends Agent {
     protected double currentCapacity; //in kWh.
@@ -21,6 +20,14 @@ public abstract class Vehicle extends Agent {
         this.maxCapacity = maxCapacity;
     }
 
+    public double getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    public double getMaxCapacity() {
+        return maxCapacity;
+    }
+
     public void setCurrentCapacity(double currentCapacity) {
         this.currentCapacity = currentCapacity;
     }
@@ -32,12 +39,15 @@ public abstract class Vehicle extends Agent {
     public void setup(){
         ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
         msg.addReceiver(new AID("CHub", false));
-        msg.setContent("ola");
+        msg.setContent("I want to charge.");
         addBehaviour(new VehicleSubscription(this, msg));
     }
 
-    public abstract void updateBattery(double newLoad);
+    public void updateBattery(double newLoad) {
+        currentCapacity = Math.min(this.maxCapacity, this.currentLoad * Constants.tick_ratio + this.currentCapacity);
+        this.currentLoad = newLoad;
+    }
 
-    public abstract void initiateRequest(ACLMessage msg);
+    public abstract void addResponseBehaviour(ACLMessage msg);
 
 }

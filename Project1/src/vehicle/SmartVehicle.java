@@ -10,4 +10,8 @@ public abstract class SmartVehicle extends Vehicle {
         this.chargeGrid = chargeGrid;
         this.altruistFactor = altruistFactor;
     }
+
+    public float getAltruistFactor() {
+        return altruistFactor;
+    }
 }

@@ -1,10 +1,8 @@
 package vehicle;
 
 import jade.lang.acl.ACLMessage;
-import utils.Constants;
-import vehicle.behaviour.OneWayRequestBehaviour;
-
-import java.io.IOException;
+import jade.lang.acl.MessageTemplate;
+import vehicle.behaviour.OneWayStatusResponseBehaviour;
 
 public class OneWayVehicle extends Vehicle {
     public OneWayVehicle() {
@@ -16,20 +14,7 @@ public class OneWayVehicle extends Vehicle {
     }
 
     @Override
-    public void updateBattery(double newLoad) {
-        currentCapacity = Math.min(this.maxCapacity, this.currentLoad * Constants.tick_ratio + this.currentCapacity);
-        this.currentLoad = newLoad;
-    }
-
-    @Override
-    public void initiateRequest(ACLMessage msg) {
-        ACLMessage request = msg.createReply();
-        request.setPerformative(ACLMessage.REQUEST);
-        try {
-            request.setContentObject(this.currentCapacity);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        addBehaviour(new OneWayRequestBehaviour(this, request));
+    public void addResponseBehaviour(ACLMessage msg) {
+        addBehaviour(new OneWayStatusResponseBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
     }
 }

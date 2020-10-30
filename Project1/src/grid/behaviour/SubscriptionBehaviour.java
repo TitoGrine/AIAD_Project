@@ -18,7 +18,6 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
         if(chub.getOccupiedStations() < chub.getNumStations()){
             chub.addVehicle();
             reply.setPerformative(ACLMessage.AGREE);
-            reply.setContent("resposta");
 
             createSubscription(subscription);
         }

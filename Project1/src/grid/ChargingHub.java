@@ -1,16 +1,18 @@
 package grid;
 
-import grid.behaviour.NotifyBehaviour;
-import grid.behaviour.RequestResponderBehaviour;
+import grid.behaviour.RequestStatusBehaviour;
 import grid.behaviour.SubscriptionBehaviour;
+import grid.behaviour.TimerBehaviour;
+import jade.core.AID;
 import jade.core.Agent;
-import jade.domain.FIPAAgentManagement.NotUnderstoodException;
-import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.proto.AchieveREResponder;
 import jade.proto.SubscriptionResponder;
+import vehicle.StatusResponse;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 public class ChargingHub extends Agent {
@@ -18,38 +20,51 @@ public class ChargingHub extends Agent {
     //Grid simulator
     private int numStations;
     private int occupiedStations;
-    private SubscriptionBehaviour chargingSubscription;
+    private Map<AID, StatusResponse> systemStatus;
 
-    public ChargingHub() {
-        this(10,10);
-    }
+    private SubscriptionBehaviour chargingSubscription;
 
     public ChargingHub(double availableLoad, int numStations) {
         this.availableLoad = availableLoad;
         this.numStations = numStations;
         this.occupiedStations = 0;
+        systemStatus = new HashMap<>();
         this.chargingSubscription = new SubscriptionBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
     }
 
-    public void setup(){
+    public void setup() {
         addBehaviour(chargingSubscription);
-        addBehaviour(new NotifyBehaviour(this, 5000));
-        addBehaviour(new RequestResponderBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
-        addBehaviour(new TestBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.PROPOSE)));
+        addBehaviour(new TimerBehaviour(this, 5000));
     }
 
-    public void notifySubscribers(){
+    public void updateVehicleStatus(AID vehicle, StatusResponse status) {
+        systemStatus.put(vehicle, status);
+    }
+
+    public void updateSystemStatus() {
+        systemStatus.clear();
+        addBehaviour(new RequestStatusBehaviour(this, new ACLMessage(ACLMessage.REQUEST)));
+    }
+
+    public void distributeLoad() {
+        Map<AID, Double> loadDistribution = new HashMap<>();
+        double load = availableLoad / occupiedStations;
+
+        for (AID vehicle : systemStatus.keySet())
+            loadDistribution.put(vehicle, load);
+
         Vector<SubscriptionResponder.Subscription> subscriptions = chargingSubscription.getSubscriptions();
-        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-        msg.setContent("give battery");
-        for(SubscriptionResponder.Subscription subscription : subscriptions){
-            subscription.notify(msg);
+        ACLMessage msg;
+
+        try {
+            for (SubscriptionResponder.Subscription subscription : subscriptions) {
+                msg = new ACLMessage(ACLMessage.INFORM);
+                msg.setContentObject(loadDistribution.get(subscription.getMessage().getSender()));
+                subscription.notify(msg);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-    }
-
-    public double distributeLoad(){
-        return availableLoad / occupiedStations;
     }
 
     public int getOccupiedStations() {
@@ -60,26 +75,16 @@ public class ChargingHub extends Agent {
         return numStations;
     }
 
+    public Vector<SubscriptionResponder.Subscription> getChargingVehicles() {
+        return chargingSubscription.getSubscriptions();
+    }
 
-    public void addVehicle(){
+    public void addVehicle() {
         occupiedStations++;
     }
 
-    public void removeVehicle(){
+    public void removeVehicle() {
         occupiedStations--;
-    }
-
-    class TestBehaviour extends AchieveREResponder {
-        public TestBehaviour(Agent a, MessageTemplate mt) {
-            super(a, mt);
-        }
-
-        @Override
-        protected ACLMessage handleRequest(ACLMessage request) {
-            notifySubscribers();
-
-            return null;
-        }
     }
 }
 
