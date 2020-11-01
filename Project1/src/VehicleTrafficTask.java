@@ -2,7 +2,11 @@ import jade.core.Agent;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
+import utils.Constants;
+import utils.Utilities;
+import vehicle.BroadVehicle;
 import vehicle.OneWayVehicle;
+import vehicle.TwoWayVehicle;
 
 import java.util.TimerTask;
 import java.util.UUID;
@@ -14,17 +18,48 @@ public class VehicleTrafficTask extends TimerTask {
         this.mainContainer = mainContainer;
     }
 
-    @Override
-    public void run() {
-        AgentController ac1;
-        String vehicleId = "vehicle_" + UUID.randomUUID().toString();
-        Agent vehicle = new OneWayVehicle(30, 50);
+    public Agent getRandomVehicle(){
+        int type = Utilities.randomVehicleType();
+        int maxCapacity = Utilities.randomNumber(Constants.CAPACITY_DISTRIBUTION[Constants.MIN], Constants.CAPACITY_DISTRIBUTION[Constants.MAX]);
+        int currentCapacity = Utilities.randomNumber( 0.05 * maxCapacity, 0.95 * maxCapacity);
+
+        switch(type){
+            case Constants.ONEWAY_VEHICLE:
+                return new OneWayVehicle(currentCapacity, maxCapacity);
+
+            case Constants.TWOWAY_VEHICLE:
+                return new TwoWayVehicle(currentCapacity, maxCapacity, Utilities.randomAltruisticFactor(), Utilities.chargeGridPermission());
+
+            case Constants.BROAD_VEHICLE:
+                return new BroadVehicle(currentCapacity, maxCapacity, Utilities.randomAltruisticFactor(), Utilities.chargeGridPermission());
+
+            default:
+                return null;
+        }
+    }
+
+    public void addNewVehicle(){
+        AgentController agent;
+        String vehicleID = "vehicle_" + UUID.randomUUID().toString();
+        Agent vehicle = getRandomVehicle();
 
         try {
-            ac1 = mainContainer.acceptNewAgent(vehicleId, vehicle);
-            ac1.start();
+            agent = mainContainer.acceptNewAgent(vehicleID, vehicle);
+            agent.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void run() {
+        int numberNewCars = Utilities.randomNumber(0, Constants.CAR_TRAFFIC);
+
+        System.out.println("Try to enter " + numberNewCars + " cars.");
+
+        while(numberNewCars > 0){
+            addNewVehicle();
+            numberNewCars--;
         }
     }
 }

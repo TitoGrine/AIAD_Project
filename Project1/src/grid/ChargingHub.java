@@ -8,6 +8,7 @@ import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
+import utils.Constants;
 import vehicle.StatusResponse;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.Vector;
 
 public class ChargingHub extends Agent {
-    private double availableLoad; // in kWh
+    private int availableLoad; // in kWh
     //Grid simulator
     private int numStations;
     private int occupiedStations;
@@ -24,7 +25,7 @@ public class ChargingHub extends Agent {
 
     private SubscriptionBehaviour chargingSubscription;
 
-    public ChargingHub(double availableLoad, int numStations) {
+    public ChargingHub(int availableLoad, int numStations) {
         this.availableLoad = availableLoad;
         this.numStations = numStations;
         this.occupiedStations = 0;
@@ -36,7 +37,7 @@ public class ChargingHub extends Agent {
 
     public void setup() {
         addBehaviour(chargingSubscription);
-        addBehaviour(new TimerBehaviour(this, 5000));
+        addBehaviour(new TimerBehaviour(this, Constants.TICK_FREQUENCY));
     }
 
     public void updateVehicleStatus(AID vehicle, StatusResponse status) {
@@ -49,9 +50,9 @@ public class ChargingHub extends Agent {
     }
 
     public void distributeLoad() {
-        Map<AID, Double> loadDistribution = new HashMap<>();
+        Map<AID, Integer> loadDistribution = new HashMap<>();
 
-        double totalNeededCapacity = 0.0;
+        int totalNeededCapacity = 0;
 
         for(AID vehicle : systemStatus.keySet())
             totalNeededCapacity += systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity();
@@ -62,7 +63,7 @@ public class ChargingHub extends Agent {
         notifyVehicles(loadDistribution);
     }
 
-    public void notifyVehicles(Map<AID, Double> loadDistribution){
+    public void notifyVehicles(Map<AID, Integer> loadDistribution){
         Vector<SubscriptionResponder.Subscription> subscriptions = chargingSubscription.getSubscriptions();
         ACLMessage msg;
 

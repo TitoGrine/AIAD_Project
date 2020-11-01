@@ -14,7 +14,7 @@ public class TimerBehaviour extends TickerBehaviour {
 
     @Override
     protected void onTick() {
-        if(this.getTickCount() > Constants.cycle_ticks)
+        if(this.getTickCount() > Constants.CYCLE_TICKS)
             this.stop();
 
         chub.updateSystemStatus();

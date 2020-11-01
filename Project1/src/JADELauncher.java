@@ -6,8 +6,6 @@ import jade.core.Runtime;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import utils.Constants;
-import vehicle.OneWayVehicle;
-import vehicle.TwoWayVehicle;
 
 import java.util.Timer;
 
@@ -26,9 +24,9 @@ public class JADELauncher {
             acRMA.start();
 
             AgentController acHub;
-            Agent chub =  new ChargingHub(100, 3);
+            Agent chub =  new ChargingHub(Constants.AVAILABLE_LOAD, Constants.CHARGING_STATIONS);
 
-            acHub = mainContainer.acceptNewAgent("CHub", chub);
+            acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
 
             new Timer().scheduleAtFixedRate(new VehicleTrafficTask(mainContainer), 0, Constants.TRAFFIC_FREQUENCY);

@@ -28,7 +28,7 @@ public class SubscriptionBehaviour extends SubscriptionInitiator {
     public void handleInform(ACLMessage msg){
         try {
             System.out.println(vehicle.getLocalName() + " - subscription inform: " + msg.getContentObject());
-            vehicle.updateBattery((double) msg.getContentObject());
+            vehicle.updateBattery((int) msg.getContentObject());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }
