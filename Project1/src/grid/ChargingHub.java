@@ -58,7 +58,7 @@ public class ChargingHub extends Agent {
             totalNeededCapacity += systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity();
 
         for (AID vehicle : systemStatus.keySet())
-            loadDistribution.put(vehicle, totalNeededCapacity == 0 ? 0 : availableLoad * ((systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity()) / totalNeededCapacity));
+            loadDistribution.put(vehicle, totalNeededCapacity == 0 ? 0 : (int) Math.floor(availableLoad * ((systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity()) / (double) totalNeededCapacity)));
 
         notifyVehicles(loadDistribution);
     }

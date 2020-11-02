@@ -54,12 +54,11 @@ public abstract class Vehicle extends Agent {
         currentCapacity = Math.min(this.maxCapacity, (int) (this.currentLoad * Constants.TICK_RATIO) + this.currentCapacity);
 
         if(battery_percentage > 0.2){
-            double leave = Constants.EXIT_PROBABILITY + 0.6 * battery_percentage;
+            double leave = Constants.EXIT_PROBABILITY + 0.45 * battery_percentage;
 
             if(Math.random() < leave){
                 System.out.println("Leaving with " + battery_percentage + "% of battery.");
-                subscription.cancel(service, true);
-                this.doDelete();
+                subscription.cancel(service, false);
             }
         }
     }

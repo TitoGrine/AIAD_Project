@@ -5,6 +5,9 @@ import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
+import utils.Constants;
+
+import java.io.IOException;
 
 public class SubscriptionBehaviour extends SubscriptionResponder {
     private ChargingHub chub;
@@ -32,10 +35,18 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
 
     @Override
     protected ACLMessage handleCancel(ACLMessage cancel) throws FailureException {
+        super.handleCancel(cancel);
+
         chub.removeVehicle();
 
-        System.out.println("Vehicle left the charging hub!");
+        ACLMessage reply = cancel.createReply();
+        reply.setPerformative(ACLMessage.INFORM);
+        try {
+            reply.setContentObject(Constants.ALLOW_DISCONNECT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        return super.handleCancel(cancel);
+        return reply;
     }
 }

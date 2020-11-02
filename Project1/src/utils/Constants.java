@@ -9,6 +9,7 @@ public class Constants {
     public final static int BROAD_VEHICLE  = 2;
 
     public final static double NO_FACTOR = -1.0;
+    public final static int ALLOW_DISCONNECT = -200;
 
     // System characteristics
     public final static long TICK_FREQUENCY = 5000;                         // How many (real time) milliseconds each tick is worth
