@@ -2,7 +2,6 @@ package vehicle;
 
 public abstract class SmartVehicle extends Vehicle {
     protected boolean chargeGrid;
-    protected float altruistFactor;
     protected float personality;
     protected final int expectedChargingTime = 1;
 
@@ -10,13 +9,14 @@ public abstract class SmartVehicle extends Vehicle {
         super(currentCapacity, maxCapacity);
 
         this.chargeGrid = chargeGrid;
-        this.altruistFactor = personality;
+        this.personality = personality;
     }
 
     public float getAltruistFactor() {
         double missingBattery = (maxCapacity - currentCapacity) / maxCapacity; // Goes from 0 to 1
         float energyNeeds = (float) (missingBattery / expectedChargingTime);
+        float fa = (0.75f * energyNeeds + 0.25f * personality) + 0.5f;
 
-        return (0.75f * energyNeeds + 0.25f * personality);
+        return fa;
     }
 }

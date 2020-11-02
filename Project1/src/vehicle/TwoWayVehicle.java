@@ -5,8 +5,8 @@ import jade.lang.acl.MessageTemplate;
 import vehicle.behaviour.SmartStatusResponseBehaviour;
 
 public class TwoWayVehicle extends SmartVehicle {
-    public TwoWayVehicle(int currentCapacity, int maxCapacity, float altruistFactor, boolean chargeGrid) {
-        super(currentCapacity, maxCapacity, altruistFactor, chargeGrid);
+    public TwoWayVehicle(int currentCapacity, int maxCapacity, float personality, boolean chargeGrid) {
+        super(currentCapacity, maxCapacity, personality, chargeGrid);
     }
 
     @Override

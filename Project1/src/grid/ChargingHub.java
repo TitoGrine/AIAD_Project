@@ -8,6 +8,7 @@ import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
+import utils.Constants;
 import vehicle.StatusResponse;
 
 import java.io.IOException;
@@ -48,14 +49,51 @@ public class ChargingHub extends Agent {
 
     public void distributeLoad() {
         Map<AID, Double> loadDistribution = new HashMap<>();
+        double totalAllocatedLoad = 0;
+        int notFullyChargedStations = occupiedStations;
+        int smartVehiclesConnected = 0;
+        double accAltruistFactor = 0;
 
-        double totalNeededCapacity = 0.0;
+        // 1st part: check if avgAF is above 1.0
+        for(StatusResponse status : systemStatus.values()) {
+            if(status.getMaxCapacity() == status.getCurrentCapacity())
+                notFullyChargedStations--;
+            else if (status.getAltruistFactor() != Constants.NO_FACTOR) {
+                smartVehiclesConnected++;
+                accAltruistFactor += status.getAltruistFactor();
+            }
+        }
 
-        for(AID vehicle : systemStatus.keySet())
-            totalNeededCapacity += systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity();
+        double avgAltruistFactor = accAltruistFactor / smartVehiclesConnected;
+        double avgOffset = Math.max(0, avgAltruistFactor - 1.0); //Either 0 or the amount the avgAF is above 1.0
+        double fairShare = availableLoad / notFullyChargedStations;
 
-        for (AID vehicle : systemStatus.keySet())
-            loadDistribution.put(vehicle, totalNeededCapacity == 0 ? 0 : availableLoad * ((systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity()) / totalNeededCapacity));
+        System.out.format("\n AVG ALTRUIST FACTOR: %f\n", avgAltruistFactor);
+        System.out.format("\n AVG ALTRUIST FACTOR OFFSET: %f\n", avgOffset);
+        System.out.format("\n FAIR SHARE: %f\n", fairShare);
+
+        accAltruistFactor = 0;
+        // 2nd part: calculate the allocated load to each non charged vehicle
+        for(AID vehicle : systemStatus.keySet()) {
+            StatusResponse status = systemStatus.get(vehicle);
+            double af = status.getAltruistFactor();
+            if(af != Constants.NO_FACTOR) {
+                af = status.getAltruistFactor() - avgOffset;
+                accAltruistFactor += af;
+            }
+
+            double missingLoad = status.getMaxCapacity() - status.getCurrentCapacity();
+            double allocatedLoad = Math.abs(af) * fairShare;
+            double load = Math.min(missingLoad, allocatedLoad);
+
+            loadDistribution.put(vehicle, load);
+            totalAllocatedLoad += load;
+        }
+
+        avgAltruistFactor = accAltruistFactor / smartVehiclesConnected;
+
+        System.out.format("\n ACTUAL AVG ALTRUIST FACTOR : %f\n", avgAltruistFactor);
+        System.out.format("\n\n TOTAL LOAD : %f\n\n", totalAllocatedLoad);
 
         notifyVehicles(loadDistribution);
     }

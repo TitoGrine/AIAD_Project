@@ -34,17 +34,18 @@ public class JADELauncher {
 
 
             AgentController ac1;
-            Agent onev = new OneWayVehicle(30, 50);
+            Agent onev = new OneWayVehicle(0, 50);
             ac1 = mainContainer.acceptNewAgent("onev", onev);
+//            ac1 = mainContainer.acceptNewAgent("twov0", new TwoWayVehicle(70, 100, 1.0f, false));
             ac1.start();
 
 
             AgentController ac2;
-            ac2 = mainContainer.acceptNewAgent("twov1", new TwoWayVehicle(50, 60, 0.8f, false));
+            ac2 = mainContainer.acceptNewAgent("twov1", new TwoWayVehicle(70, 100, 0.0f, false));
             ac2.start();
 
             AgentController ac3;
-            ac3 = mainContainer.acceptNewAgent("twov2", new TwoWayVehicle(50, 60, 0.8f, false));
+            ac3 = mainContainer.acceptNewAgent("twov2", new TwoWayVehicle(0, 100, 1.0f, false));
             ac3.start();
 
 
