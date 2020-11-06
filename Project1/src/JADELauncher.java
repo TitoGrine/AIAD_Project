@@ -27,7 +27,7 @@ public class JADELauncher {
 
 
             AgentController acHub;
-            Agent chub =  new ChargingHub(100, 3);
+            Agent chub =  new ChargingHub(100, 5);
 
             acHub = mainContainer.acceptNewAgent("CHub", chub);
             acHub.start();
@@ -41,12 +41,20 @@ public class JADELauncher {
 
 
             AgentController ac2;
-            ac2 = mainContainer.acceptNewAgent("twov1", new TwoWayVehicle(70, 100, 0.0f, false));
+            ac2 = mainContainer.acceptNewAgent("twov1", new TwoWayVehicle(0, 100, 0.0f, false));
             ac2.start();
 
             AgentController ac3;
-            ac3 = mainContainer.acceptNewAgent("twov2", new TwoWayVehicle(0, 100, 1.0f, false));
+            ac3 = mainContainer.acceptNewAgent("twov2", new TwoWayVehicle(0, 100, 0.3f, false));
             ac3.start();
+
+            AgentController ac4;
+            ac4 = mainContainer.acceptNewAgent("twov3", new TwoWayVehicle(0, 100, 0.6f, false));
+            ac4.start();
+
+            AgentController ac5;
+            ac5 = mainContainer.acceptNewAgent("twov4", new TwoWayVehicle(0, 100, 1.0f, false));
+            ac5.start();
 
 
             /*AgentController ac3 = mainContainer.acceptNewAgent("broadv", new BroadVehicle(10, 100, 0.1f, true));
