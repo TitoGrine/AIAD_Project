@@ -4,8 +4,10 @@ import java.util.Random;
 
 public class Utilities {
 
-    private static double normalDistribution(double x, double mean, double deviation){
-        return (1 / deviation * Math.sqrt(2 * Math.PI)) * Math.pow(Math.E, -0.5 * Math.pow((x - mean) / deviation, 2));
+    private static double normalDistribution(double mean, double deviation){
+        Random rand = new Random(System.currentTimeMillis());
+
+        return Math.max(0.0, Math.min(1.0, rand.nextGaussian() * deviation + mean));
     }
 
     public static int randomNumber(int lower, int upper){
@@ -32,10 +34,10 @@ public class Utilities {
     }
 
     public static double randomAltruisticFactor(){
-        return Math.max(0.0, Math.min(1.0, normalDistribution(Math.random(), Constants.MEAN_ALTRUISTIC_VALUE, Constants.ALTRUISTIC_STANDARD_DEVIATION)));
+        return normalDistribution(Constants.MEAN_ALTRUISTIC_VALUE, Constants.ALTRUISTIC_STANDARD_DEVIATION);
     }
 
     public static boolean chargeGridPermission(){
-        return normalDistribution(Math.random(), Constants.MEAN_PERMISSION_VALUE, Constants.PERMISSION_STANDARD_DEVIATION) < 0.5;
+        return normalDistribution(Constants.MEAN_PERMISSION_VALUE, Constants.PERMISSION_STANDARD_DEVIATION) < 0.5;
     }
 }

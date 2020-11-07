@@ -24,7 +24,7 @@ public class JADELauncher {
             acRMA.start();
 
             AgentController acHub;
-            Agent chub =  new ChargingHub(Constants.AVAILABLE_LOAD, Constants.CHARGING_STATIONS);
+            Agent chub =  new ChargingHub(rt, mainContainer, Constants.AVAILABLE_LOAD, Constants.CHARGING_STATIONS);
 
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();

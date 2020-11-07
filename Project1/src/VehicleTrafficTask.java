@@ -14,16 +14,16 @@ import java.util.UUID;
 public class VehicleTrafficTask extends TimerTask {
     ContainerController mainContainer;
 
-    public VehicleTrafficTask(ContainerController mainContainer){
+    public VehicleTrafficTask(ContainerController mainContainer) {
         this.mainContainer = mainContainer;
     }
 
-    public Agent getRandomVehicle(){
+    public Agent getRandomVehicle() {
         int type = Utilities.randomVehicleType();
         int maxCapacity = Utilities.randomNumber(Constants.CAPACITY_DISTRIBUTION[Constants.MIN], Constants.CAPACITY_DISTRIBUTION[Constants.MAX]);
-        int currentCapacity = Utilities.randomNumber( 0.05 * maxCapacity, 0.95 * maxCapacity);
+        int currentCapacity = Utilities.randomNumber(0.05 * maxCapacity, 0.95 * maxCapacity);
 
-        switch(type){
+        switch (type) {
             case Constants.ONEWAY_VEHICLE:
                 return new OneWayVehicle(currentCapacity, maxCapacity);
 
@@ -38,28 +38,29 @@ public class VehicleTrafficTask extends TimerTask {
         }
     }
 
-    public void addNewVehicle(){
+    public void addNewVehicle() throws StaleProxyException {
         AgentController agent;
         String vehicleID = "vehicle_" + UUID.randomUUID().toString();
         Agent vehicle = getRandomVehicle();
 
-        try {
-            agent = mainContainer.acceptNewAgent(vehicleID, vehicle);
-            agent.start();
-        } catch (StaleProxyException e) {
-            e.printStackTrace();
-        }
+        agent = mainContainer.acceptNewAgent(vehicleID, vehicle);
+        agent.start();
     }
 
     @Override
     public void run() {
         int numberNewCars = Utilities.randomNumber(0, Constants.CAR_TRAFFIC);
 
-        System.out.println("Try to enter " + numberNewCars + " cars.");
+        System.out.println("Tried to connect " + numberNewCars + " cars.");
 
-        while(numberNewCars > 0){
-            addNewVehicle();
-            numberNewCars--;
+        try {
+            while (numberNewCars > 0) {
+                addNewVehicle();
+                numberNewCars--;
+            }
+        } catch (StaleProxyException e) {
+            e.printStackTrace();
+            this.cancel();
         }
     }
 }

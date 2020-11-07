@@ -5,9 +5,11 @@ import grid.behaviour.SubscriptionBehaviour;
 import grid.behaviour.TimerBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.Runtime;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
+import jade.wrapper.ContainerController;
 import utils.Constants;
 import vehicle.StatusResponse;
 
@@ -24,8 +26,9 @@ public class ChargingHub extends Agent {
     private Map<AID, StatusResponse> systemStatus;
 
     private SubscriptionBehaviour chargingSubscription;
+    private TimerBehaviour timerBehaviour;
 
-    public ChargingHub(int availableLoad, int numStations) {
+    public ChargingHub(Runtime runtime, ContainerController container, int availableLoad, int numStations) {
         this.availableLoad = availableLoad;
         this.numStations = numStations;
         this.occupiedStations = 0;
@@ -33,11 +36,12 @@ public class ChargingHub extends Agent {
 
         MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.CANCEL), MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
         this.chargingSubscription = new SubscriptionBehaviour(this, mt);
+        this.timerBehaviour = new TimerBehaviour(runtime, container, this, Constants.TICK_FREQUENCY);
     }
 
     public void setup() {
         addBehaviour(chargingSubscription);
-        addBehaviour(new TimerBehaviour(this, Constants.TICK_FREQUENCY));
+        addBehaviour(timerBehaviour);
     }
 
     public void updateVehicleStatus(AID vehicle, StatusResponse status) {
