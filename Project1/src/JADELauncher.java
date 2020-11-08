@@ -5,8 +5,9 @@ import jade.core.ProfileImpl;
 import jade.core.Runtime;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
-import vehicle.OneWayVehicle;
-import vehicle.TwoWayVehicle;
+import utils.Constants;
+
+import java.util.Timer;
 
 public class JADELauncher {
 
@@ -14,59 +15,23 @@ public class JADELauncher {
         Runtime rt = Runtime.instance();
 
         Profile p1 = new ProfileImpl();
-        //p1.setParameter(...);
-        ContainerController mainContainer = rt.createMainContainer(p1);
 
-//        Profile p2 = new ProfileImpl();
-        //p2.setParameter(...);
+        ContainerController mainContainer = rt.createMainContainer(p1);
 
         try {
             AgentController acRMA;
             acRMA = mainContainer.acceptNewAgent("rma", new jade.tools.rma.rma());
             acRMA.start();
 
-
             AgentController acHub;
-            Agent chub =  new ChargingHub(100, 3);
+            Agent chub =  new ChargingHub(rt, mainContainer, Constants.AVAILABLE_LOAD, Constants.CHARGING_STATIONS);
 
-            acHub = mainContainer.acceptNewAgent("CHub", chub);
+            acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
 
-
-            AgentController ac1;
-            Agent onev = new OneWayVehicle(30, 50);
-            ac1 = mainContainer.acceptNewAgent("onev", onev);
-            ac1.start();
-
-
-            AgentController ac2;
-            ac2 = mainContainer.acceptNewAgent("twov1", new TwoWayVehicle(50, 60, 0.8f, false));
-            ac2.start();
-
-            AgentController ac3;
-            ac3 = mainContainer.acceptNewAgent("twov2", new TwoWayVehicle(50, 60, 0.8f, false));
-            ac3.start();
-
-
-            /*AgentController ac3 = mainContainer.acceptNewAgent("broadv", new BroadVehicle(10, 100, 0.1f, true));
-            ac3.start();*/
-
-
-//            AgentController acSniffer;
-//            Sniffer sniffer = new jade.tools.sniffer.Sniffer();
-//            acSniffer = mainContainer.acceptNewAgent("sniffer", sniffer);
-//            acSniffer.start();
-//			ArrayList agentList = new ArrayList();
-//			agentList.add(new jade.tools.sniffer.Agent("onev"));
-//			agentList.add(new jade.tools.sniffer.Agent("twov"));
-//			agentList.add(new jade.tools.sniffer.Agent("broadv"));
-
-//            sniffer.sniffMsg(agentList, sniffer.SNIFF_ON);
+            new Timer().scheduleAtFixedRate(new VehicleTrafficTask(mainContainer), 0, Constants.TRAFFIC_FREQUENCY);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
-
 }

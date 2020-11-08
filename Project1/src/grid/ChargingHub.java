@@ -5,9 +5,12 @@ import grid.behaviour.SubscriptionBehaviour;
 import grid.behaviour.TimerBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.Runtime;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
+import jade.wrapper.ContainerController;
+import utils.Constants;
 import vehicle.StatusResponse;
 
 import java.io.IOException;
@@ -16,25 +19,29 @@ import java.util.Map;
 import java.util.Vector;
 
 public class ChargingHub extends Agent {
-    private double availableLoad; // in kWh
+    private int availableLoad; // in kWh
     //Grid simulator
     private int numStations;
     private int occupiedStations;
     private Map<AID, StatusResponse> systemStatus;
 
     private SubscriptionBehaviour chargingSubscription;
+    private TimerBehaviour timerBehaviour;
 
-    public ChargingHub(double availableLoad, int numStations) {
+    public ChargingHub(Runtime runtime, ContainerController container, int availableLoad, int numStations) {
         this.availableLoad = availableLoad;
         this.numStations = numStations;
         this.occupiedStations = 0;
         systemStatus = new HashMap<>();
-        this.chargingSubscription = new SubscriptionBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
+
+        MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.CANCEL), MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
+        this.chargingSubscription = new SubscriptionBehaviour(this, mt);
+        this.timerBehaviour = new TimerBehaviour(runtime, container, this, Constants.TICK_FREQUENCY);
     }
 
     public void setup() {
         addBehaviour(chargingSubscription);
-        addBehaviour(new TimerBehaviour(this, 5000));
+        addBehaviour(timerBehaviour);
     }
 
     public void updateVehicleStatus(AID vehicle, StatusResponse status) {
@@ -47,20 +54,20 @@ public class ChargingHub extends Agent {
     }
 
     public void distributeLoad() {
-        Map<AID, Double> loadDistribution = new HashMap<>();
+        Map<AID, Integer> loadDistribution = new HashMap<>();
 
-        double totalNeededCapacity = 0.0;
+        int totalNeededCapacity = 0;
 
         for(AID vehicle : systemStatus.keySet())
             totalNeededCapacity += systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity();
 
         for (AID vehicle : systemStatus.keySet())
-            loadDistribution.put(vehicle, totalNeededCapacity == 0 ? 0 : availableLoad * ((systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity()) / totalNeededCapacity));
+            loadDistribution.put(vehicle, totalNeededCapacity == 0 ? 0 : (int) Math.floor(availableLoad * ((systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity()) / (double) totalNeededCapacity)));
 
         notifyVehicles(loadDistribution);
     }
 
-    public void notifyVehicles(Map<AID, Double> loadDistribution){
+    public void notifyVehicles(Map<AID, Integer> loadDistribution){
         Vector<SubscriptionResponder.Subscription> subscriptions = chargingSubscription.getSubscriptions();
         ACLMessage msg;
 
