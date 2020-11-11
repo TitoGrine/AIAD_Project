@@ -7,9 +7,9 @@ import java.io.Serializable;
 public class StatusResponse implements Serializable {
     double currentCapacity;
     double maxCapacity;
-    float altruistFactor;
+    double altruistFactor;
 
-    public StatusResponse(double currentCapacity, double maxCapacity, float altruistFactor){
+    public StatusResponse(double currentCapacity, double maxCapacity, double altruistFactor){
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
         this.altruistFactor = altruistFactor;
@@ -27,7 +27,7 @@ public class StatusResponse implements Serializable {
         return maxCapacity;
     }
 
-    public float getAltruistFactor() {
+    public double getAltruistFactor() {
         return altruistFactor;
     }
 

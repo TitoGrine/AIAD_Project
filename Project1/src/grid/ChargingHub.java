@@ -8,12 +8,14 @@ import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
+import javafx.util.Pair;
 import utils.Constants;
 import vehicle.StatusResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Vector;
 
 public class ChargingHub extends Agent {
@@ -47,53 +49,29 @@ public class ChargingHub extends Agent {
         addBehaviour(new RequestStatusBehaviour(this, new ACLMessage(ACLMessage.REQUEST)));
     }
 
+    private double calculatePriority(StatusResponse st, double totalMissingBattery) {
+        double missingBattery = st.getMaxCapacity() - st.getCurrentCapacity();
+        double missingBatteryPercent = missingBattery / st.getMaxCapacity();
+
+        return (missingBatteryPercent + missingBattery) / totalMissingBattery;
+    }
+
     public void distributeLoad() {
         Map<AID, Double> loadDistribution = new HashMap<>();
-        double totalAllocatedLoad = 0;
-        int notFullyChargedStations = occupiedStations;
-        int smartVehiclesConnected = 0;
-        double accAltruistFactor = 0;
+        PriorityQueue<Pair<AID, Double>> priorityQueue = new PriorityQueue<>();
+        double totalMissingBattery = 0;
+        double totalPriority = 0;
 
-        // 1st part: check if avgAF is above 1.0
+        // 1st part: Calculate total missing battery
         for(StatusResponse status : systemStatus.values()) {
-            if(status.getMaxCapacity() == status.getCurrentCapacity())
-                notFullyChargedStations--;
-            else if (status.getAltruistFactor() != Constants.NO_FACTOR) {
-                smartVehiclesConnected++;
-                accAltruistFactor += status.getAltruistFactor();
-            }
+            totalMissingBattery += status.getMaxCapacity() - status.getCurrentCapacity();
         }
 
-        double avgAltruistFactor = accAltruistFactor / smartVehiclesConnected;
-        double avgOffset = Math.max(0, avgAltruistFactor - 1.0); //Either 0 or the amount the avgAF is above 1.0
-        double fairShare = availableLoad / notFullyChargedStations;
+        // 2nd part: Calculate priorities and total priority
+        for(Map.Entry<AID, StatusResponse> entry : systemStatus.entrySet()) {
+            double priority = calculatePriority(entry.getValue(), totalMissingBattery);
 
-        System.out.format("\n AVG ALTRUIST FACTOR: %f\n", avgAltruistFactor);
-        System.out.format("\n AVG ALTRUIST FACTOR OFFSET: %f\n", avgOffset);
-        System.out.format("\n FAIR SHARE: %f\n", fairShare);
-
-        accAltruistFactor = 0;
-        // 2nd part: calculate the allocated load to each non charged vehicle
-        for(AID vehicle : systemStatus.keySet()) {
-            StatusResponse status = systemStatus.get(vehicle);
-            double af = status.getAltruistFactor();
-            if(af != Constants.NO_FACTOR) {
-                af = status.getAltruistFactor() - avgOffset;
-                accAltruistFactor += af;
-            }
-
-            double missingLoad = status.getMaxCapacity() - status.getCurrentCapacity();
-            double allocatedLoad = Math.abs(af) * fairShare;
-            double load = Math.min(missingLoad, allocatedLoad);
-
-            loadDistribution.put(vehicle, load);
-            totalAllocatedLoad += load;
         }
-
-        avgAltruistFactor = accAltruistFactor / smartVehiclesConnected;
-
-        System.out.format("\n ACTUAL AVG ALTRUIST FACTOR : %f\n", avgAltruistFactor);
-        System.out.format("\n\n TOTAL LOAD : %f\n\n", totalAllocatedLoad);
 
         notifyVehicles(loadDistribution);
     }
