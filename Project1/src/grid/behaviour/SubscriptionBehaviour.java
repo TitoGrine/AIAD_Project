@@ -1,9 +1,13 @@
 package grid.behaviour;
 
 import grid.ChargingHub;
+import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
+import utils.Constants;
+
+import java.io.IOException;
 
 public class SubscriptionBehaviour extends SubscriptionResponder {
     private ChargingHub chub;
@@ -29,5 +33,20 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
         return reply;
     }
 
+    @Override
+    protected ACLMessage handleCancel(ACLMessage cancel) throws FailureException {
+        super.handleCancel(cancel);
 
+        chub.removeVehicle();
+
+        ACLMessage reply = cancel.createReply();
+        reply.setPerformative(ACLMessage.INFORM);
+        try {
+            reply.setContentObject(Constants.ALLOW_DISCONNECT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return reply;
+    }
 }

@@ -5,29 +5,29 @@ import utils.Constants;
 import java.io.Serializable;
 
 public class StatusResponse implements Serializable {
-    double currentCapacity;
-    double maxCapacity;
-    float altruistFactor;
+    int currentCapacity;
+    int maxCapacity;
+    double altruistFactor;
 
-    public StatusResponse(double currentCapacity, double maxCapacity, float altruistFactor){
+    public StatusResponse(int currentCapacity, int maxCapacity, double altruistFactor){
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
         this.altruistFactor = altruistFactor;
     }
 
-    public StatusResponse(double currentCapacity, double maxCapacity){
+    public StatusResponse(int currentCapacity, int maxCapacity){
         this(currentCapacity, maxCapacity, Constants.NO_FACTOR);
     }
 
-    public double getCurrentCapacity() {
+    public int getCurrentCapacity() {
         return currentCapacity;
     }
 
-    public double getMaxCapacity() {
+    public int getMaxCapacity() {
         return maxCapacity;
     }
 
-    public float getAltruistFactor() {
+    public double getAltruistFactor() {
         return altruistFactor;
     }
 

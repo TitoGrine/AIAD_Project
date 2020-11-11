@@ -2,16 +2,16 @@ package vehicle;
 
 public abstract class SmartVehicle extends Vehicle {
     protected boolean chargeGrid;
-    protected float altruistFactor;
+    protected double altruistFactor;
 
-    protected SmartVehicle(int currentCapacity, int maxCapacity, float altruistFactor, boolean chargeGrid) {
+    protected SmartVehicle(int currentCapacity, int maxCapacity, double altruistFactor, boolean chargeGrid) {
         super(currentCapacity, maxCapacity);
 
         this.chargeGrid = chargeGrid;
         this.altruistFactor = altruistFactor;
     }
 
-    public float getAltruistFactor() {
+    public double getAltruistFactor() {
         return altruistFactor;
     }
 }

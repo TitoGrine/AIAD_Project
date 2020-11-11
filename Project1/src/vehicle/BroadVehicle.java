@@ -1,24 +1,10 @@
 package vehicle;
 
 import jade.lang.acl.ACLMessage;
-import utils.Constants;
-import vehicle.behaviour.OneWayStatusResponseBehaviour;
-
-import java.io.IOException;
 
 public class BroadVehicle extends SmartVehicle {
-    public BroadVehicle() {
-        this(10, 50, 0.1f, false);
-    }
-
-    public BroadVehicle(int currentCapacity, int maxCapacity, float altruistFactor, boolean chargeGrid) {
+    public BroadVehicle(int currentCapacity, int maxCapacity, double altruistFactor, boolean chargeGrid) {
         super(currentCapacity, maxCapacity, altruistFactor, chargeGrid);
-    }
-
-    @Override
-    public void updateBattery(double newLoad) {
-        currentCapacity = Math.min(this.maxCapacity, this.currentLoad * Constants.tick_ratio + this.currentCapacity);
-        this.currentLoad = newLoad;
     }
 
     @Override
