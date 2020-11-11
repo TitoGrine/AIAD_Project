@@ -26,6 +26,8 @@ public class SubscriptionBehaviour extends SubscriptionInitiator {
         try {
             System.out.println(vehicle.getLocalName() + " - subscription inform: " + msg.getContentObject());
             vehicle.updateBattery((double) msg.getContentObject());
+            System.out.println("Now I need to pay the bill for the: " + msg.getContentObject() + " I received");
+            vehicle.payBill((double) msg.getContentObject());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }

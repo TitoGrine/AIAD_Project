@@ -17,7 +17,7 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
         ACLMessage reply = subscription.createReply();
         if(chub.getOccupiedStations() < chub.getNumStations()){
             chub.addVehicle();
-            reply.setContent("Charging allowed.");
+            reply.setContent("Charging allowed. My charging price is: " + chub.getChargingBill() + " per kWh!");
             reply.setPerformative(ACLMessage.AGREE);
 
             createSubscription(subscription);

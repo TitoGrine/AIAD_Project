@@ -21,6 +21,7 @@ public class ChargingHub extends Agent {
     private int numStations;
     private int occupiedStations;
     private Map<AID, StatusResponse> systemStatus;
+    protected double chargingBill = 1;
 
     private SubscriptionBehaviour chargingSubscription;
 
@@ -93,6 +94,14 @@ public class ChargingHub extends Agent {
 
     public void removeVehicle() {
         occupiedStations--;
+    }
+
+    public double getChargingBill() {
+        return chargingBill;
+    }
+
+    public void setChargingBill(double chargingBill) {
+        this.chargingBill = chargingBill;
     }
 }
 

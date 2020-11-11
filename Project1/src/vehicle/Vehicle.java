@@ -10,6 +10,7 @@ public abstract class Vehicle extends Agent {
     protected double currentCapacity; //in kWh.
     protected double maxCapacity; // maximum amount in kWh
     protected double currentLoad = 0;
+    protected double priceToPay = 0;
 
     public void setCurrentLoad(double currentLoad) {
         this.currentLoad = currentLoad;
@@ -46,6 +47,12 @@ public abstract class Vehicle extends Agent {
     public void updateBattery(double newLoad) {
         this.currentLoad = newLoad;
         currentCapacity = Math.min(this.maxCapacity, this.currentLoad * Constants.tick_ratio + this.currentCapacity);
+        System.out.println("My battery is being updated.");
+    }
+
+    public void payBill(double newLoad){
+        System.out.println("I am now paying my bill of: " + newLoad ); //newLoad * horas * chargingBill do chub
+        this.priceToPay += newLoad; //newLoad * horas * chargingBill do chub
     }
 
     public abstract void addResponseBehaviour(ACLMessage msg);
