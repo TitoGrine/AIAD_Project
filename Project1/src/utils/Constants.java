@@ -31,5 +31,5 @@ public class Constants {
     public final static double ALTRUISTIC_STANDARD_DEVIATION = 0.2;         // Standard deviation of altruistic factor normal distribution
     public final static double MEAN_PERMISSION_VALUE = 0.5;                 // Mean value of normal distribution for permission to charge grid (lower mean means higher probability of acceptance)
     public final static double PERMISSION_STANDARD_DEVIATION = 0.5;         // Standard deviation of normal distribution for permission to charge grid
-
+    public final static double CHARGING_PRICE = 1.0;                        // Price to charge vehicle per kWh
 }

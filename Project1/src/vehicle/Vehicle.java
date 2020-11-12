@@ -15,6 +15,9 @@ public abstract class Vehicle extends Agent {
     protected int maxCapacity;      // maximum amount in kWh
     protected int initCapacity;      // initial amount in kWh
     protected double currentLoad = 0;
+    protected double priceToPay = 0;
+
+    protected double chargingPrice;
     private AID service;
     protected SubscriptionBehaviour subscription;
 
@@ -46,6 +49,14 @@ public abstract class Vehicle extends Agent {
         this.maxCapacity = maxCapacity;
     }
 
+    public double getPriceToPay() {
+        return priceToPay;
+    }
+
+    public void setChargingPrice(double chargingPrice) {
+        this.chargingPrice = chargingPrice;
+    }
+
     public void setup(){
         ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
         msg.addReceiver(service);
@@ -55,6 +66,7 @@ public abstract class Vehicle extends Agent {
     }
 
     public void updateBattery(int newLoad) {
+        this.priceToPay += newLoad * Constants.TICK_RATIO * chargingPrice; //newLoad * horas * chargingBill do chub
         this.currentLoad = newLoad;
         currentCapacity = Math.min(this.maxCapacity, (int) (this.currentLoad * Constants.TICK_RATIO) + this.currentCapacity);
         double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
@@ -64,7 +76,7 @@ public abstract class Vehicle extends Agent {
 
             if(Math.random() < leave){
                 System.out.println("Leaving with " + String.format("%.2g", battery_percentage * 100) + "% of battery.");
-                Data.submitStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.4g", battery_percentage), "0"));
+                Data.submitStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.4g", battery_percentage), String.valueOf(this.priceToPay)));
                 subscription.cancel(service, false);
             }
         }

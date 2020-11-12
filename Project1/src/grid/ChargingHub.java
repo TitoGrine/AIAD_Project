@@ -24,6 +24,7 @@ public class ChargingHub extends Agent {
     private int numStations;
     private int occupiedStations;
     private Map<AID, StatusResponse> systemStatus;
+    protected double chargingPrice = Constants.CHARGING_PRICE;
 
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
@@ -101,6 +102,11 @@ public class ChargingHub extends Agent {
     public void removeVehicle() {
         occupiedStations--;
     }
+
+    public double getChargingPrice() {
+        return chargingPrice;
+    }
+
 }
 
 
