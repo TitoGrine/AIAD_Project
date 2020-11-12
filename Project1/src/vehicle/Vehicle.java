@@ -57,7 +57,7 @@ public abstract class Vehicle extends Agent {
             double leave = Constants.EXIT_PROBABILITY + 0.45 * battery_percentage;
 
             if(Math.random() < leave){
-                System.out.println("Leaving with " + battery_percentage + "% of battery.");
+                System.out.println(this.getLocalName() +  " - Leaving with " + (battery_percentage * 100) + "% of battery.");
                 subscription.cancel(service, false);
             }
         }

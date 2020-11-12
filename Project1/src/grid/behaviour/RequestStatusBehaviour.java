@@ -33,20 +33,20 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
     }
 
     public void handleAgree(ACLMessage msg) {
-        System.out.println(chub.getLocalName() + " - received agree: " + msg.getContent());
+        System.out.println(chub.getLocalName() + " - received agree from " + msg.getSender().getLocalName() + ": " + msg.getContent());
     }
 
     public void handleRefuse(ACLMessage msg) {
-        System.out.println(chub.getLocalName() + " - received refuse: " + msg.getContent());
+        System.out.println(chub.getLocalName() + " - received refuse from " + msg.getSender().getLocalName() + ": " + msg.getContent());
     }
 
     public void handleFailure(ACLMessage msg) {
-        System.out.println(chub.getLocalName() + " - received failure: " + msg.getContent());
+        System.out.println(chub.getLocalName() + " - received failure from " + msg.getSender().getLocalName() + ": " + msg.getContent());
     }
 
     public void handleInform(ACLMessage msg) {
         try {
-            System.out.println(chub.getLocalName() + " - received inform: " + msg.getContentObject());
+            System.out.println(chub.getLocalName() + " - received inform from " + msg.getSender().getLocalName() + ": " + msg.getContentObject());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }
