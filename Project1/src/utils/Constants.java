@@ -11,10 +11,16 @@ public class Constants {
     public final static double NO_FACTOR = -1.0;
     public final static int ALLOW_DISCONNECT = -200;
 
+    // Statistics related
+    public final static String DATA_FOLDER = "stats";
+    public final static String VEHICLE_STATS = "vehicle_stats";
+    public final static String FILE_EXTENSION = ".csv";
+
     // System characteristics
     public final static double START_TIME = 13.0;
     public final static long TICK_FREQUENCY = 5000;                         // How many (real time) milliseconds each tick is worth
     public final static int CYCLE_TICKS = 5;                                // How many ticks are done in one simulation
+
     public final static double TICK_RATIO = 0.25;                           // How many minutes (simulation time) each tick is worth (0.25 is a 15 minutes)
     public final static int TRAFFIC_FREQUENCY = 3000;                       // Frequency to which vehicles can enter the system in seconds
     public final static int CAR_TRAFFIC = 3;                                // Maximum number of vehicles that can attempt to charge at each interval
