@@ -40,4 +40,8 @@ public class Utilities {
     public static boolean chargeGridPermission(){
         return normalDistribution(Constants.MEAN_PERMISSION_VALUE, Constants.PERMISSION_STANDARD_DEVIATION) < 0.5;
     }
+
+    public static void printEventMessage(final String message, String color){
+        System.out.println(Constants.WHITE_BOLD + message + Constants.RESET);
+    }
 }

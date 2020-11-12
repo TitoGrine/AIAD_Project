@@ -33,7 +33,7 @@ public class StatusResponse implements Serializable {
 
     @Override
     public String toString() {
-        String result = "Vehicle Status: \n";
+        String result = "\nVehicle Status: \n";
         result += " · Current Capacity = " + currentCapacity + "\n";
         result += " · Max Capacity = " + maxCapacity + "\n";
         result += " · Altruistic Factor = " + altruistFactor + "\n";

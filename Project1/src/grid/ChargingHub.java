@@ -25,6 +25,7 @@ public class ChargingHub extends Agent {
     private double localTime  = Constants.START_TIME;
     private Map<AID, StatusResponse> systemStatus;
     private Grid grid = new Grid();
+    protected double chargingPrice = Constants.CHARGING_PRICE;
 
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
@@ -60,6 +61,7 @@ public class ChargingHub extends Agent {
 
     public void distributeLoad() {
         Map<AID, Integer> loadDistribution = new HashMap<>();
+        Vector<SubscriptionResponder.Subscription> subscriptions = chargingSubscription.getSubscriptions();
 
         int totalNeededCapacity = 0;
 
@@ -69,21 +71,22 @@ public class ChargingHub extends Agent {
         for (AID vehicle : systemStatus.keySet())
             loadDistribution.put(vehicle, totalNeededCapacity == 0 ? 0 : (int) Math.floor(availableLoad * ((systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity()) / (double) totalNeededCapacity)));
 
-        notifyVehicles(loadDistribution);
+        notifyVehicles(loadDistribution, subscriptions);
     }
 
-    public void notifyVehicles(Map<AID, Integer> loadDistribution){
-        Vector<SubscriptionResponder.Subscription> subscriptions = chargingSubscription.getSubscriptions();
+    public void notifyVehicles(Map<AID, Integer> loadDistribution, Vector<SubscriptionResponder.Subscription> subscriptions){
         ACLMessage msg;
 
-        try {
-            for (SubscriptionResponder.Subscription subscription : subscriptions) {
-                msg = new ACLMessage(ACLMessage.INFORM);
-                msg.setContentObject(loadDistribution.get(subscription.getMessage().getSender()));
-                subscription.notify(msg);
+        if(loadDistribution.size() > 0){
+            try {
+                for (SubscriptionResponder.Subscription subscription : subscriptions) {
+                    msg = new ACLMessage(ACLMessage.INFORM);
+                    msg.setContentObject(new ChargingConditions(loadDistribution.get(subscription.getMessage().getSender())));
+                    subscription.notify(msg);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -106,6 +109,11 @@ public class ChargingHub extends Agent {
     public void removeVehicle() {
         occupiedStations--;
     }
+
+    public double getChargingPrice() {
+        return chargingPrice;
+    }
+
 }
 
 
