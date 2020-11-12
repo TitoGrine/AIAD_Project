@@ -76,14 +76,10 @@ public abstract class Vehicle extends Agent {
 
             if(Math.random() < leave){
                 System.out.println("Leaving with " + String.format("%.2g", battery_percentage * 100) + "% of battery.");
-                Data.submitStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.4g", battery_percentage), "0"));
+                Data.submitStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.4g", battery_percentage), String.valueOf(this.priceToPay)));
                 subscription.cancel(service, false);
             }
         }
-    }
-
-    public void payBill(){
-        System.out.println("I have finished charging. I'm paying a bill of: " + this.priceToPay);
     }
 
     public abstract void addResponseBehaviour(ACLMessage msg);
