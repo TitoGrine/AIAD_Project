@@ -64,19 +64,47 @@ public class ChargingHub extends Agent {
 
     public void distributeLoad() {
         Map<AID, Integer> loadDistribution = new HashMap<>();
-        PriorityQueue<Pair<AID, Double>> priorityQueue = new PriorityQueue<>();
-        double totalMissingBattery = 0;
+        PriorityQueue<Pair<AID, Double>> priorityQueue = new PriorityQueue<>((a, b) -> {
+            if(a.getValue() > b.getValue()) return -1;
+            else if (a.getValue() < b.getValue()) return 1;
+            return 0;
+        });
+        int totalMissingBattery = 0;
         double totalPriority = 0;
+        double totalGivenByVehicles = 0;
 
         // 1st part: Calculate total missing battery
         for(StatusResponse status : systemStatus.values()) {
             totalMissingBattery += status.getMaxCapacity() - status.getCurrentCapacity();
         }
 
-        // 2nd part: Calculate priorities and total priority
-        for(Map.Entry<AID, StatusResponse> entry : systemStatus.entrySet()) {
-            double priority = calculatePriority(entry.getValue(), totalMissingBattery);
+        if(totalMissingBattery == 0) {
+            for(AID vehicle : systemStatus.keySet()) {
+                loadDistribution.put(vehicle, 0);
+            }
+        } else {
+            // 2nd part: Calculate priorities and total priority
+            for (Map.Entry<AID, StatusResponse> entry : systemStatus.entrySet()) {
+                double priority = calculatePriority(entry.getValue(), totalMissingBattery);
+                totalPriority += priority;
+                priorityQueue.add(new Pair<>(entry.getKey(), priority));
+            }
 
+            // 3rd part: iterate through all available vehicles and accumulate the amount each one is willing to give
+            for (StatusResponse status : systemStatus.values()) {
+                int fairShare = (status.getMaxCapacity() - status.getCurrentCapacity()) * this.availableLoad / totalMissingBattery;
+                if (status.getAltruistFactor() != -1)
+                    totalGivenByVehicles += fairShare * status.getAltruistFactor() / 2.0;
+            }
+
+            // 4th part: go through the priority queue and allocate more battery according to priority
+            while (!priorityQueue.isEmpty()) {
+                Pair<AID, Double> pair = priorityQueue.poll();
+                StatusResponse status = systemStatus.get(pair.getKey());
+                int fairShare = (status.getMaxCapacity() - status.getCurrentCapacity()) * this.availableLoad / totalMissingBattery;
+                int allocatedLoad = fairShare + (int) (totalGivenByVehicles * pair.getValue() / totalPriority);
+                loadDistribution.put(pair.getKey(), allocatedLoad);
+            }
         }
 
         notifyVehicles(loadDistribution);
