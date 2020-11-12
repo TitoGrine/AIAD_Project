@@ -11,6 +11,8 @@ public abstract class Vehicle extends Agent {
     protected int maxCapacity;      // maximum amount in kWh
     protected double currentLoad = 0;
     protected double priceToPay = 0;
+
+    protected double chargingPrice;
     private AID service;
     protected SubscriptionBehaviour subscription;
 
@@ -41,6 +43,14 @@ public abstract class Vehicle extends Agent {
         this.maxCapacity = maxCapacity;
     }
 
+    public double getPriceToPay() {
+        return priceToPay;
+    }
+
+    public void setChargingPrice(double chargingPrice) {
+        this.chargingPrice = chargingPrice;
+    }
+
     public void setup(){
         ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
         msg.addReceiver(service);
@@ -51,6 +61,7 @@ public abstract class Vehicle extends Agent {
 
     public void updateBattery(int newLoad) {
         double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
+        this.priceToPay += newLoad * Constants.TICK_RATIO * chargingPrice; //newLoad * horas * chargingBill do chub
         this.currentLoad = newLoad;
         currentCapacity = Math.min(this.maxCapacity, (int) (this.currentLoad * Constants.TICK_RATIO) + this.currentCapacity);
 
@@ -59,14 +70,14 @@ public abstract class Vehicle extends Agent {
 
             if(Math.random() < leave){
                 System.out.println("Leaving with " + battery_percentage + "% of battery.");
+                payBill();
                 subscription.cancel(service, false);
             }
         }
     }
 
-    public void payBill(int newLoad){
-        System.out.println("I am now paying my bill of: " + newLoad ); //newLoad * horas * chargingBill do chub
-        this.priceToPay += newLoad; //newLoad * horas * chargingBill do chub
+    public void payBill(){
+        System.out.println("I have finished charging. I'm paying a bill of: " + this.priceToPay);
     }
 
     public abstract void addResponseBehaviour(ACLMessage msg);

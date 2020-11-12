@@ -1,5 +1,6 @@
 package grid.behaviour;
 
+import grid.ChargingConditions;
 import grid.ChargingHub;
 import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
@@ -21,7 +22,11 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
         ACLMessage reply = subscription.createReply();
         if(chub.getOccupiedStations() < chub.getNumStations()){
             chub.addVehicle();
-            reply.setContent("Charging allowed. My charging price is: " + chub.getChargingBill() + " per kWh!");
+            try {
+                reply.setContentObject(new ChargingConditions(chub.getChargingPrice()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             reply.setPerformative(ACLMessage.AGREE);
 
             createSubscription(subscription);

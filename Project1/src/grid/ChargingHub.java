@@ -24,7 +24,7 @@ public class ChargingHub extends Agent {
     private int numStations;
     private int occupiedStations;
     private Map<AID, StatusResponse> systemStatus;
-    protected double chargingBill = 1;
+    protected double chargingPrice = Constants.CHARGING_PRICE;
 
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
@@ -103,13 +103,10 @@ public class ChargingHub extends Agent {
         occupiedStations--;
     }
 
-    public double getChargingBill() {
-        return chargingBill;
+    public double getChargingPrice() {
+        return chargingPrice;
     }
 
-    public void setChargingBill(double chargingBill) {
-        this.chargingBill = chargingBill;
-    }
 }
 
 
