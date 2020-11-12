@@ -4,11 +4,16 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import utils.Constants;
+import utils.Data;
 import vehicle.behaviour.SubscriptionBehaviour;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class Vehicle extends Agent {
     protected int currentCapacity;  // in kWh.
     protected int maxCapacity;      // maximum amount in kWh
+    protected int initCapacity;      // initial amount in kWh
     protected double currentLoad = 0;
     protected double priceToPay = 0;
 
@@ -23,6 +28,7 @@ public abstract class Vehicle extends Agent {
     protected Vehicle(int currentCapacity, int maxCapacity) {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
+        this.initCapacity = currentCapacity;
 
         service = new AID("Charging_Hub", false);
     }
@@ -60,17 +66,17 @@ public abstract class Vehicle extends Agent {
     }
 
     public void updateBattery(int newLoad) {
-        double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
         this.priceToPay += newLoad * Constants.TICK_RATIO * chargingPrice; //newLoad * horas * chargingBill do chub
         this.currentLoad = newLoad;
         currentCapacity = Math.min(this.maxCapacity, (int) (this.currentLoad * Constants.TICK_RATIO) + this.currentCapacity);
+        double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
 
         if(battery_percentage > 0.2){
             double leave = Constants.EXIT_PROBABILITY + 0.45 * battery_percentage;
 
             if(Math.random() < leave){
-                System.out.println("Leaving with " + battery_percentage + "% of battery.");
-                payBill();
+                System.out.println("Leaving with " + String.format("%.2g", battery_percentage * 100) + "% of battery.");
+                Data.submitStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.4g", battery_percentage), "0"));
                 subscription.cancel(service, false);
             }
         }
