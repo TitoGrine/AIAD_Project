@@ -20,10 +20,11 @@ import java.util.Vector;
 
 public class ChargingHub extends Agent {
     private int availableLoad; // in kWh
-    //Grid simulator
     private int numStations;
     private int occupiedStations;
+    private double localTime  = Constants.START_TIME;
     private Map<AID, StatusResponse> systemStatus;
+    private Grid grid = new Grid();
 
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
@@ -49,6 +50,10 @@ public class ChargingHub extends Agent {
     }
 
     public void updateSystemStatus() {
+        this.localTime += Constants.TICK_RATIO % 24;
+        this.availableLoad = grid.getLoad((int) this.localTime);
+        System.out.println(String.format("Local time is %02d:%02d", ((int) this.localTime), (int) ((this.localTime - (int) this.localTime) * 60)));
+        System.out.println("Available load is of " + availableLoad);
         systemStatus.clear();
         addBehaviour(new RequestStatusBehaviour(this, new ACLMessage(ACLMessage.REQUEST)));
     }
