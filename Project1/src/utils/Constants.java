@@ -10,6 +10,7 @@ public class Constants {
 
     public final static double NO_FACTOR = -1.0;
     public final static int ALLOW_DISCONNECT = -200;
+    public final static String BROAD_SERVICE = "broad-service";
 
     // Statistics related
     public final static String DATA_FOLDER = "stats";
