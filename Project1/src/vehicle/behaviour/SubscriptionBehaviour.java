@@ -4,7 +4,6 @@ import grid.ChargingConditions;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.proto.SubscriptionInitiator;
-import utils.Constants;
 import utils.Utilities;
 import vehicle.Vehicle;
 
@@ -42,7 +41,7 @@ public class SubscriptionBehaviour extends SubscriptionInitiator {
             }
 
             Utilities.printVehicleMessage(vehicle.getLocalName(),vehicle.getVehicleType(), "subscription inform: " + response.getGivenLoad());
-            vehicle.updateBattery(response.getGivenLoad());
+            vehicle.chargeBattery(response.getGivenLoad());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }

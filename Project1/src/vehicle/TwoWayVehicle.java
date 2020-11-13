@@ -12,7 +12,7 @@ public class TwoWayVehicle extends SmartVehicle {
 
     @Override
     public void addResponseBehaviour(ACLMessage msg) {
-        addBehaviour(new SmartStatusResponseBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
+        addBehaviour(new SmartStatusResponseBehaviour(this));
     }
 
     @Override

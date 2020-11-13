@@ -3,6 +3,7 @@ package grid;
 import grid.behaviour.RequestStatusBehaviour;
 import grid.behaviour.SubscriptionBehaviour;
 import grid.behaviour.TimerBehaviour;
+import grid.behaviour.Vehicle2GridBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.Runtime;
@@ -12,14 +13,12 @@ import jade.proto.SubscriptionResponder;
 import jade.wrapper.ContainerController;
 import utils.Constants;
 import javafx.util.Pair;
+import utils.Data;
 import utils.Utilities;
 import vehicle.StatusResponse;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Vector;
+import java.util.*;
 
 public class ChargingHub extends Agent {
     private int availableLoad; // in kWh
@@ -54,10 +53,14 @@ public class ChargingHub extends Agent {
 
     public void updateSystemStatus() {
         this.localTime += Constants.TICK_RATIO % 24;
-        this.availableLoad = grid.getLoad((int) this.localTime);
+        this.availableLoad = grid.getLoad((int) this.localTime, (int) ((this.localTime - (int) this.localTime) * 60));
         Utilities.printTime(((int) this.localTime), (int) ((this.localTime - (int) this.localTime) * 60));
         systemStatus.clear();
         addBehaviour(new RequestStatusBehaviour(this, new ACLMessage(ACLMessage.REQUEST)));
+    }
+
+    public void removeVehicleFromSystemStatus(AID vehicle){
+        systemStatus.remove(vehicle);
     }
 
     private double calculatePriority(StatusResponse st, double totalMissingBattery) {
@@ -65,6 +68,27 @@ public class ChargingHub extends Agent {
         double missingBatteryPercent = missingBattery / st.getMaxCapacity();
 
         return (missingBatteryPercent * missingBattery) / totalMissingBattery;
+    }
+
+    public void analyzeSystem() {
+        if(grid.getPeakLoad() > 0){
+            List<AID> vehiclesForV2G = new ArrayList<>();
+            StatusResponse status;
+
+            for(AID vehicle : systemStatus.keySet()) {
+                status = systemStatus.get(vehicle);
+
+                if(status.allowsV2G())
+                    vehiclesForV2G.add(vehicle);
+            }
+
+            if(vehiclesForV2G.size() > 0)
+                addBehaviour(new Vehicle2GridBehaviour(this, grid.getPeakLoad(), vehiclesForV2G));
+            else
+                addGridDataPoint(grid.getPeakLoad(), 0);
+        } else {
+            distributeLoad();
+        }
     }
 
     public void distributeLoad() {
@@ -90,14 +114,12 @@ public class ChargingHub extends Agent {
         } else {
             // 2nd part: Calculate priorities and total priority
             for (Map.Entry<AID, StatusResponse> entry : systemStatus.entrySet()) {
-                double priority = calculatePriority(entry.getValue(), totalMissingBattery);
+                StatusResponse status = entry.getValue();
+
+                double priority = calculatePriority(status, totalMissingBattery);
                 totalPriority += priority;
                 priorityQueue.add(new Pair<>(entry.getKey(), priority));
-            }
 
-            // 3rd part: iterate through all available vehicles and accumulate the amount each one is willing to give
-            for (Map.Entry<AID, StatusResponse> entry : systemStatus.entrySet()) {
-                StatusResponse status = entry.getValue();
 //                int fairShare = (status.getMaxCapacity() - status.getCurrentCapacity()) * this.availableLoad / totalMissingBattery;
                 int fairShare = this.availableLoad / this.systemStatus.size();
                 double given = 0;
@@ -131,14 +153,20 @@ public class ChargingHub extends Agent {
         if(loadDistribution.size() > 0){
             try {
                 for (SubscriptionResponder.Subscription subscription : subscriptions) {
-                    msg = new ACLMessage(ACLMessage.INFORM);
-                    msg.setContentObject(new ChargingConditions(loadDistribution.get(subscription.getMessage().getSender())));
-                    subscription.notify(msg);
+                    if(systemStatus.containsKey(subscription.getMessage().getSender())){
+                        msg = new ACLMessage(ACLMessage.INFORM);
+                        msg.setContentObject(new ChargingConditions(loadDistribution.get(subscription.getMessage().getSender())));
+                        subscription.notify(msg);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void addGridDataPoint(int peakLoad, int totalSharedLoad){
+        Data.submitGridStat(String.valueOf(peakLoad), String.valueOf((int) (100 * totalSharedLoad / peakLoad)));
     }
 
     public int getOccupiedStations() {

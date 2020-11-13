@@ -12,7 +12,7 @@ public class OneWayVehicle extends Vehicle {
 
     @Override
     public void addResponseBehaviour(ACLMessage msg) {
-        addBehaviour(new OneWayStatusResponseBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
+        addBehaviour(new OneWayStatusResponseBehaviour(this));
     }
 
     @Override

@@ -7,6 +7,7 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import utils.Constants;
 import utils.Data;
+import vehicle.TwoWayVehicle;
 
 import java.util.Timer;
 

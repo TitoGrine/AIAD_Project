@@ -14,33 +14,40 @@ public class Constants {
     // Statistics related
     public final static String DATA_FOLDER = "stats";
     public final static String VEHICLE_STATS = "vehicle_stats";
+    public final static String GRID_STATS = "grid_stats";
     public final static String FILE_EXTENSION = ".csv";
 
     // System characteristics
-    public final static double START_TIME = 13.0;
+    public final static double START_TIME = 7.5;
     public final static long TICK_FREQUENCY = 5000;                         // How many (real time) milliseconds each tick is worth
     public final static int CYCLE_TICKS = 20;                                // How many ticks are done in one simulation
 
     public final static double TICK_RATIO = 0.25;                           // How many minutes (simulation time) each tick is worth (0.25 is a 15 minutes)
     public final static int TRAFFIC_FREQUENCY = 3000;                       // Frequency to which vehicles can enter the system in seconds
-    public final static int CAR_TRAFFIC = 3;                                // Maximum number of vehicles that can attempt to charge at each interval
+    public final static int CAR_TRAFFIC = 5;                                // Maximum number of vehicles that can attempt to charge at each interval
     public final static double EXIT_PROBABILITY = 0.05;                     // Base probability for a car to leave
+    public final static double EXIT_FACTOR = 0.0;                           // Exit probability factor of battery
     public final static int CHARGING_STATIONS = 10;                         // Number of charging stations the charging hub has
-    public final static double[] VEHICLE_DISTRIBUTION = {0.4, 0.6, 0.0};    // Relative frequency of each type of vehicle
+    public final static double[] VEHICLE_DISTRIBUTION = {0.0, 1.0, 0.0};    // Relative frequency of each type of vehicle
     public final static int[] CAPACITY_DISTRIBUTION = {30, 100};            // Range of maximum capacities of vehicles in kWh
     public final static double MEAN_ALTRUISTIC_VALUE = 0.8;                 // Mean value of altruistic factor of normal distribution
     public final static double ALTRUISTIC_STANDARD_DEVIATION = 0.2;         // Standard deviation of altruistic factor normal distribution
-    public final static double MEAN_PERMISSION_VALUE = 0.5;                 // Mean value of normal distribution for permission to charge grid (lower mean means higher probability of acceptance)
+    public final static double MEAN_PERMISSION_VALUE = 0.1;                 // Mean value of normal distribution for permission to charge grid (lower mean means higher probability of acceptance)
     public final static double PERMISSION_STANDARD_DEVIATION = 0.5;         // Standard deviation of normal distribution for permission to charge grid
     public final static double CHARGING_PRICE = 1.0;                        // Price to charge vehicle per kWh
 
     public final static int[] SPRING_GRID_DEMAND = {65, 58, 57, 57, 62, 57, 58, 49, 72, 81, 187, 165, 28, 100, 111, 187, 57, 21, 26, 21, 57, 58, 57, 58};
     public final static int[] SUMMER_GRID_DEMAND = {56, 57, 58, 58, 58, 69, 21, 41, 21, 20, 115, 151, 34, 24, 21, 30, 31, 22, 23, 21, 59, 57, 60, 60};
-    public final static int[] AUTUMN_GRID_DEMAND = {61, 58, 59, 58, 59, 69, 60, 22, 182, 25, 25, 103, 111, 34, 58, 370, 387, 402, 22, 58, 70, 61, 62, 61};
-    public final static int[] WINTER_GRID_DEMAND = {59, 61, 59, 59, 60, 58, 58, 149, 267, 157, 140, 304, 283, 210, 83, 284, 68, 37, 37, 74, 61, 61, 70, 62};
+    public final static int[] AUTUMN_GRID_DEMAND = {59, 61, 59, 59, 60, 58, 58, 149, 267, 157, 140, 304, 283, 210, 83, 284, 68, 37, 37, 74, 61, 61, 70, 62};
+    public final static int[] WINTER_GRID_DEMAND = {61, 58, 59, 58, 59, 69, 60, 22, 182, 25, 25, 103, 111, 34, 58, 370, 387, 390, 22, 58, 70, 61, 62, 61};
+
+    public final static int SPRING_MAX_AVAILABLE_LOAD = 200;
+    public final static int SUMMER_MAX_AVAILABLE_LOAD = 175;
+    public final static int AUTUMN_MAX_AVAILABLE_LOAD = 350;
+    public final static int WINTER_MAX_AVAILABLE_LOAD = 400;
 
     public final static int[] CURRENT_DEMAND = SPRING_GRID_DEMAND;
-    public final static int MAX_AVAILABLE_LOAD = 400;
+    public final static int MAX_AVAILABLE_LOAD = SPRING_MAX_AVAILABLE_LOAD;
 
     // Colors
 
