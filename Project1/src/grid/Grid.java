@@ -1,7 +1,9 @@
 package grid;
 
+import utils.Constants;
+
 public class Grid {
-    public float getLoad(int t) {
-        return (float) (-Math.pow(t,2) + 555);
+    public int getLoad(int t) {
+        return Constants.MAX_AVAILABLE_LOAD - Constants.CURRENT_DEMAND[t];
     }
 }

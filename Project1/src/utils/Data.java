@@ -8,7 +8,7 @@ import java.util.List;
 public class Data {
 
     private static final String data_folder_path = "./" + Constants.DATA_FOLDER;
-    private static final String vehicle_data_file_path = "./" + Constants.DATA_FOLDER + "/" + Constants.VECHICLE_DATA_FILE + Constants.FILE_EXTENSION;
+    private static final String vehicle_data_file_path = "./" + Constants.DATA_FOLDER + "/" + Constants.VEHICLE_STATS + Constants.FILE_EXTENSION;
 
     public static void createFiles(){
         File folder = new File(data_folder_path);

@@ -11,6 +11,7 @@ import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
 import jade.wrapper.ContainerController;
 import utils.Constants;
+import utils.Utilities;
 import vehicle.StatusResponse;
 
 import java.io.IOException;
@@ -20,10 +21,11 @@ import java.util.Vector;
 
 public class ChargingHub extends Agent {
     private int availableLoad; // in kWh
-    //Grid simulator
     private int numStations;
     private int occupiedStations;
+    private double localTime  = Constants.START_TIME;
     private Map<AID, StatusResponse> systemStatus;
+    private Grid grid = new Grid();
     protected double chargingPrice = Constants.CHARGING_PRICE;
 
     private SubscriptionBehaviour chargingSubscription;
@@ -50,12 +52,16 @@ public class ChargingHub extends Agent {
     }
 
     public void updateSystemStatus() {
+        this.localTime += Constants.TICK_RATIO % 24;
+        this.availableLoad = grid.getLoad((int) this.localTime);
+        Utilities.printTime(((int) this.localTime), (int) ((this.localTime - (int) this.localTime) * 60));
         systemStatus.clear();
         addBehaviour(new RequestStatusBehaviour(this, new ACLMessage(ACLMessage.REQUEST)));
     }
 
     public void distributeLoad() {
         Map<AID, Integer> loadDistribution = new HashMap<>();
+        Vector<SubscriptionResponder.Subscription> subscriptions = chargingSubscription.getSubscriptions();
 
         int totalNeededCapacity = 0;
 
@@ -65,21 +71,22 @@ public class ChargingHub extends Agent {
         for (AID vehicle : systemStatus.keySet())
             loadDistribution.put(vehicle, totalNeededCapacity == 0 ? 0 : (int) Math.floor(availableLoad * ((systemStatus.get(vehicle).getMaxCapacity() - systemStatus.get(vehicle).getCurrentCapacity()) / (double) totalNeededCapacity)));
 
-        notifyVehicles(loadDistribution);
+        notifyVehicles(loadDistribution, subscriptions);
     }
 
-    public void notifyVehicles(Map<AID, Integer> loadDistribution){
-        Vector<SubscriptionResponder.Subscription> subscriptions = chargingSubscription.getSubscriptions();
+    public void notifyVehicles(Map<AID, Integer> loadDistribution, Vector<SubscriptionResponder.Subscription> subscriptions){
         ACLMessage msg;
 
-        try {
-            for (SubscriptionResponder.Subscription subscription : subscriptions) {
-                msg = new ACLMessage(ACLMessage.INFORM);
-                msg.setContentObject(loadDistribution.get(subscription.getMessage().getSender()));
-                subscription.notify(msg);
+        if(loadDistribution.size() > 0){
+            try {
+                for (SubscriptionResponder.Subscription subscription : subscriptions) {
+                    msg = new ACLMessage(ACLMessage.INFORM);
+                    msg.setContentObject(new ChargingConditions(loadDistribution.get(subscription.getMessage().getSender())));
+                    subscription.notify(msg);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

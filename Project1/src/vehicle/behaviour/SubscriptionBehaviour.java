@@ -5,6 +5,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.proto.SubscriptionInitiator;
 import utils.Constants;
+import utils.Utilities;
 import vehicle.Vehicle;
 
 public class SubscriptionBehaviour extends SubscriptionInitiator {
@@ -25,24 +26,23 @@ public class SubscriptionBehaviour extends SubscriptionInitiator {
     }
 
     public void handleRefuse(ACLMessage msg){
-        System.out.println(vehicle.getLocalName() + " - subscription refuse: " + msg.getContent());
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "subscription refuse: " + msg.getContent());
 
         vehicle.doDelete();
     }
 
     public void handleInform(ACLMessage msg){
         try {
-            int response = (int) msg.getContentObject();
+            ChargingConditions response = (ChargingConditions) msg.getContentObject();
                   
 
-            if(response == Constants.ALLOW_DISCONNECT){
-                System.out.println("Leaving the charging hub!");
-                vehicle.doDelete();
+            if(response.isChargingTerminated()){
+                vehicle.exit();
                 return;
             }
 
-            System.out.println(vehicle.getLocalName() + " - subscription inform: " + response);
-            vehicle.updateBattery(response);
+            Utilities.printVehicleMessage(vehicle.getLocalName(),vehicle.getVehicleType(), "subscription inform: " + response.getGivenLoad());
+            vehicle.updateBattery(response.getGivenLoad());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }

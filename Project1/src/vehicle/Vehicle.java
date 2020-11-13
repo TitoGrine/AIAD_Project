@@ -5,6 +5,7 @@ import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import utils.Constants;
 import utils.Data;
+import utils.Utilities;
 import vehicle.behaviour.SubscriptionBehaviour;
 
 import java.util.ArrayList;
@@ -60,14 +61,14 @@ public abstract class Vehicle extends Agent {
     public void setup(){
         ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
         msg.addReceiver(service);
-        msg.setContent("I want to charge.");
+        msg.setContent("Requesting charge.");
         subscription = new SubscriptionBehaviour(this, msg);
         addBehaviour(subscription);
     }
 
     public void updateBattery(int newLoad) {
-        this.priceToPay += newLoad * Constants.TICK_RATIO * chargingPrice; //newLoad * horas * chargingBill do chub
         this.currentLoad = newLoad;
+        this.priceToPay += this.currentLoad * Constants.TICK_RATIO * chargingPrice;
         currentCapacity = Math.min(this.maxCapacity, (int) (this.currentLoad * Constants.TICK_RATIO) + this.currentCapacity);
         double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
 
@@ -75,13 +76,19 @@ public abstract class Vehicle extends Agent {
             double leave = Constants.EXIT_PROBABILITY + 0.45 * battery_percentage;
 
             if(Math.random() < leave){
-                System.out.println("Leaving with " + String.format("%.2g", battery_percentage * 100) + "% of battery.");
-                Data.submitStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.4g", battery_percentage), String.valueOf(this.priceToPay)));
+                Data.submitStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.3g", battery_percentage), String.valueOf(this.priceToPay)));
                 subscription.cancel(service, false);
             }
         }
     }
 
+    public void exit(){
+        Utilities.printSystemMessage("vehicle " + Constants.RED_BOLD + this.getLocalName() + Constants.RESET + " left the charging hub.");
+        this.doDelete();
+    }
+
     public abstract void addResponseBehaviour(ACLMessage msg);
+
+    public abstract int getVehicleType();
 
 }

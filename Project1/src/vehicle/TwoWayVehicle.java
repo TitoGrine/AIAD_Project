@@ -2,6 +2,7 @@ package vehicle;
 
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import utils.Constants;
 import vehicle.behaviour.SmartStatusResponseBehaviour;
 
 public class TwoWayVehicle extends SmartVehicle {
@@ -12,5 +13,10 @@ public class TwoWayVehicle extends SmartVehicle {
     @Override
     public void addResponseBehaviour(ACLMessage msg) {
         addBehaviour(new SmartStatusResponseBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
+    }
+
+    @Override
+    public int getVehicleType() {
+        return Constants.TWOWAY_VEHICLE;
     }
 }
