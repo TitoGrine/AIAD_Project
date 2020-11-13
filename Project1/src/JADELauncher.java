@@ -6,6 +6,7 @@ import jade.core.Runtime;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import utils.Constants;
+import utils.Data;
 
 import java.util.Timer;
 
@@ -17,6 +18,8 @@ public class JADELauncher {
         Profile p1 = new ProfileImpl();
 
         ContainerController mainContainer = rt.createMainContainer(p1);
+
+        Data.createFiles();
 
         try {
             AgentController acRMA;

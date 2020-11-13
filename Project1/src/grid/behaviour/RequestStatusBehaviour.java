@@ -5,6 +5,8 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREInitiator;
 import jade.proto.SubscriptionResponder;
+import utils.Constants;
+import utils.Utilities;
 import vehicle.StatusResponse;
 
 import java.util.Vector;
@@ -23,7 +25,7 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
 
         for (SubscriptionResponder.Subscription subscription : chub.getChargingVehicles()) {
             request = new ACLMessage((ACLMessage.REQUEST));
-            request.setContent("Request car status.");
+            request.setContent("Requesting car status.");
             request.addReceiver(subscription.getMessage().getSender());
 
             msgs.add(request);
@@ -33,20 +35,20 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
     }
 
     public void handleAgree(ACLMessage msg) {
-        System.out.println(chub.getLocalName() + " - received agree from " + msg.getSender().getLocalName() + ": " + msg.getContent());
+        Utilities.printChargingHubMessage("received agree: " + msg.getContent());
     }
 
     public void handleRefuse(ACLMessage msg) {
-        System.out.println(chub.getLocalName() + " - received refuse from " + msg.getSender().getLocalName() + ": " + msg.getContent());
+        Utilities.printChargingHubMessage("received refuse: " + msg.getContent());
     }
 
     public void handleFailure(ACLMessage msg) {
-        System.out.println(chub.getLocalName() + " - received failure from " + msg.getSender().getLocalName() + ": " + msg.getContent());
+        Utilities.printChargingHubMessage("received failure: " + msg.getContent());
     }
 
     public void handleInform(ACLMessage msg) {
         try {
-            System.out.println(chub.getLocalName() + " - received inform from " + msg.getSender().getLocalName() + ": " + msg.getContentObject());
+            Utilities.printChargingHubMessage("received inform: \n" + msg.getContentObject());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }

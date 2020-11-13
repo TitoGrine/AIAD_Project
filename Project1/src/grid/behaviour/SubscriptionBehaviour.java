@@ -1,5 +1,6 @@
 package grid.behaviour;
 
+import grid.ChargingConditions;
 import grid.ChargingHub;
 import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
@@ -21,14 +22,18 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
         ACLMessage reply = subscription.createReply();
         if(chub.getOccupiedStations() < chub.getNumStations()){
             chub.addVehicle();
-            reply.setContent("Charging allowed.");
+            try {
+                reply.setContentObject(new ChargingConditions(chub.getChargingPrice()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             reply.setPerformative(ACLMessage.AGREE);
 
             createSubscription(subscription);
         }
         else{
             reply.setPerformative(ACLMessage.REFUSE);
-            reply.setContent("Charging not allowed. There isn't enough charging stations.");
+            reply.setContent("Charging denied. There isn't enough charging stations.");
         }
         return reply;
     }
@@ -42,7 +47,7 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
         ACLMessage reply = cancel.createReply();
         reply.setPerformative(ACLMessage.INFORM);
         try {
-            reply.setContentObject(Constants.ALLOW_DISCONNECT);
+            reply.setContentObject(new ChargingConditions(true));
         } catch (IOException e) {
             e.printStackTrace();
         }

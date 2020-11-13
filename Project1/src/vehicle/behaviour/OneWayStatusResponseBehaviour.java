@@ -19,9 +19,7 @@ public class OneWayStatusResponseBehaviour extends AchieveREResponder {
     public ACLMessage handleRequest(ACLMessage request){
         ACLMessage reply = request.createReply();
         reply.setPerformative(ACLMessage.AGREE);
-        reply.setContent("Still connected.");
-
-        System.out.println(vehicle.getLocalName() + " - Received a request for status.");
+        reply.setContent("Connected.");
 
         return reply;
     }
@@ -35,8 +33,6 @@ public class OneWayStatusResponseBehaviour extends AchieveREResponder {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        System.out.println(vehicle.getLocalName() + " - Sent vehicle status.");
 
         return reply;
     }
