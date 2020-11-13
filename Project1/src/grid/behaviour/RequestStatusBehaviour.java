@@ -48,7 +48,7 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
 
     public void handleInform(ACLMessage msg) {
         try {
-            Utilities.printChargingHubMessage("received inform: \n" + msg.getContentObject());
+            Utilities.printChargingHubMessage("received inform from " + msg.getSender().getLocalName() + ":\n" + msg.getContentObject());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }

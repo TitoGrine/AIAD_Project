@@ -33,8 +33,7 @@ public class ChargingHub extends Agent {
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
 
-    public ChargingHub(Runtime runtime, ContainerController container, int availableLoad, int numStations) {
-        this.availableLoad = availableLoad;
+    public ChargingHub(Runtime runtime, ContainerController container, int numStations) {
         this.numStations = numStations;
         this.occupiedStations = 0;
         systemStatus = new HashMap<>();
@@ -99,7 +98,8 @@ public class ChargingHub extends Agent {
             // 3rd part: iterate through all available vehicles and accumulate the amount each one is willing to give
             for (Map.Entry<AID, StatusResponse> entry : systemStatus.entrySet()) {
                 StatusResponse status = entry.getValue();
-                int fairShare = (status.getMaxCapacity() - status.getCurrentCapacity()) * this.availableLoad / totalMissingBattery;
+//                int fairShare = (status.getMaxCapacity() - status.getCurrentCapacity()) * this.availableLoad / totalMissingBattery;
+                int fairShare = this.availableLoad / this.systemStatus.size();
                 double given = 0;
                 if (status.getAltruistFactor() != -1) {
                     given = fairShare * status.getAltruistFactor() / 2.0;
@@ -118,7 +118,8 @@ public class ChargingHub extends Agent {
                 loadDistribution.put(pair.getKey(), allocatedLoad);
             }
 
-            System.out.println("TOTAL ALLOCATED LOAD: " + totalLoad);
+            Utilities.printChargingHubMessage("available load: " + this.availableLoad);
+            Utilities.printChargingHubMessage("total allocated load: " + totalLoad);
         }
 
         notifyVehicles(loadDistribution, chargingSubscription.getSubscriptions());
