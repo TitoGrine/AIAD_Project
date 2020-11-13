@@ -8,6 +8,14 @@ public class StatusResponse implements Serializable {
     int currentCapacity;
     int maxCapacity;
     double altruistFactor;
+    boolean allowsV2G = false;
+
+    public StatusResponse(int currentCapacity, int maxCapacity, double altruistFactor, boolean allowsV2G){
+        this.currentCapacity = currentCapacity;
+        this.maxCapacity = maxCapacity;
+        this.altruistFactor = altruistFactor;
+        this.allowsV2G = allowsV2G;
+    }
 
     public StatusResponse(int currentCapacity, int maxCapacity, double altruistFactor){
         this.currentCapacity = currentCapacity;
@@ -29,6 +37,10 @@ public class StatusResponse implements Serializable {
 
     public double getAltruistFactor() {
         return altruistFactor;
+    }
+
+    public boolean allowsV2G() {
+        return allowsV2G;
     }
 
     @Override

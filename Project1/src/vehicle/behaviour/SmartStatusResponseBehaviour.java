@@ -12,8 +12,8 @@ import java.io.IOException;
 public class SmartStatusResponseBehaviour extends AchieveREResponder {
     private SmartVehicle vehicle;
 
-    public SmartStatusResponseBehaviour(Vehicle vehicle, MessageTemplate msg) {
-        super(vehicle, msg);
+    public SmartStatusResponseBehaviour(Vehicle vehicle) {
+        super(vehicle, MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
         this.vehicle = (SmartVehicle) vehicle;
     }
 
@@ -30,7 +30,7 @@ public class SmartStatusResponseBehaviour extends AchieveREResponder {
         reply.setPerformative(ACLMessage.INFORM);
 
         try {
-            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getAltruistFactor()));
+            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getAltruistFactor(), vehicle.allowsV2G()));
         } catch (IOException e) {
             e.printStackTrace();
         }

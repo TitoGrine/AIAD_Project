@@ -15,15 +15,18 @@ public abstract class Vehicle extends Agent {
     protected int currentCapacity;  // in kWh.
     protected int maxCapacity;      // maximum amount in kWh
     protected int initCapacity;      // initial amount in kWh
-    protected double currentLoad = 0;
     protected double priceToPay = 0;
 
     protected double chargingPrice;
     private AID service;
     protected SubscriptionBehaviour subscription;
 
-    public void setCurrentLoad(int currentLoad) {
-        this.currentLoad = currentLoad;
+    private void updatePriceToPay(double load, double price, boolean toGrid){
+        this.priceToPay += load * Constants.TICK_RATIO * price * (toGrid ? -1 : 1);
+    }
+
+    private void updateCapacity(double load, boolean toGrid){
+        currentCapacity = Math.max(0, Math.min(this.maxCapacity, (int) (load * Constants.TICK_RATIO * (toGrid ? -1 : 1)) + this.currentCapacity));
     }
 
     protected Vehicle(int currentCapacity, int maxCapacity) {
@@ -66,10 +69,10 @@ public abstract class Vehicle extends Agent {
         addBehaviour(subscription);
     }
 
-    public void updateBattery(int newLoad) {
-        this.currentLoad = newLoad;
-        this.priceToPay += this.currentLoad * Constants.TICK_RATIO * chargingPrice;
-        currentCapacity = Math.min(this.maxCapacity, (int) (this.currentLoad * Constants.TICK_RATIO) + this.currentCapacity);
+    public void chargeBattery(int newLoad) {
+        this.updatePriceToPay(newLoad, chargingPrice, false);
+        this.updateCapacity(newLoad, false);
+
         double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
 
         if(battery_percentage > 0.2){
@@ -80,6 +83,11 @@ public abstract class Vehicle extends Agent {
                 subscription.cancel(service, false);
             }
         }
+    }
+
+    public void chargeGrid(int sharedLoad, double discountPrice){
+        this.updatePriceToPay(sharedLoad, discountPrice, true);
+        this.updateCapacity(sharedLoad, true);
     }
 
     public void exit(){

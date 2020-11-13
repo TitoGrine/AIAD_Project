@@ -11,8 +11,8 @@ import java.io.IOException;
 public class OneWayStatusResponseBehaviour extends AchieveREResponder {
     private Vehicle vehicle;
 
-    public OneWayStatusResponseBehaviour(Vehicle vehicle, MessageTemplate msg) {
-        super(vehicle, msg);
+    public OneWayStatusResponseBehaviour(Vehicle vehicle) {
+        super(vehicle, MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
         this.vehicle = vehicle;
     }
 
