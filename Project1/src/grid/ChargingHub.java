@@ -59,7 +59,7 @@ public class ChargingHub extends Agent {
         double missingBattery = st.getMaxCapacity() - st.getCurrentCapacity();
         double missingBatteryPercent = missingBattery / st.getMaxCapacity();
 
-        return (missingBatteryPercent + missingBattery) / totalMissingBattery;
+        return (missingBatteryPercent * missingBattery) / totalMissingBattery;
     }
 
     public void distributeLoad() {
@@ -91,20 +91,28 @@ public class ChargingHub extends Agent {
             }
 
             // 3rd part: iterate through all available vehicles and accumulate the amount each one is willing to give
-            for (StatusResponse status : systemStatus.values()) {
+            for (Map.Entry<AID, StatusResponse> entry : systemStatus.entrySet()) {
+                StatusResponse status = entry.getValue();
                 int fairShare = (status.getMaxCapacity() - status.getCurrentCapacity()) * this.availableLoad / totalMissingBattery;
-                if (status.getAltruistFactor() != -1)
-                    totalGivenByVehicles += fairShare * status.getAltruistFactor() / 2.0;
+                double given = 0;
+                if (status.getAltruistFactor() != -1) {
+                    given = fairShare * status.getAltruistFactor() / 2.0;
+                    totalGivenByVehicles += given;
+                }
+                // Temporarily saves the amount that is assured to each car
+                loadDistribution.put(entry.getKey(), (int) (fairShare - given));
             }
 
+            int totalLoad = 0;
             // 4th part: go through the priority queue and allocate more battery according to priority
             while (!priorityQueue.isEmpty()) {
                 Pair<AID, Double> pair = priorityQueue.poll();
-                StatusResponse status = systemStatus.get(pair.getKey());
-                int fairShare = (status.getMaxCapacity() - status.getCurrentCapacity()) * this.availableLoad / totalMissingBattery;
-                int allocatedLoad = fairShare + (int) (totalGivenByVehicles * pair.getValue() / totalPriority);
+                int allocatedLoad = loadDistribution.get(pair.getKey()) + (int) (totalGivenByVehicles * pair.getValue() / totalPriority);
+                totalLoad += allocatedLoad;
                 loadDistribution.put(pair.getKey(), allocatedLoad);
             }
+
+            System.out.println("TOTAL ALLOCATED LOAD: " + totalLoad);
         }
 
         notifyVehicles(loadDistribution);

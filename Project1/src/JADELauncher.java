@@ -34,26 +34,26 @@ public class JADELauncher {
 
 
             AgentController ac1;
-            Agent onev = new OneWayVehicle(0, 50);
-            ac1 = mainContainer.acceptNewAgent("onev", onev);
-//            ac1 = mainContainer.acceptNewAgent("twov0", new TwoWayVehicle(70, 100, 1.0f, false));
-            ac1.start();
+//            Agent onev = new OneWayVehicle(0, 50);
+//            ac1 = mainContainer.acceptNewAgent("onev", onev);
+////            ac1 = mainContainer.acceptNewAgent("twov0", new TwoWayVehicle(70, 100, 1.0f, false));
+//            ac1.start();
 
 
             AgentController ac2;
-            ac2 = mainContainer.acceptNewAgent("twov1", new TwoWayVehicle(50, 100, 0.0, false));
+            ac2 = mainContainer.acceptNewAgent("twov1", new TwoWayVehicle(0, 100, 0.0, false));
             ac2.start();
 
             AgentController ac3;
-            ac3 = mainContainer.acceptNewAgent("twov2", new TwoWayVehicle(80, 100, 0.3, false));
+            ac3 = mainContainer.acceptNewAgent("twov2", new TwoWayVehicle(0, 100, 0.3, false));
             ac3.start();
 
             AgentController ac4;
-            ac4 = mainContainer.acceptNewAgent("twov3", new TwoWayVehicle(10, 100, 0.6, false));
+            ac4 = mainContainer.acceptNewAgent("twov3", new TwoWayVehicle(0, 100, 0.6, false));
             ac4.start();
 
             AgentController ac5;
-            ac5 = mainContainer.acceptNewAgent("twov4", new TwoWayVehicle(20, 100, 1.0, false));
+            ac5 = mainContainer.acceptNewAgent("twov4", new TwoWayVehicle(0, 100, 1.0, false));
             ac5.start();
 
 
