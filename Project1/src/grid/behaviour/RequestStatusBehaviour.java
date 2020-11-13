@@ -39,7 +39,7 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
     }
 
     public void handleRefuse(ACLMessage msg) {
-        Utilities.printChargingHubMessage(" - received refuse: " + msg.getContent());
+        Utilities.printChargingHubMessage("received refuse: " + msg.getContent());
     }
 
     public void handleFailure(ACLMessage msg) {
@@ -48,7 +48,7 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
 
     public void handleInform(ACLMessage msg) {
         try {
-            Utilities.printChargingHubMessage("received inform: \n" + msg.getContentObject());
+            Utilities.printChargingHubMessage("received inform from " + msg.getSender().getLocalName() + ":\n" + msg.getContentObject());
         } catch (UnreadableException e) {
             e.printStackTrace();
         }

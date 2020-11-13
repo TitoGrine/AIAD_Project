@@ -25,7 +25,6 @@ public class Constants {
     public final static int TRAFFIC_FREQUENCY = 3000;                       // Frequency to which vehicles can enter the system in seconds
     public final static int CAR_TRAFFIC = 3;                                // Maximum number of vehicles that can attempt to charge at each interval
     public final static double EXIT_PROBABILITY = 0.05;                     // Base probability for a car to leave
-    public final static int AVAILABLE_LOAD = 200;                           // Available load the charging hub can output
     public final static int CHARGING_STATIONS = 10;                         // Number of charging stations the charging hub has
     public final static double[] VEHICLE_DISTRIBUTION = {0.4, 0.6, 0.0};    // Relative frequency of each type of vehicle
     public final static int[] CAPACITY_DISTRIBUTION = {30, 100};            // Range of maximum capacities of vehicles in kWh
