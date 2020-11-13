@@ -51,7 +51,7 @@ public class VehicleTrafficTask extends TimerTask {
     public void run() {
         int numberNewCars = Utilities.randomNumber(0, Constants.CAR_TRAFFIC);
 
-        System.out.println("Tried to connect " + numberNewCars + " cars.");
+        Utilities.printSystemMessage(numberNewCars + " vehicles attempted to connect to the charging hub.");
 
         try {
             while (numberNewCars > 0) {

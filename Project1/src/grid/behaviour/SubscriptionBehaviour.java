@@ -33,7 +33,7 @@ public class SubscriptionBehaviour extends SubscriptionResponder {
         }
         else{
             reply.setPerformative(ACLMessage.REFUSE);
-            reply.setContent("Charging not allowed. There isn't enough charging stations.");
+            reply.setContent("Charging denied. There isn't enough charging stations.");
         }
         return reply;
     }

@@ -11,6 +11,7 @@ import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
 import jade.wrapper.ContainerController;
 import utils.Constants;
+import utils.Utilities;
 import vehicle.StatusResponse;
 
 import java.io.IOException;
@@ -53,8 +54,7 @@ public class ChargingHub extends Agent {
     public void updateSystemStatus() {
         this.localTime += Constants.TICK_RATIO % 24;
         this.availableLoad = grid.getLoad((int) this.localTime);
-        System.out.println(String.format("Local time is %02d:%02d", ((int) this.localTime), (int) ((this.localTime - (int) this.localTime) * 60)));
-        System.out.println("Available load is of " + availableLoad);
+        Utilities.printTime(((int) this.localTime), (int) ((this.localTime - (int) this.localTime) * 60));
         systemStatus.clear();
         addBehaviour(new RequestStatusBehaviour(this, new ACLMessage(ACLMessage.REQUEST)));
     }
