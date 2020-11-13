@@ -67,17 +67,21 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
             }
         }
 
+        if(priorityQueue.isEmpty())
+            chub.addGridDataPoint(peakLoad, 0);
+
         ACLMessage msg;
+        int remainingLoad = peakLoad;
 
         try {
-            while (!priorityQueue.isEmpty() && peakLoad > 0) {
+            while (!priorityQueue.isEmpty() && remainingLoad > 0) {
                 msg = priorityQueue.poll();
                 ACLMessage reply = msg.createReply();
-                Vehicle2GridConditions chargingConditions = new Vehicle2GridConditions(chub.getChargingPrice() * 0.3, Math.min(peakLoad, (int) msg.getContentObject()));
+                Vehicle2GridConditions chargingConditions = new Vehicle2GridConditions(chub.getChargingPrice() * 0.3, Math.min(remainingLoad, (int) msg.getContentObject()));
 
                 reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                 reply.setContentObject(chargingConditions);
-                peakLoad -= chargingConditions.getSharedLoad();
+                remainingLoad -= chargingConditions.getSharedLoad();
 
                 acceptances.add(reply);
             }
@@ -98,11 +102,21 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
 
     @Override
     protected void handleAllResultNotifications(Vector resultNotifications) {
+        int totalSharedLoad = 0;
         for(Object result : resultNotifications){
-            Utilities.printChargingHubMessage("vehicle " + ((ACLMessage) result).getSender().getLocalName() + " confirms charging the grid.");
-            chub.removeVehicleFromSystemStatus(((ACLMessage) result).getSender());
+
+            if(((ACLMessage) result).getPerformative() == ACLMessage.INFORM){
+                Utilities.printChargingHubMessage("vehicle " + ((ACLMessage) result).getSender().getLocalName() + " confirms charging the grid.");
+                chub.removeVehicleFromSystemStatus(((ACLMessage) result).getSender());
+                try {
+                    totalSharedLoad += (int) ((ACLMessage) result).getContentObject();
+                } catch (UnreadableException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
+        chub.addGridDataPoint(peakLoad, totalSharedLoad);
         chub.distributeLoad();
     }
 }

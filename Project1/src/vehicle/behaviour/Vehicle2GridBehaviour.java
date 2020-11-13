@@ -30,8 +30,8 @@ public class Vehicle2GridBehaviour extends ContractNetResponder {
 
         Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "received call for proposals of V2G");
 
-        if(batteryPercentage > 0.9){
-            int proposedLoad = (int) ((vehicle.getCurrentCapacity() - (0.8 - (0.2 * (vehicle.getAltruistFactor() - 0.5))) * vehicle.getMaxCapacity()) / Constants.TICK_RATIO);
+        if(batteryPercentage > 0.85){
+            int proposedLoad = (int) ((vehicle.getCurrentCapacity() - (0.75 - (0.2 * (vehicle.getAltruistFactor() - 0.5))) * vehicle.getMaxCapacity()) / Constants.TICK_RATIO);
 
             reply.setPerformative(ACLMessage.PROPOSE);
             try {
@@ -65,10 +65,10 @@ public class Vehicle2GridBehaviour extends ContractNetResponder {
 
         try {
             Vehicle2GridConditions chargingConditions = (Vehicle2GridConditions) accept.getContentObject();
-            vehicle.chargeGrid(chargingConditions.getSharedLoad(), chargingConditions.getDiscountPrice());
+            int chargedLoad = vehicle.chargeGrid(chargingConditions.getSharedLoad(), chargingConditions.getDiscountPrice());
             reply.setPerformative(ACLMessage.INFORM);
-            reply.setContent("Charged grid.");
-        } catch (UnreadableException e) {
+            reply.setContentObject(chargedLoad);
+        } catch (UnreadableException | IOException e) {
             e.printStackTrace();
             reply.setPerformative(ACLMessage.FAILURE);
             reply.setContent("Failed to charge grid.");

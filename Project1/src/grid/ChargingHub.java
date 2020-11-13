@@ -13,6 +13,7 @@ import jade.proto.SubscriptionResponder;
 import jade.wrapper.ContainerController;
 import utils.Constants;
 import javafx.util.Pair;
+import utils.Data;
 import utils.Utilities;
 import vehicle.StatusResponse;
 
@@ -81,7 +82,10 @@ public class ChargingHub extends Agent {
                     vehiclesForV2G.add(vehicle);
             }
 
-            addBehaviour(new Vehicle2GridBehaviour(this, grid.getPeakLoad(), vehiclesForV2G));
+            if(vehiclesForV2G.size() > 0)
+                addBehaviour(new Vehicle2GridBehaviour(this, grid.getPeakLoad(), vehiclesForV2G));
+            else
+                addGridDataPoint(grid.getPeakLoad(), 0);
         } else {
             distributeLoad();
         }
@@ -110,14 +114,12 @@ public class ChargingHub extends Agent {
         } else {
             // 2nd part: Calculate priorities and total priority
             for (Map.Entry<AID, StatusResponse> entry : systemStatus.entrySet()) {
-                double priority = calculatePriority(entry.getValue(), totalMissingBattery);
+                StatusResponse status = entry.getValue();
+
+                double priority = calculatePriority(status, totalMissingBattery);
                 totalPriority += priority;
                 priorityQueue.add(new Pair<>(entry.getKey(), priority));
-            }
 
-            // 3rd part: iterate through all available vehicles and accumulate the amount each one is willing to give
-            for (Map.Entry<AID, StatusResponse> entry : systemStatus.entrySet()) {
-                StatusResponse status = entry.getValue();
 //                int fairShare = (status.getMaxCapacity() - status.getCurrentCapacity()) * this.availableLoad / totalMissingBattery;
                 int fairShare = this.availableLoad / this.systemStatus.size();
                 double given = 0;
@@ -161,6 +163,10 @@ public class ChargingHub extends Agent {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void addGridDataPoint(int peakLoad, int totalSharedLoad){
+        Data.submitGridStat(String.valueOf(peakLoad), String.valueOf((int) (100 * totalSharedLoad / peakLoad)));
     }
 
     public int getOccupiedStations() {

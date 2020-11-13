@@ -33,20 +33,7 @@ public class JADELauncher {
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
 
-            //new Timer().scheduleAtFixedRate(new VehicleTrafficTask(mainContainer), 0, Constants.TRAFFIC_FREQUENCY);
-
-            Agent v1 = new TwoWayVehicle(10, 100, 0.0, false);
-            AgentController acV1 = mainContainer.acceptNewAgent("Vehicle 1", v1);
-
-            Agent v2 = new TwoWayVehicle(90, 100, 0.1, true);
-            AgentController acV2 = mainContainer.acceptNewAgent("Vehicle 2", v2);
-
-            Agent v3 = new TwoWayVehicle(95, 100, 0.1, true);
-            AgentController acV3 = mainContainer.acceptNewAgent("Vehicle 3", v3);
-
-            acV1.start();
-            acV2.start();
-            acV3.start();
+            new Timer().scheduleAtFixedRate(new VehicleTrafficTask(mainContainer), 0, Constants.TRAFFIC_FREQUENCY);
         } catch (Exception e) {
             e.printStackTrace();
         }

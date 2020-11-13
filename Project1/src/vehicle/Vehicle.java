@@ -8,12 +8,11 @@ import utils.Data;
 import utils.Utilities;
 import vehicle.behaviour.SubscriptionBehaviour;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public abstract class Vehicle extends Agent {
-    protected int currentCapacity;  // in kWh.
-    protected int maxCapacity;      // maximum amount in kWh
+    protected int currentCapacity;   // in kWh.
+    protected int maxCapacity;       // maximum amount in kWh
     protected int initCapacity;      // initial amount in kWh
     protected double priceToPay = 0;
 
@@ -25,8 +24,11 @@ public abstract class Vehicle extends Agent {
         this.priceToPay += load * Constants.TICK_RATIO * price * (toGrid ? -1 : 1);
     }
 
-    private void updateCapacity(double load, boolean toGrid){
-        currentCapacity = Math.max(0, Math.min(this.maxCapacity, (int) (load * Constants.TICK_RATIO * (toGrid ? -1 : 1)) + this.currentCapacity));
+    private int updateCapacity(double load, boolean toGrid){
+        int chargedLoad = (int) (load * Constants.TICK_RATIO);
+        currentCapacity = Math.max(0, Math.min(this.maxCapacity, chargedLoad * (toGrid ? -1 : 1) + this.currentCapacity));
+
+        return chargedLoad;
     }
 
     protected Vehicle(int currentCapacity, int maxCapacity) {
@@ -76,18 +78,18 @@ public abstract class Vehicle extends Agent {
         double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
 
         if(battery_percentage > 0.2){
-            double leave = Constants.EXIT_PROBABILITY + 0.45 * battery_percentage;
+            double leave = Constants.EXIT_PROBABILITY + Constants.EXIT_FACTOR * battery_percentage;
 
             if(Math.random() < leave){
-                Data.submitStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.3g", battery_percentage), String.valueOf(this.priceToPay)));
+                Data.submitVehicleStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.3g", battery_percentage), String.valueOf(this.priceToPay)));
                 subscription.cancel(service, false);
             }
         }
     }
 
-    public void chargeGrid(int sharedLoad, double discountPrice){
+    public int chargeGrid(int sharedLoad, double discountPrice){
         this.updatePriceToPay(sharedLoad, discountPrice, true);
-        this.updateCapacity(sharedLoad, true);
+        return this.updateCapacity(sharedLoad, true);
     }
 
     public void exit(){
