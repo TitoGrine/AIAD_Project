@@ -47,6 +47,36 @@ public class Utilities {
         return normalDistribution(Constants.MEAN_PERMISSION_VALUE, Constants.PERMISSION_STANDARD_DEVIATION) < 0.5;
     }
 
+    public static void registerService(Agent agent, String service) {
+        DFAgentDescription dfd = new DFAgentDescription();
+        dfd.setName(agent.getAID());
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType(service);
+        sd.setName(agent.getLocalName());
+        dfd.addServices(sd);
+        try {
+            DFService.register(agent, dfd);
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static DFAgentDescription[] getService(Agent agent, String service)
+    {
+        DFAgentDescription dfd = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType(service);
+        dfd.addServices(sd);
+        try
+        {
+            return DFService.search(agent, dfd);
+        }
+        catch (FIPAException fe) {
+            fe.printStackTrace();
+            return null;
+        }
+    }
+
     public static void printTime(final int hours, int minutes) {
         System.out.println(Constants.WHITE_BOLD_BRIGHT + String.format("\n ⌚ Local Time: %02d:%02d", hours, minutes) + Constants.RESET);
     }

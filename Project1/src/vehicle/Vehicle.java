@@ -2,36 +2,43 @@ package vehicle;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import utils.Constants;
 import utils.Data;
 import utils.Utilities;
 import vehicle.behaviour.SubscriptionBehaviour;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public abstract class Vehicle extends Agent {
-    protected int currentCapacity;  // in kWh.
-    protected int maxCapacity;      // maximum amount in kWh
+    protected int currentCapacity;   // in kWh.
+    protected int maxCapacity;       // maximum amount in kWh
     protected int initCapacity;      // initial amount in kWh
-    protected double currentLoad = 0;
     protected double priceToPay = 0;
 
     protected double chargingPrice;
     private AID service;
     protected SubscriptionBehaviour subscription;
 
-    public void setCurrentLoad(int currentLoad) {
-        this.currentLoad = currentLoad;
+    private void updatePriceToPay(double load, double price, boolean toGrid){
+        this.priceToPay += load * Constants.TICK_RATIO * price * (toGrid ? -1 : 1);
+    }
+
+    private int updateCapacity(double load, boolean toGrid){
+        int chargedLoad = (int) (load * Constants.TICK_RATIO);
+        currentCapacity = Math.max(0, Math.min(this.maxCapacity, chargedLoad * (toGrid ? -1 : 1) + this.currentCapacity));
+
+        return chargedLoad;
     }
 
     protected Vehicle(int currentCapacity, int maxCapacity) {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
         this.initCapacity = currentCapacity;
-
-        service = new AID("Charging_Hub", false);
     }
 
     public int getCurrentCapacity() {
@@ -59,6 +66,12 @@ public abstract class Vehicle extends Agent {
     }
 
     public void setup(){
+        DFAgentDescription[] chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
+        if (chubs.length <= 0) {
+            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "could not find a charging hub");
+        }
+        service = chubs[0].getName();
+
         ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
         msg.addReceiver(service);
         msg.setContent("Requesting charge.");
@@ -66,20 +79,25 @@ public abstract class Vehicle extends Agent {
         addBehaviour(subscription);
     }
 
-    public void updateBattery(int newLoad) {
-        this.currentLoad = newLoad;
-        this.priceToPay += this.currentLoad * Constants.TICK_RATIO * chargingPrice;
-        currentCapacity = Math.min(this.maxCapacity, (int) (this.currentLoad * Constants.TICK_RATIO) + this.currentCapacity);
+    public void chargeBattery(int newLoad) {
+        this.updatePriceToPay(newLoad, chargingPrice, false);
+        this.updateCapacity(newLoad, false);
+
         double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
 
         if(battery_percentage > 0.2){
-            double leave = Constants.EXIT_PROBABILITY + 0.45 * battery_percentage;
+            double leave = Constants.EXIT_PROBABILITY + Constants.EXIT_FACTOR * battery_percentage;
 
             if(Math.random() < leave){
-                Data.submitStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.3g", battery_percentage), String.valueOf(this.priceToPay)));
+                Data.submitVehicleStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.3g", battery_percentage), String.valueOf(this.priceToPay)));
                 subscription.cancel(service, false);
             }
         }
+    }
+
+    public int chargeGrid(int sharedLoad, double discountPrice){
+        this.updatePriceToPay(sharedLoad, discountPrice, true);
+        return this.updateCapacity(sharedLoad, true);
     }
 
     public void exit(){

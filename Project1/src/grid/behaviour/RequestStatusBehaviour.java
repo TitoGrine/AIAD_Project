@@ -64,6 +64,6 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
             e.printStackTrace();
         }
 
-        chub.distributeLoad();
+        chub.analyzeSystem();
     }
 }
