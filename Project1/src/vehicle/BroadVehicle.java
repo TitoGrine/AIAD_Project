@@ -1,5 +1,6 @@
 package vehicle;
 
+import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -8,10 +9,13 @@ import jade.lang.acl.ACLMessage;
 import utils.Constants;
 import utils.Utilities;
 import vehicle.behaviour.BroadProposeInitiator;
+import vehicle.behaviour.BroadProposeResponder;
 import vehicle.behaviour.BroadStatusResponseBehaviour;
 import vehicle.behaviour.TwoWayStatusResponseBehaviour;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BroadVehicle extends SmartVehicle {
     public BroadVehicle(int currentCapacity, int maxCapacity, double altruistFactor, boolean chargeGrid) {
@@ -34,21 +38,31 @@ public class BroadVehicle extends SmartVehicle {
     }
 
     @Override
+    public double getAltruistFactor() {
+        return super.getAltruistFactor();
+    }
+
+    @Override
     public void addResponseBehaviour(ACLMessage msg) {
         //TODO: Add response behaviour.
         addBehaviour(new BroadStatusResponseBehaviour(this));
     }
 
-    @Override
-    public int getVehicleType() {
-        return Constants.BROAD_VEHICLE;
-    }
-
-    public void startConsensusProposal() {
+    public Behaviour startConsensusProposal(ACLMessage request, String RESULT_NOTIFICATION_KEY) {
         DFAgentDescription[] agents = Utilities.getService(this, Constants.BROAD_SERVICE);
-        if(amILeader(agents))
-            addBehaviour(new BroadProposeInitiator(this));
+        Behaviour result;
+
+        if(amILeader(agents)) {
+            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "I am the leader!");
+            result = new BroadProposeInitiator(this, request, agents, RESULT_NOTIFICATION_KEY);
+//            addBehaviour(result);
+        } else {
+            result = new BroadProposeResponder(this, request, RESULT_NOTIFICATION_KEY);
+//            addBehaviour(result);
+        }
         //TODO: should the propose responder behaviour be added here?
+
+        return result;
     }
 
     private boolean amILeader(DFAgentDescription[] agents) {
@@ -57,18 +71,21 @@ public class BroadVehicle extends SmartVehicle {
             if(agents[i].getName().getLocalName().compareTo(this.getLocalName()) < 0)
                 //There is an agent with a name that lexicographically precedes its own name
                 return false;
-            else if(agents[i].getName().getLocalName().compareTo(this.getLocalName()) == 0)
-                //Needing a tie breaker
-                return false;
+            //Since there can not be duplicate agent names, there is no need for a tie breaker
         }
 
         return true;
     }
 
     public void startConsensusNegotiation(ArrayList<Double> result) {
+        //TODO: add AID -> AF association
         //TODO: add contract net behaviour
-        for(Double af : result) {
-            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "got an AF of " + af);
-        }
+        result.add(getAltruistFactor());
+        Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "the negotiation tuple is " + result);
+    }
+
+    @Override
+    public int getVehicleType() {
+        return Constants.BROAD_VEHICLE;
     }
 }

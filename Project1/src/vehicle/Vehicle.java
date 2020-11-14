@@ -66,9 +66,10 @@ public abstract class Vehicle extends Agent {
     }
 
     public void setup(){
-        DFAgentDescription[] chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
-        if (chubs.length <= 0) {
+        DFAgentDescription[] chubs = new DFAgentDescription[0];
+        while (chubs.length <= 0) {
             Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "could not find a charging hub");
+            chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
         }
         service = chubs[0].getName();
 

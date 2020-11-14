@@ -7,30 +7,42 @@ import jade.proto.ProposeInitiator;
 import utils.Constants;
 import utils.Utilities;
 import vehicle.BroadVehicle;
+import vehicle.StatusResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
 public class BroadProposeInitiator extends ProposeInitiator {
     BroadVehicle vehicle;
+    DFAgentDescription[] agents;
+    ACLMessage statusRequest;
+    String RESULT_NOTIFICATION_KEY;
 
-    public BroadProposeInitiator(BroadVehicle a) {
-        super(a, new ACLMessage(ACLMessage.PROPOSE));
-        vehicle = a;
+    public BroadProposeInitiator(BroadVehicle vehicle, ACLMessage request, DFAgentDescription[] agents, String RESULT_NOTIFICATION_KEY) {
+        super(vehicle, new ACLMessage(ACLMessage.PROPOSE));
+        this.vehicle = vehicle;
+        this.agents = agents;
+        this.statusRequest = request;
+        this.RESULT_NOTIFICATION_KEY = RESULT_NOTIFICATION_KEY;
     }
 
     @Override
     protected Vector prepareInitiations(ACLMessage propose) {
         Vector<ACLMessage> msgs = new Vector<>();
 
-        DFAgentDescription[] vehicles = Utilities.getService(vehicle, Constants.BROAD_SERVICE);
-        for(int i = 0; i < vehicles.length; i++) {
+        for(DFAgentDescription agent : agents) {
+            if(agent.getName().equals(vehicle.getAID())){
+                continue;
+            }
+            Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "preparing propose for " + agent.getName().getLocalName());
             propose = new ACLMessage(ACLMessage.PROPOSE);
-            propose.setContent("Proposing a start of consensus. Send me your FA's");
-            propose.addReceiver(vehicles[i].getName());
+            propose.setContent("Proposing a start of consensus. Send me your AF's");
+            propose.addReceiver(agent.getName());
             msgs.add(propose);
         }
 
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "Sending proposes");
         return msgs;
     }
 
@@ -47,5 +59,21 @@ public class BroadProposeInitiator extends ProposeInitiator {
         }
 
         vehicle.startConsensusNegotiation(result);
+    }
+
+    @Override
+    public int onEnd() {
+        ACLMessage reply = statusRequest.createReply();
+        reply.setPerformative(ACLMessage.INFORM);
+
+        try {
+            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getAltruistFactor(), vehicle.allowsV2G()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.getDataStore().put(RESULT_NOTIFICATION_KEY, reply);
+
+        return 0;
     }
 }
