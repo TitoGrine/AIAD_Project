@@ -1,6 +1,11 @@
 package utils;
 
 import jade.core.AID;
+import jade.core.Agent;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 
 import java.util.Random;
 
@@ -41,6 +46,36 @@ public class Utilities {
 
     public static boolean chargeGridPermission() {
         return normalDistribution(Constants.MEAN_PERMISSION_VALUE, Constants.PERMISSION_STANDARD_DEVIATION) < 0.5;
+    }
+
+    public static void registerService(Agent agent, String service) {
+        DFAgentDescription dfd = new DFAgentDescription();
+        dfd.setName(agent.getAID());
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType(service);
+        sd.setName(agent.getLocalName());
+        dfd.addServices(sd);
+        try {
+            DFService.register(agent, dfd);
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static DFAgentDescription[] getService(Agent agent, String service)
+    {
+        DFAgentDescription dfd = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType(service);
+        dfd.addServices(sd);
+        try
+        {
+            return DFService.search(agent, dfd);
+        }
+        catch (FIPAException fe) {
+            fe.printStackTrace();
+            return null;
+        }
     }
 
     public static void printTime(final int hours, int minutes) {

@@ -2,6 +2,10 @@ package vehicle;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import utils.Constants;
 import utils.Data;
@@ -35,8 +39,6 @@ public abstract class Vehicle extends Agent {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
         this.initCapacity = currentCapacity;
-
-        service = new AID("Charging_Hub", false);
     }
 
     public int getCurrentCapacity() {
@@ -64,6 +66,12 @@ public abstract class Vehicle extends Agent {
     }
 
     public void setup(){
+        DFAgentDescription[] chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
+        if (chubs.length <= 0) {
+            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "could not find a charging hub");
+        }
+        service = chubs[0].getName();
+
         ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
         msg.addReceiver(service);
         msg.setContent("Requesting charge.");
