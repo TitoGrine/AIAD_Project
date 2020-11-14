@@ -6,6 +6,7 @@ import jade.core.behaviours.TickerBehaviour;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
 import utils.Constants;
+import utils.Utilities;
 
 public class TimerBehaviour extends TickerBehaviour {
     private ChargingHub chub;
@@ -21,6 +22,7 @@ public class TimerBehaviour extends TickerBehaviour {
 
     @Override
     protected void onTick() {
+        Utilities.printSystemMessage("tick number " + this.getTickCount());
         if(this.getTickCount() > Constants.CYCLE_TICKS){
             this.stop();
             try {
@@ -30,7 +32,6 @@ public class TimerBehaviour extends TickerBehaviour {
                 e.printStackTrace();
             }
         }
-
         chub.updateSystemStatus();
     }
 }

@@ -27,7 +27,7 @@ public class BroadStatusResponseBehaviour extends AchieveREResponder {
     }
 
     @Override
-    protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response) throws FailureException {
+    protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response) {
         return null;
     }
 
@@ -40,7 +40,6 @@ public class BroadStatusResponseBehaviour extends AchieveREResponder {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         vehicle.send(reply);
     }

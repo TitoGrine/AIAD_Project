@@ -26,4 +26,13 @@ public class BroadCarInfo implements Serializable {
     public double getChargedPercent() {
         return chargedPercent;
     }
+
+    @Override
+    public String toString() {
+        return "BroadCarInfo{" +
+                "aid=" + aid +
+                ", af=" + af +
+                ", chargedPercent=" + chargedPercent +
+                '}';
+    }
 }

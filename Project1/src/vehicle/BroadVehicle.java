@@ -30,6 +30,9 @@ public class BroadVehicle extends SmartVehicle {
     public void setup() {
         super.setup();
         Utilities.registerService(this, Constants.BROAD_SERVICE);
+        responseBehaviour = new BroadStatusResponseBehaviour(this);
+        addBehaviour(responseBehaviour);
+        addBehaviour(new BroadConsensusResponder(this));
     }
 
     @Override
@@ -49,8 +52,6 @@ public class BroadVehicle extends SmartVehicle {
     @Override
     public void addResponseBehaviour(ACLMessage msg) {
         //TODO: Add response behaviour.
-        responseBehaviour = new BroadStatusResponseBehaviour(this);
-        addBehaviour(responseBehaviour);
     }
 
     public void startConsensusProposal(ACLMessage request) {
@@ -62,11 +63,7 @@ public class BroadVehicle extends SmartVehicle {
             Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "I am the leader!");
             result = new BroadConsensusInitiator(this, agents);
             addBehaviour(result);
-        } else {
-            result = new BroadConsensusResponder(this);
-            addBehaviour(result);
         }
-        //TODO: should the propose responder behaviour be added here?
     }
 
     private boolean amILeader(DFAgentDescription[] agents) {
@@ -89,19 +86,8 @@ public class BroadVehicle extends SmartVehicle {
         responseBehaviour.replyToChub(this.request, altruistFactor);
     }
 
-    // Pair<AF, ChargedPercent>
-    private double calculateAvg(Map<AID, BroadCarInfo> proposals) {
-        double sum = 0;
-
-        for(BroadCarInfo info : proposals.values()) {
-            sum += info.getAf();
-        }
-
-        return sum / proposals.size();
-    }
-
     public Map<AID, Double> adaptFactors(Map<AID, BroadCarInfo> proposals){
-        double avgAF = calculateAvg(proposals);
+        Pair<Double, Double> avgMeasures = calculateAvg(proposals);
         Map<AID, Double> result = new HashMap<>();
         ArrayList<BroadCarInfo> list = new ArrayList<>(proposals.values());
         list.sort((a, b) -> {
@@ -110,23 +96,42 @@ public class BroadVehicle extends SmartVehicle {
             return a.getChargedPercent() < b.getChargedPercent() ? -1 : 1;
         });
 
-        Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "Ordered list of proposals: " + list.toString());
-
-        double mid = list.size() / 2;
-        //TODO: check mid value and act accordingly
-        if(list.size() % 2 == 0) {
-            firstHalfDistribution(list.subList(0, (int) mid), avgAF / 2.0, result);
-            secondHalfDistribution(list.subList((int) mid, list.size()), avgAF / 2.0, result);
+        int mid = findMid(list, avgMeasures.getValue());
+        if(mid != -1) {
+            firstHalfDistribution(list.subList(0, mid), avgMeasures.getKey() / 2.0, result);
+            secondHalfDistribution(list.subList(mid, list.size()), avgMeasures.getKey() / 2.0, result);
         } else {
-            // If list.size is 1, then firsHalf will go from 0 to 0 and secondHalf from 1 to 1 which means it remains unchanged
-            firstHalfDistribution(list.subList(0, (int) mid), avgAF / 2.0, result);
-            secondHalfDistribution(list.subList((int) mid + 1, list.size()), avgAF / 2.0, result);
-            // The exact middle elem remains unchanged
-            BroadCarInfo midElem = list.get((int) mid);
-            result.put(midElem.getAid(), midElem.getAf());
+            for(BroadCarInfo elem : list) {
+                result.put(elem.getAid(), elem.getAf());
+            }
         }
 
         return result;
+    }
+
+    private Pair<Double, Double> calculateAvg(Map<AID, BroadCarInfo> proposals) {
+        double sumAF = 0;
+        double sumPercent = 0;
+
+        for(BroadCarInfo info : proposals.values()) {
+            sumAF += info.getAf();
+            sumPercent += info.getChargedPercent();
+        }
+
+        double avgAF = proposals.size() == 0 ? 0 : sumAF / proposals.size();
+        double avgPercent = proposals.size() == 0 ? 0 : sumPercent / proposals.size();
+
+        return new Pair<>(avgAF, avgPercent);
+    }
+
+    private int findMid(List<BroadCarInfo> list, Double avg) {
+        for (int i = 0; i < list.size(); i++) {
+            if (avg < list.get(i).getChargedPercent()){
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     private void firstHalfDistribution(List<BroadCarInfo> firstHalf, double halfAvgAF, Map<AID, Double> result) {

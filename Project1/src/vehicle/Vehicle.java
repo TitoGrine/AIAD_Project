@@ -83,7 +83,7 @@ public abstract class Vehicle extends Agent {
 
         double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
 
-        if(battery_percentage > 0.2){
+        if(battery_percentage > 1.5){
             double leave = Constants.EXIT_PROBABILITY + Constants.EXIT_FACTOR * battery_percentage;
 
             if(Math.random() < leave){
