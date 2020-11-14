@@ -9,6 +9,7 @@ import jade.proto.ContractNetInitiator;
 import jade.proto.ProposeInitiator;
 import javafx.util.Pair;
 import utils.Utilities;
+import vehicle.BroadCarInfo;
 import vehicle.BroadVehicle;
 
 import java.io.IOException;
@@ -47,23 +48,23 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
 
     @Override
     protected void handleAllResponses(Vector responses, Vector acceptances) {
-        Map<AID, Pair<Double, Double>> proposals = new HashMap<>();
-        proposals.put(vehicle.getAID(), new Pair<>(vehicle.getAltruistFactor(), (double) vehicle.getCurrentCapacity() / vehicle.getMaxCapacity()));
+        Map<AID, BroadCarInfo> proposals = new HashMap<>();
+        proposals.put(vehicle.getAID(), new BroadCarInfo(vehicle.getAID(), vehicle.getAltruistFactor(), (double) vehicle.getCurrentCapacity() / vehicle.getMaxCapacity()));
 
         for(Object response : responses) {
             try {
-                proposals.put(((ACLMessage) response).getSender(), (Pair) ((ACLMessage) response).getContentObject());
+                proposals.put(((ACLMessage) response).getSender(), (BroadCarInfo) ((ACLMessage) response).getContentObject());
             } catch (UnreadableException e) {
                 e.printStackTrace();
             }
         }
 
-        Map<AID, Pair<Double, Double>> counterProposals = vehicle.adaptFactors(proposals);
+        Map<AID, Double> counterProposals = vehicle.adaptFactors(proposals);
 
         for(Object response : responses) {
             ACLMessage reply = ((ACLMessage) response).createReply();
-            double initAF = proposals.get(((ACLMessage) response).getSender()).getKey();
-            double newAF = counterProposals.get(((ACLMessage) response).getSender()).getKey();
+            double initAF = proposals.get(((ACLMessage) response).getSender()).getAf();
+            double newAF = counterProposals.get(((ACLMessage) response).getSender());
 
             reply.setPerformative(initAF == newAF ? ACLMessage.ACCEPT_PROPOSAL : ACLMessage.REJECT_PROPOSAL);
 
@@ -76,6 +77,6 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
             acceptances.add(reply);
         }
 
-        vehicle.replyToChub(counterProposals.get(vehicle.getAID()).getKey());
+        vehicle.replyToChub(counterProposals.get(vehicle.getAID()));
     }
 }

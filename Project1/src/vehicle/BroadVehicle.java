@@ -13,6 +13,9 @@ import vehicle.behaviour.BroadConsensusInitiator;
 import vehicle.behaviour.BroadConsensusResponder;
 import vehicle.behaviour.BroadStatusResponseBehaviour;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BroadVehicle extends SmartVehicle {
@@ -86,8 +89,70 @@ public class BroadVehicle extends SmartVehicle {
         responseBehaviour.replyToChub(this.request, altruistFactor);
     }
 
-    public Map<AID, Pair<Double, Double>> adaptFactors(Map<AID, Pair<Double, Double>> proposals){
-        return proposals;
+    // Pair<AF, ChargedPercent>
+    private double calculateAvg(Map<AID, BroadCarInfo> proposals) {
+        double sum = 0;
+
+        for(BroadCarInfo info : proposals.values()) {
+            sum += info.getAf();
+        }
+
+        return sum / proposals.size();
+    }
+
+    public Map<AID, Double> adaptFactors(Map<AID, BroadCarInfo> proposals){
+        double avgAF = calculateAvg(proposals);
+        Map<AID, Double> result = new HashMap<>();
+        ArrayList<BroadCarInfo> list = new ArrayList<>(proposals.values());
+        list.sort((a, b) -> {
+            if(a.getChargedPercent() == b.getChargedPercent())
+                return 0;
+            return a.getChargedPercent() < b.getChargedPercent() ? -1 : 1;
+        });
+
+        Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "Ordered list of proposals: " + list.toString());
+
+        double mid = list.size() / 2;
+        //TODO: check mid value and act accordingly
+        if(list.size() % 2 == 0) {
+            firstHalfDistribution(list.subList(0, (int) mid), avgAF / 2.0, result);
+            secondHalfDistribution(list.subList((int) mid, list.size()), avgAF / 2.0, result);
+        } else {
+            // If list.size is 1, then firsHalf will go from 0 to 0 and secondHalf from 1 to 1 which means it remains unchanged
+            firstHalfDistribution(list.subList(0, (int) mid), avgAF / 2.0, result);
+            secondHalfDistribution(list.subList((int) mid + 1, list.size()), avgAF / 2.0, result);
+            // The exact middle elem remains unchanged
+            BroadCarInfo midElem = list.get((int) mid);
+            result.put(midElem.getAid(), midElem.getAf());
+        }
+
+        return result;
+    }
+
+    private void firstHalfDistribution(List<BroadCarInfo> firstHalf, double halfAvgAF, Map<AID, Double> result) {
+        double totalMissingPercent = 0;
+
+        for(BroadCarInfo info : firstHalf) {
+            totalMissingPercent += 1 - info.getChargedPercent();
+        }
+
+        for(BroadCarInfo info : firstHalf) {
+            double delta = halfAvgAF * (1 - info.getChargedPercent()) / totalMissingPercent;
+            result.put(info.getAid(), Double.max(info.getAf() - delta, 0.0));
+        }
+    }
+
+    private void secondHalfDistribution(List<BroadCarInfo> secondHalf, double halfAvgAF, Map<AID, Double> result) {
+        double totalChargedPercent = 0;
+
+        for(BroadCarInfo info : secondHalf) {
+            totalChargedPercent += info.getChargedPercent();
+        }
+
+        for(BroadCarInfo info : secondHalf) {
+            double delta = halfAvgAF * info.getChargedPercent() / totalChargedPercent;
+            result.put(info.getAid(), Double.min(info.getAf() + delta, 1.0));
+        }
     }
 
     @Override

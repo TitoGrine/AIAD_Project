@@ -9,6 +9,7 @@ import jade.proto.ContractNetResponder;
 import jade.proto.ProposeResponder;
 import javafx.util.Pair;
 import utils.Utilities;
+import vehicle.BroadCarInfo;
 import vehicle.BroadVehicle;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class BroadConsensusResponder extends ContractNetResponder {
 
         try {
             reply.setPerformative(ACLMessage.PROPOSE);
-            reply.setContentObject(new Pair<>(vehicle.getAltruistFactor(), (double) vehicle.getCurrentCapacity() / vehicle.getMaxCapacity()));
+            reply.setContentObject(new BroadCarInfo(vehicle.getAID(), vehicle.getAltruistFactor(), (double) vehicle.getCurrentCapacity() / vehicle.getMaxCapacity()));
         } catch (IOException e) {
             reply.setPerformative(ACLMessage.REFUSE);
             reply.setContent("Exception occurred.");
