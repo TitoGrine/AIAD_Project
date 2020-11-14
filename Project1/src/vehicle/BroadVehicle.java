@@ -7,7 +7,10 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import utils.Constants;
+import utils.Utilities;
 import vehicle.behaviour.SmartStatusResponseBehaviour;
+
+import java.util.ArrayList;
 
 public class BroadVehicle extends SmartVehicle {
     public BroadVehicle(int currentCapacity, int maxCapacity, double altruistFactor, boolean chargeGrid) {
@@ -52,5 +55,12 @@ public class BroadVehicle extends SmartVehicle {
     @Override
     public int getVehicleType() {
         return Constants.BROAD_VEHICLE;
+    }
+
+    public void startConsensusNegotiation(ArrayList<Double> result) {
+        //TODO: add contract net behaviour
+        for(Double af : result) {
+            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "got an AF of " + af);
+        }
     }
 }
