@@ -8,9 +8,6 @@ import jade.wrapper.ContainerController;
 import utils.Constants;
 import utils.Data;
 import vehicle.BroadVehicle;
-import vehicle.TwoWayVehicle;
-
-import java.util.Timer;
 
 public class JADELauncher {
 

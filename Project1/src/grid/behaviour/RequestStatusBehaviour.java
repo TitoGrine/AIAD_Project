@@ -5,7 +5,6 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREInitiator;
 import jade.proto.SubscriptionResponder;
-import utils.Constants;
 import utils.Utilities;
 import vehicle.StatusResponse;
 

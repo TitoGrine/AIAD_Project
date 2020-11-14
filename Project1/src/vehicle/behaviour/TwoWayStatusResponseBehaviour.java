@@ -3,10 +3,8 @@ package vehicle.behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREResponder;
-import vehicle.SmartVehicle;
 import vehicle.StatusResponse;
 import vehicle.TwoWayVehicle;
-import vehicle.Vehicle;
 
 import java.io.IOException;
 

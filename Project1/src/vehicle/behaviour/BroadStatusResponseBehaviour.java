@@ -1,9 +1,9 @@
 package vehicle.behaviour;
 
+import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREResponder;
-import utils.Utilities;
 import vehicle.BroadVehicle;
 import vehicle.StatusResponse;
 
@@ -26,12 +26,17 @@ public class BroadStatusResponseBehaviour extends AchieveREResponder {
         return reply;
     }
 
-    public void replyToChub(ACLMessage request) {
+    @Override
+    protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response) throws FailureException {
+        return null;
+    }
+
+    public void replyToChub(ACLMessage request, double altruistFactor) {
         ACLMessage reply = request.createReply();
         reply.setPerformative(ACLMessage.INFORM);
 
         try {
-            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getAltruistFactor(), vehicle.allowsV2G()));
+            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), altruistFactor, vehicle.allowsV2G()));
         } catch (IOException e) {
             e.printStackTrace();
         }

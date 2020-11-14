@@ -1,6 +1,5 @@
 package grid.behaviour;
 
-import grid.ChargingConditions;
 import grid.ChargingHub;
 import grid.Vehicle2GridConditions;
 import jade.core.AID;

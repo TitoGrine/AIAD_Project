@@ -1,7 +1,6 @@
 package vehicle;
 
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import utils.Constants;
 import vehicle.behaviour.OneWayStatusResponseBehaviour;
 

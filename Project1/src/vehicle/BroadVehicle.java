@@ -1,21 +1,19 @@
 package vehicle;
 
+import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import javafx.util.Pair;
 import utils.Constants;
 import utils.Utilities;
-import vehicle.behaviour.BroadProposeInitiator;
-import vehicle.behaviour.BroadProposeResponder;
+import vehicle.behaviour.BroadConsensusInitiator;
+import vehicle.behaviour.BroadConsensusResponder;
 import vehicle.behaviour.BroadStatusResponseBehaviour;
-import vehicle.behaviour.TwoWayStatusResponseBehaviour;
 
-import java.util.ArrayList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.Map;
 
 public class BroadVehicle extends SmartVehicle {
     private BroadStatusResponseBehaviour responseBehaviour;
@@ -57,14 +55,12 @@ public class BroadVehicle extends SmartVehicle {
         Behaviour result;
         this.request = request;
 
-        Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "request received is: " + request);
-
         if(amILeader(agents)) {
             Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "I am the leader!");
-            result = new BroadProposeInitiator(this, agents);
+            result = new BroadConsensusInitiator(this, agents);
             addBehaviour(result);
         } else {
-            result = new BroadProposeResponder(this);
+            result = new BroadConsensusResponder(this);
             addBehaviour(result);
         }
         //TODO: should the propose responder behaviour be added here?
@@ -82,16 +78,16 @@ public class BroadVehicle extends SmartVehicle {
         return true;
     }
 
-    public void startConsensusNegotiation(ArrayList<Double> result) {
-        //TODO: add AID -> AF association
-        //TODO: add contract net behaviour
-        result.add(getAltruistFactor());
-        Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "the negotiation tuple is " + result);
-        this.replyToChub();
+    public void replyToChub() {
+        responseBehaviour.replyToChub(this.request, this.altruistFactor);
     }
 
-    public void replyToChub() {
-        responseBehaviour.replyToChub(this.request);
+    public void replyToChub(double altruistFactor) {
+        responseBehaviour.replyToChub(this.request, altruistFactor);
+    }
+
+    public Map<AID, Pair<Double, Double>> adaptFactors(Map<AID, Pair<Double, Double>> proposals){
+        return proposals;
     }
 
     @Override

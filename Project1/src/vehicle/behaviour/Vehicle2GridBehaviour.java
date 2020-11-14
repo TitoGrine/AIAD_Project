@@ -24,7 +24,7 @@ public class Vehicle2GridBehaviour extends ContractNetResponder {
     }
 
     @Override
-    protected ACLMessage handleCfp(ACLMessage cfp) throws RefuseException, FailureException, NotUnderstoodException {
+    protected ACLMessage handleCfp(ACLMessage cfp) {
         double batteryPercentage = vehicle.getCurrentCapacity() / (double) vehicle.getMaxCapacity();
         ACLMessage reply = cfp.createReply();
 
@@ -54,7 +54,7 @@ public class Vehicle2GridBehaviour extends ContractNetResponder {
     }
 
     @Override
-    protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept) throws FailureException {
+    protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)  {
         ACLMessage reply = accept.createReply();
 
         try {

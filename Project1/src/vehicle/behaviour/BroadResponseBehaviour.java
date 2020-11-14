@@ -4,9 +4,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREResponder;
 import vehicle.BroadVehicle;
-import vehicle.SmartVehicle;
 import vehicle.StatusResponse;
-import vehicle.Vehicle;
 
 import java.io.IOException;
 

@@ -5,7 +5,6 @@ import jade.core.Runtime;
 import jade.core.behaviours.TickerBehaviour;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
-import sun.misc.Signal;
 import utils.Constants;
 
 public class TimerBehaviour extends TickerBehaviour {
