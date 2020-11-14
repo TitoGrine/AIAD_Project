@@ -39,13 +39,6 @@ public abstract class Vehicle extends Agent {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
         this.initCapacity = currentCapacity;
-
-        DFAgentDescription[] chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
-        if (chubs.length <= 0) {
-            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "could not find a charging hub");
-        }
-
-        service = chubs[0].getName();
     }
 
     public int getCurrentCapacity() {
@@ -73,6 +66,12 @@ public abstract class Vehicle extends Agent {
     }
 
     public void setup(){
+        DFAgentDescription[] chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
+        if (chubs.length <= 0) {
+            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "could not find a charging hub");
+        }
+        service = chubs[0].getName();
+
         ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
         msg.addReceiver(service);
         msg.setContent("Requesting charge.");
