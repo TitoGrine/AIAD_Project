@@ -14,8 +14,8 @@ import java.util.Vector;
 public class BroadProposeInitiator extends ProposeInitiator {
     BroadVehicle vehicle;
 
-    public BroadProposeInitiator(BroadVehicle a, ACLMessage msg) {
-        super(a, msg);
+    public BroadProposeInitiator(BroadVehicle a) {
+        super(a, new ACLMessage(ACLMessage.PROPOSE));
         vehicle = a;
     }
 

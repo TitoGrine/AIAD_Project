@@ -5,10 +5,11 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import utils.Constants;
 import utils.Utilities;
-import vehicle.behaviour.SmartStatusResponseBehaviour;
+import vehicle.behaviour.BroadProposeInitiator;
+import vehicle.behaviour.BroadStatusResponseBehaviour;
+import vehicle.behaviour.TwoWayStatusResponseBehaviour;
 
 import java.util.ArrayList;
 
@@ -17,24 +18,10 @@ public class BroadVehicle extends SmartVehicle {
         super(currentCapacity, maxCapacity, altruistFactor, chargeGrid);
     }
 
-    private void registerService() {
-        DFAgentDescription dfd = new DFAgentDescription();
-        dfd.setName(this.getAID());
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType(Constants.BROAD_SERVICE);
-        sd.setName(this.getLocalName());
-        dfd.addServices(sd);
-        try {
-            DFService.register(this, dfd);
-        } catch (FIPAException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void setup() {
         super.setup();
-        registerService();
+        Utilities.registerService(this, Constants.BROAD_SERVICE);
     }
 
     @Override
@@ -48,13 +35,34 @@ public class BroadVehicle extends SmartVehicle {
 
     @Override
     public void addResponseBehaviour(ACLMessage msg) {
-        addBehaviour(new SmartStatusResponseBehaviour(this, MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
         //TODO: Add response behaviour.
+        addBehaviour(new BroadStatusResponseBehaviour(this));
     }
 
     @Override
     public int getVehicleType() {
         return Constants.BROAD_VEHICLE;
+    }
+
+    public void startConsensusProposal() {
+        DFAgentDescription[] agents = Utilities.getService(this, Constants.BROAD_SERVICE);
+        if(amILeader(agents))
+            addBehaviour(new BroadProposeInitiator(this));
+        //TODO: should the propose responder behaviour be added here?
+    }
+
+    private boolean amILeader(DFAgentDescription[] agents) {
+        //The vehicle considers it is the leader
+        for(int i = 0; i < agents.length; i++) {
+            if(agents[i].getName().getLocalName().compareTo(this.getLocalName()) < 0)
+                //There is an agent with a name that lexicographically precedes its own name
+                return false;
+            else if(agents[i].getName().getLocalName().compareTo(this.getLocalName()) == 0)
+                //Needing a tie breaker
+                return false;
+        }
+
+        return true;
     }
 
     public void startConsensusNegotiation(ArrayList<Double> result) {
