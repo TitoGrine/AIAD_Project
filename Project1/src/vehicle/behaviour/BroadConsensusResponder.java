@@ -8,6 +8,7 @@ import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetResponder;
 import jade.proto.ProposeResponder;
 import javafx.util.Pair;
+import utils.Constants;
 import utils.Utilities;
 import vehicle.BroadCarInfo;
 import vehicle.BroadVehicle;
@@ -18,7 +19,7 @@ public class BroadConsensusResponder extends ContractNetResponder {
     BroadVehicle vehicle;
 
     public BroadConsensusResponder(BroadVehicle vehicle) {
-        super(vehicle, MessageTemplate.MatchPerformative(ACLMessage.CFP));
+        super(vehicle, MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.CFP), MessageTemplate.MatchContent(Constants.CONSENSUS_CONTENT)));
         this.vehicle = vehicle;
     }
 

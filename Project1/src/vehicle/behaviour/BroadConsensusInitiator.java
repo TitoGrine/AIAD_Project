@@ -8,6 +8,7 @@ import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
 import jade.proto.ProposeInitiator;
 import javafx.util.Pair;
+import utils.Constants;
 import utils.Utilities;
 import vehicle.BroadCarInfo;
 import vehicle.BroadVehicle;
@@ -37,7 +38,7 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
                 continue;
 
             propose = new ACLMessage(ACLMessage.CFP);
-            propose.setContent("Requesting altruistic factor proposal.");
+            propose.setContent(Constants.CONSENSUS_CONTENT);
             propose.addReceiver(agent.getName());
             msgs.add(propose);
         }

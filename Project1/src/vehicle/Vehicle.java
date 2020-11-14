@@ -38,6 +38,10 @@ public abstract class Vehicle extends Agent {
         this.initCapacity = currentCapacity;
     }
 
+    public AID getChub() {
+        return service;
+    }
+
     public int getCurrentCapacity() {
         return currentCapacity;
     }

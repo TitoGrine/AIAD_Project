@@ -12,6 +12,7 @@ public class Constants {
     public final static int ALLOW_DISCONNECT = -200;
     public final static String BROAD_SERVICE = "broad-service";
     public final static String CHUB_SERVICE = "chub-service";
+    public final static String CONSENSUS_CONTENT = "Requesting altruistic factor proposal.";
 
     // Statistics related
     public final static String DATA_FOLDER = "stats";

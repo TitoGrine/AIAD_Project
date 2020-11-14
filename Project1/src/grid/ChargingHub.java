@@ -83,6 +83,7 @@ public class ChargingHub extends Agent {
 
     public void analyzeSystem() {
         if(grid.getPeakLoad() > 0){
+            Utilities.printSystemMessage("starting a V2G round");
             List<AID> vehiclesForV2G = new ArrayList<>();
             StatusResponse status;
 

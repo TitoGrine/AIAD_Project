@@ -31,15 +31,15 @@ public class JADELauncher {
             acHub.start();
 
             AgentController vh1;
-            vh1 = mainContainer.acceptNewAgent("vh1", new BroadVehicle(100, 100, 0, false));
+            vh1 = mainContainer.acceptNewAgent("vh1", new BroadVehicle(100, 100, 0, true));
             vh1.start();
 
             AgentController vh2;
-            vh2 = mainContainer.acceptNewAgent("vh2", new BroadVehicle(75, 100, 0.25, false));
+            vh2 = mainContainer.acceptNewAgent("vh2", new BroadVehicle(75, 100, 0.25, true));
             vh2.start();
 
             AgentController vh3;
-            vh3 = mainContainer.acceptNewAgent("vh3", new BroadVehicle(50, 100, 0.5, false));
+            vh3 = mainContainer.acceptNewAgent("vh3", new BroadVehicle(50, 100, 0.5, true));
             vh3.start();
 
             AgentController vh4;
