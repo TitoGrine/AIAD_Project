@@ -11,7 +11,6 @@ import java.io.IOException;
 
 public class BroadStatusResponseBehaviour extends AchieveREResponder {
     private BroadVehicle vehicle;
-    private ACLMessage statusRequest;
 
     public BroadStatusResponseBehaviour(BroadVehicle vehicle) {
         super(vehicle, MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
@@ -22,13 +21,12 @@ public class BroadStatusResponseBehaviour extends AchieveREResponder {
         ACLMessage reply = request.createReply();
         reply.setPerformative(ACLMessage.AGREE);
         reply.setContent("Connected.");
-        statusRequest = request;
 
-        registerPrepareResultNotification(vehicle.startConsensusProposal(request, this.RESULT_NOTIFICATION_KEY));
+        vehicle.startConsensusProposal(request);
         return reply;
     }
 
-    public ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response){
+    public void replyToChub(ACLMessage request) {
         ACLMessage reply = request.createReply();
         reply.setPerformative(ACLMessage.INFORM);
 
@@ -39,21 +37,6 @@ public class BroadStatusResponseBehaviour extends AchieveREResponder {
         }
 
 
-        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "Sending reply with AF");
-        return null;
-    }
-
-    public void replyToChub() {
-        ACLMessage reply = statusRequest.createReply();
-        reply.setPerformative(ACLMessage.INFORM);
-
-        try {
-            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getAltruistFactor(), vehicle.allowsV2G()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        this.getDataStore().put(RESULT_NOTIFICATION_KEY, reply);
+        vehicle.send(reply);
     }
 }

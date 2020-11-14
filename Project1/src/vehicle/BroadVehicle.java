@@ -18,6 +18,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class BroadVehicle extends SmartVehicle {
+    private BroadStatusResponseBehaviour responseBehaviour;
+    private ACLMessage request;
+
     public BroadVehicle(int currentCapacity, int maxCapacity, double altruistFactor, boolean chargeGrid) {
         super(currentCapacity, maxCapacity, altruistFactor, chargeGrid);
     }
@@ -45,24 +48,26 @@ public class BroadVehicle extends SmartVehicle {
     @Override
     public void addResponseBehaviour(ACLMessage msg) {
         //TODO: Add response behaviour.
-        addBehaviour(new BroadStatusResponseBehaviour(this));
+        responseBehaviour = new BroadStatusResponseBehaviour(this);
+        addBehaviour(responseBehaviour);
     }
 
-    public Behaviour startConsensusProposal(ACLMessage request, String RESULT_NOTIFICATION_KEY) {
+    public void startConsensusProposal(ACLMessage request) {
         DFAgentDescription[] agents = Utilities.getService(this, Constants.BROAD_SERVICE);
         Behaviour result;
+        this.request = request;
+
+        Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "request received is: " + request);
 
         if(amILeader(agents)) {
             Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "I am the leader!");
-            result = new BroadProposeInitiator(this, request, agents, RESULT_NOTIFICATION_KEY);
-//            addBehaviour(result);
+            result = new BroadProposeInitiator(this, agents);
+            addBehaviour(result);
         } else {
-            result = new BroadProposeResponder(this, request, RESULT_NOTIFICATION_KEY);
-//            addBehaviour(result);
+            result = new BroadProposeResponder(this);
+            addBehaviour(result);
         }
         //TODO: should the propose responder behaviour be added here?
-
-        return result;
     }
 
     private boolean amILeader(DFAgentDescription[] agents) {
@@ -82,6 +87,11 @@ public class BroadVehicle extends SmartVehicle {
         //TODO: add contract net behaviour
         result.add(getAltruistFactor());
         Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "the negotiation tuple is " + result);
+        this.replyToChub();
+    }
+
+    public void replyToChub() {
+        responseBehaviour.replyToChub(this.request);
     }
 
     @Override
