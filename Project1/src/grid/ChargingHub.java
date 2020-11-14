@@ -7,6 +7,10 @@ import grid.behaviour.Vehicle2GridBehaviour;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.Runtime;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
@@ -43,8 +47,18 @@ public class ChargingHub extends Agent {
     }
 
     public void setup() {
+        Utilities.registerService(this, Constants.CHUB_SERVICE);
         addBehaviour(chargingSubscription);
         addBehaviour(timerBehaviour);
+    }
+
+    @Override
+    public void takeDown() {
+        try {
+            DFService.deregister(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateVehicleStatus(AID vehicle, StatusResponse status) {
