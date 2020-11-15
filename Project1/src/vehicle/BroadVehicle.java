@@ -50,9 +50,9 @@ public class BroadVehicle extends SmartVehicle {
     }
 
     public void startConsensusProposal(ACLMessage request) {
+        this.request = request;
         DFAgentDescription[] agents = Utilities.getService(this, Constants.BROAD_SERVICE);
         Behaviour result;
-        this.request = request;
 
         if (agents.length <= 1) {
             Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "there are no other broad vehicles on the system. Canceling consensus");
