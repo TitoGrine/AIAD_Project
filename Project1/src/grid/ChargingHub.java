@@ -218,6 +218,9 @@ public class ChargingHub extends Agent {
         return chargingPrice;
     }
 
+    public double getDiscountPrice() {
+        return chargingPrice * 0.5;
+    }
 }
 
 
