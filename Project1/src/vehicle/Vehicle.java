@@ -50,18 +50,6 @@ public abstract class Vehicle extends Agent {
         return maxCapacity;
     }
 
-    public void setCurrentCapacity(int currentCapacity) {
-        this.currentCapacity = currentCapacity;
-    }
-
-    public void setMaxCapacity(int maxCapacity) {
-        this.maxCapacity = maxCapacity;
-    }
-
-    public double getPriceToPay() {
-        return priceToPay;
-    }
-
     public void setChargingPrice(double chargingPrice) {
         this.chargingPrice = chargingPrice;
     }
@@ -69,7 +57,6 @@ public abstract class Vehicle extends Agent {
     public void setup(){
         DFAgentDescription[] chubs = new DFAgentDescription[0];
         while (chubs.length <= 0) {
-            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "could not find a charging hub");
             chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
         }
         service = chubs[0].getName();
@@ -106,8 +93,6 @@ public abstract class Vehicle extends Agent {
         Utilities.printSystemMessage("vehicle " + Constants.RED_BOLD + this.getLocalName() + Constants.RESET + " left the charging hub.");
         this.doDelete();
     }
-
-    public abstract void addResponseBehaviour(ACLMessage msg);
 
     public abstract int getVehicleType();
 

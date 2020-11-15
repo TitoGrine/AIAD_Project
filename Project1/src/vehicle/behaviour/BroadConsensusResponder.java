@@ -38,7 +38,6 @@ public class BroadConsensusResponder extends ContractNetResponder {
 
     @Override
     protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
-        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "altruistic factor proposal was rejected.");
         double tempAltruistFactor;
 
         try {
@@ -47,6 +46,7 @@ public class BroadConsensusResponder extends ContractNetResponder {
             tempAltruistFactor = vehicle.getAltruistFactor();
         }
 
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "altruistic factor proposal was rejected. Old altruist factor was  " + vehicle.getAltruistFactor() + ", new one is " + tempAltruistFactor);
         vehicle.replyToChub(tempAltruistFactor);
 
         super.reset();
@@ -54,7 +54,7 @@ public class BroadConsensusResponder extends ContractNetResponder {
 
     @Override
     protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)  {
-        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "altruistic factor proposal was accepted.");
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "altruistic factor proposal was accepted. Keeping altruist factor as " + vehicle.getAltruistFactor());
         vehicle.replyToChub();
 
         super.reset();

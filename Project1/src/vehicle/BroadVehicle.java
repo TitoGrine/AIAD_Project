@@ -49,11 +49,6 @@ public class BroadVehicle extends SmartVehicle {
         return super.getAltruistFactor();
     }
 
-    @Override
-    public void addResponseBehaviour(ACLMessage msg) {
-        //TODO: Add response behaviour.
-    }
-
     public void startConsensusProposal(ACLMessage request) {
         DFAgentDescription[] agents = Utilities.getService(this, Constants.BROAD_SERVICE);
         Behaviour result;
