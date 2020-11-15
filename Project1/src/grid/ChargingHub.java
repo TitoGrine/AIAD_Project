@@ -221,6 +221,14 @@ public class ChargingHub extends Agent {
     public double getDiscountPrice() {
         return chargingPrice * 0.5;
     }
+
+    public void closeSubscription(AID sender) {
+        Vector subs = this.chargingSubscription.getSubscriptions(sender);
+        for(Object sub : subs) {
+            ((SubscriptionResponder.Subscription) sub).close();
+        }
+        removeVehicle();
+    }
 }
 
 
