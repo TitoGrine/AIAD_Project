@@ -2,10 +2,7 @@ package vehicle;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import utils.Constants;
 import utils.Data;
@@ -41,6 +38,10 @@ public abstract class Vehicle extends Agent {
         this.initCapacity = currentCapacity;
     }
 
+    public AID getChub() {
+        return service;
+    }
+
     public int getCurrentCapacity() {
         return currentCapacity;
     }
@@ -49,26 +50,14 @@ public abstract class Vehicle extends Agent {
         return maxCapacity;
     }
 
-    public void setCurrentCapacity(int currentCapacity) {
-        this.currentCapacity = currentCapacity;
-    }
-
-    public void setMaxCapacity(int maxCapacity) {
-        this.maxCapacity = maxCapacity;
-    }
-
-    public double getPriceToPay() {
-        return priceToPay;
-    }
-
     public void setChargingPrice(double chargingPrice) {
         this.chargingPrice = chargingPrice;
     }
 
     public void setup(){
-        DFAgentDescription[] chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
-        if (chubs.length <= 0) {
-            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "could not find a charging hub");
+        DFAgentDescription[] chubs = new DFAgentDescription[0];
+        while (chubs.length <= 0) {
+            chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
         }
         service = chubs[0].getName();
 
@@ -104,8 +93,6 @@ public abstract class Vehicle extends Agent {
         Utilities.printSystemMessage("vehicle " + Constants.RED_BOLD + this.getLocalName() + Constants.RESET + " left the charging hub.");
         this.doDelete();
     }
-
-    public abstract void addResponseBehaviour(ACLMessage msg);
 
     public abstract int getVehicleType();
 

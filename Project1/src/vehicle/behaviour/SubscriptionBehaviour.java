@@ -21,7 +21,6 @@ public class SubscriptionBehaviour extends SubscriptionInitiator {
         } catch (UnreadableException e) {
             e.printStackTrace();
         }
-        vehicle.addResponseBehaviour(msg);
     }
 
     public void handleRefuse(ACLMessage msg){
@@ -45,7 +44,5 @@ public class SubscriptionBehaviour extends SubscriptionInitiator {
         } catch (UnreadableException e) {
             e.printStackTrace();
         }
-
-        vehicle.addResponseBehaviour(msg);
     }
 }

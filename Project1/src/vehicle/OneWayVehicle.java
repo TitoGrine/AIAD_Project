@@ -1,7 +1,5 @@
 package vehicle;
 
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import utils.Constants;
 import vehicle.behaviour.OneWayStatusResponseBehaviour;
 
@@ -11,7 +9,8 @@ public class OneWayVehicle extends Vehicle {
     }
 
     @Override
-    public void addResponseBehaviour(ACLMessage msg) {
+    public void setup() {
+        super.setup();
         addBehaviour(new OneWayStatusResponseBehaviour(this));
     }
 

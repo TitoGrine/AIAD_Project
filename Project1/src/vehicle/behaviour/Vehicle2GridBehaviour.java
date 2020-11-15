@@ -1,10 +1,6 @@
 package vehicle.behaviour;
 
 import grid.Vehicle2GridConditions;
-import jade.core.Agent;
-import jade.domain.FIPAAgentManagement.FailureException;
-import jade.domain.FIPAAgentManagement.NotUnderstoodException;
-import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
@@ -18,13 +14,13 @@ import java.io.IOException;
 public class Vehicle2GridBehaviour extends ContractNetResponder {
     SmartVehicle vehicle;
 
-    public Vehicle2GridBehaviour(Agent a) {
-        super(a, MessageTemplate.MatchPerformative(ACLMessage.CFP));
-        vehicle = (SmartVehicle) a;
+    public Vehicle2GridBehaviour(SmartVehicle a) {
+        super(a, MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.CFP), MessageTemplate.MatchSender(a.getChub())));
+        vehicle = a;
     }
 
     @Override
-    protected ACLMessage handleCfp(ACLMessage cfp) throws RefuseException, FailureException, NotUnderstoodException {
+    protected ACLMessage handleCfp(ACLMessage cfp) {
         double batteryPercentage = vehicle.getCurrentCapacity() / (double) vehicle.getMaxCapacity();
         ACLMessage reply = cfp.createReply();
 
@@ -54,7 +50,7 @@ public class Vehicle2GridBehaviour extends ContractNetResponder {
     }
 
     @Override
-    protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept) throws FailureException {
+    protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)  {
         ACLMessage reply = accept.createReply();
 
         try {

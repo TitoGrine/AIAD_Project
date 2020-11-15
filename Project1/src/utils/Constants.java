@@ -10,7 +10,9 @@ public class Constants {
 
     public final static double NO_FACTOR = -1.0;
     public final static int ALLOW_DISCONNECT = -200;
+    public final static String BROAD_SERVICE = "broad-service";
     public final static String CHUB_SERVICE = "chub-service";
+    public final static String CONSENSUS_CONTENT = "Requesting altruistic factor proposal.";
 
     // Statistics related
     public final static String DATA_FOLDER = "stats";
@@ -27,9 +29,9 @@ public class Constants {
     public final static int TRAFFIC_FREQUENCY = 3000;                       // Frequency to which vehicles can enter the system in seconds
     public final static int CAR_TRAFFIC = 5;                                // Maximum number of vehicles that can attempt to charge at each interval
     public final static double EXIT_PROBABILITY = 0.05;                     // Base probability for a car to leave
-    public final static double EXIT_FACTOR = 0.0;                           // Exit probability factor of battery
+    public final static double EXIT_FACTOR = 0.1;                           // Exit probability factor of battery
     public final static int CHARGING_STATIONS = 10;                         // Number of charging stations the charging hub has
-    public final static double[] VEHICLE_DISTRIBUTION = {0.0, 1.0, 0.0};    // Relative frequency of each type of vehicle
+    public final static double[] VEHICLE_DISTRIBUTION = {0.5, 0.3, 0.2};    // Relative frequency of each type of vehicle
     public final static int[] CAPACITY_DISTRIBUTION = {30, 100};            // Range of maximum capacities of vehicles in kWh
     public final static double MEAN_ALTRUISTIC_VALUE = 0.8;                 // Mean value of altruistic factor of normal distribution
     public final static double ALTRUISTIC_STANDARD_DEVIATION = 0.2;         // Standard deviation of altruistic factor normal distribution

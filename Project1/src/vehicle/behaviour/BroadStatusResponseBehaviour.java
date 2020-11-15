@@ -3,18 +3,17 @@ package vehicle.behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREResponder;
-import vehicle.SmartVehicle;
+import vehicle.BroadVehicle;
 import vehicle.StatusResponse;
-import vehicle.Vehicle;
 
 import java.io.IOException;
 
-public class SmartStatusResponseBehaviour extends AchieveREResponder {
-    private SmartVehicle vehicle;
+public class BroadStatusResponseBehaviour extends AchieveREResponder {
+    private BroadVehicle vehicle;
 
-    public SmartStatusResponseBehaviour(Vehicle vehicle) {
+    public BroadStatusResponseBehaviour(BroadVehicle vehicle) {
         super(vehicle, MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
-        this.vehicle = (SmartVehicle) vehicle;
+        this.vehicle = vehicle;
     }
 
     public ACLMessage handleRequest(ACLMessage request){
@@ -22,19 +21,25 @@ public class SmartStatusResponseBehaviour extends AchieveREResponder {
         reply.setPerformative(ACLMessage.AGREE);
         reply.setContent("Connected.");
 
+        vehicle.startConsensusProposal(request);
         return reply;
     }
 
-    public ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response){
+    @Override
+    protected ACLMessage prepareResultNotification(ACLMessage request, ACLMessage response) {
+        return null;
+    }
+
+    public void replyToChub(ACLMessage request, double altruistFactor) {
         ACLMessage reply = request.createReply();
         reply.setPerformative(ACLMessage.INFORM);
 
         try {
-            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getAltruistFactor(), vehicle.allowsV2G()));
+            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), altruistFactor, vehicle.allowsV2G()));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return reply;
+        vehicle.send(reply);
     }
 }

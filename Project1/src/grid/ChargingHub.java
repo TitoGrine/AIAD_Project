@@ -8,15 +8,12 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.Runtime;
 import jade.domain.DFService;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.SubscriptionResponder;
 import jade.wrapper.ContainerController;
-import utils.Constants;
 import javafx.util.Pair;
+import utils.Constants;
 import utils.Data;
 import utils.Utilities;
 import vehicle.StatusResponse;
@@ -86,6 +83,7 @@ public class ChargingHub extends Agent {
 
     public void analyzeSystem() {
         if(grid.getPeakLoad() > 0){
+            Utilities.printSystemMessage("starting a V2G round");
             List<AID> vehiclesForV2G = new ArrayList<>();
             StatusResponse status;
 
@@ -98,8 +96,10 @@ public class ChargingHub extends Agent {
 
             if(vehiclesForV2G.size() > 0)
                 addBehaviour(new Vehicle2GridBehaviour(this, grid.getPeakLoad(), vehiclesForV2G));
-            else
+            else {
                 addGridDataPoint(grid.getPeakLoad(), 0);
+                distributeLoad();
+            }
         } else {
             distributeLoad();
         }

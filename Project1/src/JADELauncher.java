@@ -7,7 +7,6 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import utils.Constants;
 import utils.Data;
-import vehicle.TwoWayVehicle;
 
 import java.util.Timer;
 
@@ -29,7 +28,6 @@ public class JADELauncher {
 
             AgentController acHub;
             Agent chub =  new ChargingHub(rt, mainContainer, Constants.CHARGING_STATIONS);
-
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
 

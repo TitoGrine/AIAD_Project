@@ -11,6 +11,11 @@ public abstract class SmartVehicle extends Vehicle {
 
         this.chargeGrid = chargeGrid;
         this.altruistFactor = altruistFactor;
+    }
+
+    @Override
+    public void setup() {
+        super.setup();
 
         if(chargeGrid)
             addBehaviour(new Vehicle2GridBehaviour(this));
