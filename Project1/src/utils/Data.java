@@ -21,6 +21,8 @@ public class Data {
         try {
             FileWriter writer = new FileWriter(vehicle_stats);
 
+            writer.append("Vehicle_type");
+            writer.append(",");
             writer.append("Battery_delta");
             writer.append(",");
             writer.append("Battery_percentage");

@@ -21,12 +21,12 @@ public class Constants {
     public final static String FILE_EXTENSION = ".csv";
 
     // System characteristics
-    public final static double START_TIME = 7.5;
-    public final static long TICK_FREQUENCY = 5000;                         // How many (real time) milliseconds each tick is worth
-    public final static int CYCLE_TICKS = 20;                                // How many ticks are done in one simulation
+    public final static double START_TIME = 0.0;
+    public final static long TICK_FREQUENCY = 500;                          // How many (real time) milliseconds each tick is worth
+    public final static int CYCLE_TICKS = 95;                               // How many ticks are done in one simulation
 
     public final static double TICK_RATIO = 0.25;                           // How many minutes (simulation time) each tick is worth (0.25 is a 15 minutes)
-    public final static int TRAFFIC_FREQUENCY = 3000;                       // Frequency to which vehicles can enter the system in seconds
+    public final static int TRAFFIC_FREQUENCY = 300;                        // Frequency to which vehicles can enter the system in (realtime) milliseconds
     public final static int CAR_TRAFFIC = 5;                                // Maximum number of vehicles that can attempt to charge at each interval
     public final static double EXIT_PROBABILITY = 0.05;                     // Base probability for a car to leave
     public final static double EXIT_FACTOR = 0.1;                           // Exit probability factor of battery
