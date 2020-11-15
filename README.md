@@ -3,9 +3,8 @@
 ### TODO
 
 - [X] Improve load distribution algorithm
-- [ ] Add communication between broadcast vehicles
-  - [ ] Add consumption patterns to consensus
-  - [ ] Add protocol for communication
+- [X] Add communication between broadcast vehicles
+  - [X] Add protocol for communication
 - [X] Simulate entrance and exit of vehicles
   - [X] Simulate environment based on inital parameters:
     - [X] Number of cars
