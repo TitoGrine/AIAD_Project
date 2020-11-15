@@ -22,7 +22,7 @@ public class TimerBehaviour extends TickerBehaviour {
 
     @Override
     protected void onTick() {
-        Utilities.printSystemMessage("round " + this.getTickCount() + ". FIGHT!");
+        Utilities.printSystemMessage("round " + this.getTickCount());
         if(this.getTickCount() > Constants.CYCLE_TICKS){
             this.stop();
             try {
