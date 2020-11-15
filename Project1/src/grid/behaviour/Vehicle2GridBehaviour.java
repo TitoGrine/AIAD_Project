@@ -52,9 +52,11 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
 
             return 0;
         });
+        boolean acceptedProposal = false;
 
         for (Object response : responses) {
             if (((ACLMessage) response).getPerformative() == ACLMessage.PROPOSE){
+                acceptedProposal = true;
                 try {
                     Utilities.printChargingHubMessage("received V2G proposal from " + ((ACLMessage) response).getSender().getLocalName() + " with a value of " + ((ACLMessage) response).getContentObject());
                 } catch (UnreadableException e) {
@@ -96,6 +98,11 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
             reply.setContent("V2G charging no longer needed.");
 
             acceptances.add(reply);
+        }
+
+        if(!acceptedProposal) {
+            chub.addGridDataPoint(peakLoad, 0);
+            chub.distributeLoad();
         }
     }
 

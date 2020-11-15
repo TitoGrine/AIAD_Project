@@ -15,7 +15,7 @@ public class Vehicle2GridBehaviour extends ContractNetResponder {
     SmartVehicle vehicle;
 
     public Vehicle2GridBehaviour(SmartVehicle a) {
-        super(a, MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.CFP), MessageTemplate.MatchContent("Requesting vehicle proposal to charge grid.")));
+        super(a, MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.CFP), MessageTemplate.MatchSender(a.getChub())));
         vehicle = a;
     }
 

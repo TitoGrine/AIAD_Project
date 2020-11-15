@@ -59,7 +59,10 @@ public class BroadVehicle extends SmartVehicle {
         Behaviour result;
         this.request = request;
 
-        if(amILeader(agents)) {
+        if (agents.length <= 1) {
+            Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "there are no other broad vehicles on the system. Canceling consensus");
+            replyToChub();
+        } else if (amILeader(agents)) {
             Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "I am the leader!");
             result = new BroadConsensusInitiator(this, agents);
             addBehaviour(result);

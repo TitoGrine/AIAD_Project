@@ -1,14 +1,9 @@
 package vehicle.behaviour;
 
-import grid.Vehicle2GridConditions;
-import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetResponder;
-import jade.proto.ProposeResponder;
-import javafx.util.Pair;
-import utils.Constants;
 import utils.Utilities;
 import vehicle.BroadCarInfo;
 import vehicle.BroadVehicle;
@@ -19,14 +14,13 @@ public class BroadConsensusResponder extends ContractNetResponder {
     BroadVehicle vehicle;
 
     public BroadConsensusResponder(BroadVehicle vehicle) {
-        super(vehicle, MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.CFP), MessageTemplate.MatchContent(Constants.CONSENSUS_CONTENT)));
+        super(vehicle, MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.CFP), MessageTemplate.not(MessageTemplate.MatchSender(vehicle.getChub()))));
         this.vehicle = vehicle;
     }
 
     @Override
     protected ACLMessage handleCfp(ACLMessage cfp) {
         ACLMessage reply = cfp.createReply();
-        //TODO: should we check if the sender is the actual leader?
 
         Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "received call for proposals of broad consensus");
 

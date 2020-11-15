@@ -1,20 +1,16 @@
 package vehicle.behaviour;
 
-import grid.Vehicle2GridConditions;
 import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
-import jade.proto.ProposeInitiator;
-import javafx.util.Pair;
 import utils.Constants;
 import utils.Utilities;
 import vehicle.BroadCarInfo;
 import vehicle.BroadVehicle;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -43,7 +39,7 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
             msgs.add(propose);
         }
 
-        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "Sending call for proposals");
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "sending call for proposals");
         return msgs;
     }
 
