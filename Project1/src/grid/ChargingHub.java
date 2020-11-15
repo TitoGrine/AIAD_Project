@@ -106,24 +106,21 @@ public class ChargingHub extends Agent {
     }
 
     public void distributeLoad() {
-        Map<AID, Integer> loadDistribution = new HashMap<>();
+        Map<AID, Double> loadDistribution = new HashMap<>();
         PriorityQueue<Pair<AID, Double>> priorityQueue = new PriorityQueue<>((a, b) -> {
             if(a.getValue() > b.getValue()) return -1;
             else if (a.getValue() < b.getValue()) return 1;
             return 0;
         });
-        int totalMissingBattery = 0;
         double totalPriority = 0;
         double totalGivenByVehicles = 0;
 
         // 1st part: Calculate total missing battery
-        for(StatusResponse status : systemStatus.values()) {
-            totalMissingBattery += status.getMaxCapacity() - status.getCurrentCapacity();
-        }
+        int totalMissingBattery = getTotalMissingBattery();
 
         if(totalMissingBattery == 0) {
             for(AID vehicle : systemStatus.keySet()) {
-                loadDistribution.put(vehicle, 0);
+                loadDistribution.put(vehicle, 0.0);
             }
         } else {
             // 2nd part: Calculate priorities and total priority
@@ -134,25 +131,18 @@ public class ChargingHub extends Agent {
                 totalPriority += priority;
                 priorityQueue.add(new Pair<>(entry.getKey(), priority));
 
-//                int fairShare = (status.getMaxCapacity() - status.getCurrentCapacity()) * this.availableLoad / totalMissingBattery;
-                int fairShare = this.availableLoad / this.systemStatus.size();
+                double fairShare = this.availableLoad / (double) this.systemStatus.size();
                 double given = 0;
                 if (status.getAltruistFactor() != -1) {
                     given = fairShare * status.getAltruistFactor() / 2.0;
                     totalGivenByVehicles += given;
                 }
                 // Temporarily saves the amount that is assured to each car
-                loadDistribution.put(entry.getKey(), (int) (fairShare - given));
+                loadDistribution.put(entry.getKey(), fairShare - given);
             }
 
-            int totalLoad = 0;
             // 4th part: go through the priority queue and allocate more battery according to priority
-            while (!priorityQueue.isEmpty()) {
-                Pair<AID, Double> pair = priorityQueue.poll();
-                int allocatedLoad = loadDistribution.get(pair.getKey()) + (int) (totalGivenByVehicles * pair.getValue() / totalPriority);
-                totalLoad += allocatedLoad;
-                loadDistribution.put(pair.getKey(), allocatedLoad);
-            }
+            int totalLoad = distributeRemainingLoad(loadDistribution, priorityQueue, totalPriority, totalGivenByVehicles);
 
             Utilities.printChargingHubMessage("available load: " + this.availableLoad);
             Utilities.printChargingHubMessage("total allocated load: " + totalLoad);
@@ -161,7 +151,28 @@ public class ChargingHub extends Agent {
         notifyVehicles(loadDistribution, chargingSubscription.getSubscriptions());
     }
 
-    public void notifyVehicles(Map<AID, Integer> loadDistribution, Vector<SubscriptionResponder.Subscription> subscriptions){
+    private int distributeRemainingLoad(Map<AID, Double> loadDistribution, PriorityQueue<Pair<AID, Double>> priorityQueue, double totalPriority, double totalGivenByVehicles) {
+        int totalLoad = 0;
+
+        while (!priorityQueue.isEmpty()) {
+            Pair<AID, Double> pair = priorityQueue.poll();
+            double allocatedLoad = loadDistribution.get(pair.getKey()) + (totalGivenByVehicles * pair.getValue() / totalPriority);
+            totalLoad += allocatedLoad;
+            loadDistribution.put(pair.getKey(), allocatedLoad);
+        }
+        return totalLoad;
+    }
+
+    private int getTotalMissingBattery() {
+        int totalMissingBattery = 0;
+
+        for(StatusResponse status : systemStatus.values()) {
+            totalMissingBattery += status.getMaxCapacity() - status.getCurrentCapacity();
+        }
+        return totalMissingBattery;
+    }
+
+    public void notifyVehicles(Map<AID, Double> loadDistribution, Vector<SubscriptionResponder.Subscription> subscriptions){
         ACLMessage msg;
 
         if(loadDistribution.size() > 0){
@@ -169,7 +180,7 @@ public class ChargingHub extends Agent {
                 for (SubscriptionResponder.Subscription subscription : subscriptions) {
                     if(systemStatus.containsKey(subscription.getMessage().getSender())){
                         msg = new ACLMessage(ACLMessage.INFORM);
-                        msg.setContentObject(new ChargingConditions(loadDistribution.get(subscription.getMessage().getSender())));
+                        msg.setContentObject(new ChargingConditions(loadDistribution.get(subscription.getMessage().getSender()).intValue()));
                         subscription.notify(msg);
                     }
                 }

@@ -34,7 +34,7 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
                 continue;
 
             propose = new ACLMessage(ACLMessage.CFP);
-            propose.setContent(Constants.CONSENSUS_CONTENT);
+            propose.setContent("Requesting altruistic factor proposals.");
             propose.addReceiver(agent.getName());
             msgs.add(propose);
         }

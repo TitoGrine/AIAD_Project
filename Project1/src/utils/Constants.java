@@ -9,10 +9,19 @@ public class Constants {
     public final static int BROAD_VEHICLE  = 2;
 
     public final static double NO_FACTOR = -1.0;
-    public final static int ALLOW_DISCONNECT = -200;
     public final static String BROAD_SERVICE = "broad-service";
     public final static String CHUB_SERVICE = "chub-service";
-    public final static String CONSENSUS_CONTENT = "Requesting altruistic factor proposal.";
+
+    // Grid simulation
+    public final static int[] SPRING_GRID_DEMAND = {65, 58, 57, 57, 62, 57, 58, 49, 72, 81, 187, 165, 28, 100, 111, 187, 57, 21, 26, 21, 57, 58, 57, 58};
+    public final static int[] SUMMER_GRID_DEMAND = {56, 57, 58, 58, 58, 69, 21, 41, 21, 20, 115, 151, 34, 24, 21, 30, 31, 22, 23, 21, 59, 57, 60, 60};
+    public final static int[] AUTUMN_GRID_DEMAND = {59, 61, 59, 59, 60, 58, 58, 149, 267, 157, 140, 304, 283, 210, 83, 284, 68, 37, 37, 74, 61, 61, 70, 62};
+    public final static int[] WINTER_GRID_DEMAND = {61, 58, 59, 58, 59, 69, 60, 22, 182, 25, 25, 103, 111, 34, 58, 370, 387, 390, 22, 58, 70, 61, 62, 61};
+
+    public final static int SPRING_MAX_AVAILABLE_LOAD = 200;
+    public final static int SUMMER_MAX_AVAILABLE_LOAD = 175;
+    public final static int AUTUMN_MAX_AVAILABLE_LOAD = 350;
+    public final static int WINTER_MAX_AVAILABLE_LOAD = 400;
 
     // Statistics related
     public final static String DATA_FOLDER = "stats";
@@ -38,16 +47,6 @@ public class Constants {
     public final static double MEAN_PERMISSION_VALUE = 0.1;                 // Mean value of normal distribution for permission to charge grid (lower mean means higher probability of acceptance)
     public final static double PERMISSION_STANDARD_DEVIATION = 0.5;         // Standard deviation of normal distribution for permission to charge grid
     public final static double CHARGING_PRICE = 1.0;                        // Price to charge vehicle per kWh
-
-    public final static int[] SPRING_GRID_DEMAND = {65, 58, 57, 57, 62, 57, 58, 49, 72, 81, 187, 165, 28, 100, 111, 187, 57, 21, 26, 21, 57, 58, 57, 58};
-    public final static int[] SUMMER_GRID_DEMAND = {56, 57, 58, 58, 58, 69, 21, 41, 21, 20, 115, 151, 34, 24, 21, 30, 31, 22, 23, 21, 59, 57, 60, 60};
-    public final static int[] AUTUMN_GRID_DEMAND = {59, 61, 59, 59, 60, 58, 58, 149, 267, 157, 140, 304, 283, 210, 83, 284, 68, 37, 37, 74, 61, 61, 70, 62};
-    public final static int[] WINTER_GRID_DEMAND = {61, 58, 59, 58, 59, 69, 60, 22, 182, 25, 25, 103, 111, 34, 58, 370, 387, 390, 22, 58, 70, 61, 62, 61};
-
-    public final static int SPRING_MAX_AVAILABLE_LOAD = 200;
-    public final static int SUMMER_MAX_AVAILABLE_LOAD = 175;
-    public final static int AUTUMN_MAX_AVAILABLE_LOAD = 350;
-    public final static int WINTER_MAX_AVAILABLE_LOAD = 400;
 
     public final static int[] CURRENT_DEMAND = SPRING_GRID_DEMAND;
     public final static int MAX_AVAILABLE_LOAD = SPRING_MAX_AVAILABLE_LOAD;
