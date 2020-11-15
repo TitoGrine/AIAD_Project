@@ -68,7 +68,7 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
             }
         }
 
-        if(priorityQueue.isEmpty())
+        if(priorityQueue.isEmpty() || !acceptedProposal)
             chub.addGridDataPoint(peakLoad, 0);
 
         ACLMessage msg;
@@ -100,10 +100,8 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
             acceptances.add(reply);
         }
 
-        if(!acceptedProposal) {
-            chub.addGridDataPoint(peakLoad, 0);
+        if(!acceptedProposal)
             chub.distributeLoad();
-        }
     }
 
     @Override
