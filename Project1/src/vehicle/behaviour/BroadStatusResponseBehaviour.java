@@ -21,7 +21,7 @@ public class BroadStatusResponseBehaviour extends AchieveREResponder {
         reply.setPerformative(ACLMessage.AGREE);
         reply.setContent("Connected.");
 
-        vehicle.startConsensusProposal(request.shallowClone());
+        vehicle.startConsensusProposal(request);
         return reply;
     }
 

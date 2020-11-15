@@ -48,6 +48,8 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
         Map<AID, BroadCarInfo> proposals = new HashMap<>();
         proposals.put(vehicle.getAID(), new BroadCarInfo(vehicle.getAID(), vehicle.getAltruistFactor(), (double) vehicle.getCurrentCapacity() / vehicle.getMaxCapacity()));
 
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "received all proposals!");
+
         for(Object response : responses) {
             try {
                 proposals.put(((ACLMessage) response).getSender(), (BroadCarInfo) ((ACLMessage) response).getContentObject());
@@ -56,7 +58,10 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
             }
         }
 
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "started adapting factors!");
         Map<AID, Double> counterProposals = vehicle.adaptFactors(proposals);
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "finished adapting factors!");
+
 
         for(Object response : responses) {
             ACLMessage reply = ((ACLMessage) response).createReply();
