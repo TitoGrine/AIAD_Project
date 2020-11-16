@@ -78,7 +78,7 @@ public abstract class Vehicle extends Agent {
             double leave = Constants.EXIT_PROBABILITY + Constants.EXIT_FACTOR * battery_percentage;
 
             if(Math.random() < leave){
-                Data.submitVehicleStat(Arrays.asList(String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.3g", battery_percentage), String.valueOf(this.priceToPay)));
+                Data.submitVehicleStat(Arrays.asList(String.valueOf(this.getVehicleType()), String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.3g", battery_percentage), String.valueOf(this.priceToPay)));
                 subscription.cancel(service, false);
             }
         }

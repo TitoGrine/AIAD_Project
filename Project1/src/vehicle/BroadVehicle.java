@@ -21,15 +21,16 @@ import java.util.Map;
 public class BroadVehicle extends SmartVehicle {
     private BroadStatusResponseBehaviour responseBehaviour;
     private ACLMessage request;
+    private boolean registered;
 
     public BroadVehicle(int currentCapacity, int maxCapacity, double altruistFactor, boolean chargeGrid) {
         super(currentCapacity, maxCapacity, altruistFactor, chargeGrid);
+        registered = false;
     }
 
     @Override
     public void setup() {
         super.setup();
-        Utilities.registerService(this, Constants.BROAD_SERVICE);
         responseBehaviour = new BroadStatusResponseBehaviour(this);
         addBehaviour(responseBehaviour);
         addBehaviour(new BroadConsensusResponder(this));
@@ -38,7 +39,8 @@ public class BroadVehicle extends SmartVehicle {
     @Override
     protected void takeDown() {
         try {
-            DFService.deregister(this);
+            if(registered)
+                DFService.deregister(this);
         } catch (FIPAException e) {
             e.printStackTrace();
         }
@@ -49,10 +51,31 @@ public class BroadVehicle extends SmartVehicle {
         return super.getAltruistFactor();
     }
 
+    @Override
+    public int getVehicleType() {
+        return Constants.BROAD_VEHICLE;
+    }
+
+    @Override
+    public void chargeBattery(int newLoad) {
+        super.chargeBattery(newLoad);
+
+        if(!registered) {
+            Utilities.registerService(this, Constants.BROAD_SERVICE);
+            registered = true;
+        }
+    }
+
     public void startConsensusProposal(ACLMessage request) {
+        this.request = request;
+
+        if(!registered) {
+            replyToChub();
+            return;
+        }
+
         DFAgentDescription[] agents = Utilities.getService(this, Constants.BROAD_SERVICE);
         Behaviour result;
-        this.request = request;
 
         if (agents.length <= 1) {
             Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "there are no other broad vehicles on the system. Canceling consensus");
@@ -156,10 +179,5 @@ public class BroadVehicle extends SmartVehicle {
             double delta = halfAvgAF * info.getChargedPercent() / totalChargedPercent;
             result.put(info.getAid(), Double.min(info.getAf() + delta, 1.0));
         }
-    }
-
-    @Override
-    public int getVehicleType() {
-        return Constants.BROAD_VEHICLE;
     }
 }

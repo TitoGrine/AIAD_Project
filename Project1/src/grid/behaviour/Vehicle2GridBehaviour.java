@@ -68,7 +68,7 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
             }
         }
 
-        if(priorityQueue.isEmpty())
+        if(priorityQueue.isEmpty() || !acceptedProposal)
             chub.addGridDataPoint(peakLoad, 0);
 
         ACLMessage msg;
@@ -78,7 +78,7 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
             while (!priorityQueue.isEmpty() && remainingLoad > 0) {
                 msg = priorityQueue.poll();
                 ACLMessage reply = msg.createReply();
-                Vehicle2GridConditions chargingConditions = new Vehicle2GridConditions(chub.getChargingPrice() * 0.3, Math.min(remainingLoad, (int) msg.getContentObject()));
+                Vehicle2GridConditions chargingConditions = new Vehicle2GridConditions(chub.getDiscountPrice(), Math.min(remainingLoad, (int) msg.getContentObject()));
 
                 reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                 reply.setContentObject(chargingConditions);
@@ -100,10 +100,8 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
             acceptances.add(reply);
         }
 
-        if(!acceptedProposal) {
-            chub.addGridDataPoint(peakLoad, 0);
+        if(!acceptedProposal)
             chub.distributeLoad();
-        }
     }
 
     @Override

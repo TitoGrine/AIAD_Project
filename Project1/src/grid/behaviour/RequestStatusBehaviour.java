@@ -42,7 +42,8 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
     }
 
     public void handleFailure(ACLMessage msg) {
-        Utilities.printChargingHubMessage("received failure: " + msg.getContent());
+        Utilities.printChargingHubMessage("received failure from " + msg.getSender() + ": " + msg.getContent());
+        chub.closeSubscription(msg.getSender());
     }
 
     public void handleInform(ACLMessage msg) {
