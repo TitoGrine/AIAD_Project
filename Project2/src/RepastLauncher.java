@@ -32,7 +32,7 @@ public class RepastLauncher extends Repast3Launcher {
 
         try {
             AgentController acHub;
-            Agent chub =  new ChargingHub(rt, mainContainer, Constants.CHARGING_STATIONS);
+            Agent chub =  new ChargingHub(mainContainer, Constants.CHARGING_STATIONS);
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
 
