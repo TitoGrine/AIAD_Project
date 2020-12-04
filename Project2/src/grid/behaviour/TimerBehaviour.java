@@ -11,13 +11,11 @@ import utils.Utilities;
 public class TimerBehaviour extends TickerBehaviour {
     private ChargingHub chub;
     private ContainerController container;
-    private Runtime runtime;
 
-    public TimerBehaviour(Runtime runtime, ContainerController container, ChargingHub chub, long period) {
+    public TimerBehaviour(ContainerController container, ChargingHub chub, long period) {
         super(chub, period);
         this.chub = chub;
         this.container = container;
-        this.runtime = runtime;
     }
 
     @Override

@@ -33,14 +33,14 @@ public class ChargingHub extends Agent {
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
 
-    public ChargingHub(Runtime runtime, ContainerController container, int numStations) {
+    public ChargingHub(ContainerController container, int numStations) {
         this.numStations = numStations;
         this.occupiedStations = 0;
         systemStatus = new HashMap<>();
 
         MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.CANCEL), MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
         this.chargingSubscription = new SubscriptionBehaviour(this, mt);
-        this.timerBehaviour = new TimerBehaviour(runtime, container, this, Constants.TICK_FREQUENCY);
+        this.timerBehaviour = new TimerBehaviour(container, this, Constants.TICK_FREQUENCY);
     }
 
     public void setup() {
