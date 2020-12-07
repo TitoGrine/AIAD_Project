@@ -7,24 +7,27 @@ import java.io.Serializable;
 public class StatusResponse implements Serializable {
     int currentCapacity;
     int maxCapacity;
+    int vehicleType;
     double altruistFactor;
     boolean allowsV2G = false;
 
-    public StatusResponse(int currentCapacity, int maxCapacity, double altruistFactor, boolean allowsV2G){
+    public StatusResponse(int currentCapacity, int maxCapacity, int vehicleType, double altruistFactor, boolean allowsV2G) {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
+        this.vehicleType = vehicleType;
         this.altruistFactor = altruistFactor;
         this.allowsV2G = allowsV2G;
     }
 
-    public StatusResponse(int currentCapacity, int maxCapacity, double altruistFactor){
+    public StatusResponse(int currentCapacity, int maxCapacity, int vehicleType, double altruistFactor) {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
+        this.vehicleType = vehicleType;
         this.altruistFactor = altruistFactor;
     }
 
-    public StatusResponse(int currentCapacity, int maxCapacity){
-        this(currentCapacity, maxCapacity, Constants.NO_FACTOR);
+    public StatusResponse(int currentCapacity, int maxCapacity, int vehicleType) {
+        this(currentCapacity, maxCapacity, vehicleType, Constants.NO_FACTOR);
     }
 
     public int getCurrentCapacity() {
@@ -33,6 +36,10 @@ public class StatusResponse implements Serializable {
 
     public int getMaxCapacity() {
         return maxCapacity;
+    }
+
+    public int getType() {
+        return vehicleType;
     }
 
     public double getAltruistFactor() {

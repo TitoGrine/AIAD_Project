@@ -1,23 +1,55 @@
 import grid.ChargingHub;
-import sajas.core.Agent;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
+import sajas.core.Agent;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
+import uchicago.src.sim.analysis.BinDataSource;
+import uchicago.src.sim.analysis.Histogram;
+import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
 import utils.Constants;
 import utils.Data;
+import vehicle.StatusResponse;
 
+import java.util.ArrayList;
 import java.util.Timer;
 
 public class RepastLauncher extends Repast3Launcher {
+    private static boolean runInBatchMode = false;
+    private Histogram vehiclePlot;
+    private ArrayList<StatusResponse> vehicles = new ArrayList<>();
 
-    public static void main(String[] args) {
-        SimInit init = new SimInit();
-        init.setNumRuns(1);
-        init.loadModel(new RepastLauncher(), null, false);
+    @Override
+    public void begin() {
+        if (!runInBatchMode) {
+            buildPlots();
+            buildSchedule();
+        }
+        super.begin();
+    }
+
+    private void buildSchedule() {
+        getSchedule().scheduleActionAtInterval(10, vehiclePlot, "step", Schedule.LAST);
+    }
+
+    private void buildPlots() {
+        if (vehiclePlot != null) vehiclePlot.dispose();
+        vehiclePlot = new Histogram("Agent Type Distribution", new double[]{-0.5, 0.0, 1.0, 2.0, 3.0}, this);
+        // 0 - OneWay - 1); 1 - TwoWay - 2); 2 - Broad - 3
+        vehiclePlot.setYRange(0, Constants.CHARGING_STATIONS);
+
+        BinDataSource source = new BinDataSource() {
+            public double getBinValue(Object o) {
+                StatusResponse status = (StatusResponse) o;
+                return status.getType();
+            }
+        };
+
+        vehiclePlot.createHistogramItem("Vehicle Types", vehicles, source);
+        vehiclePlot.display();
     }
 
     @Override
@@ -32,7 +64,7 @@ public class RepastLauncher extends Repast3Launcher {
 
         try {
             AgentController acHub;
-            Agent chub =  new ChargingHub(mainContainer, Constants.CHARGING_STATIONS);
+            Agent chub = new ChargingHub(mainContainer, vehicles, Constants.CHARGING_STATIONS);
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
 
@@ -50,5 +82,11 @@ public class RepastLauncher extends Repast3Launcher {
     @Override
     public String getName() {
         return "Vehicle to grid";
+    }
+
+    public static void main(String[] args) {
+        SimInit init = new SimInit();
+        init.setNumRuns(1);
+        init.loadModel(new RepastLauncher(), null, runInBatchMode);
     }
 }

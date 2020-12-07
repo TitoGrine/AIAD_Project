@@ -42,7 +42,7 @@ public class Constants {
     public final static int[] CAPACITY_DISTRIBUTION = {30, 100};            // Range of maximum capacities of vehicles in kWh
     public final static double CHARGING_PRICE = 1.0;                        // Price to charge vehicle per kWh
 
-    public final static double[] VEHICLE_DISTRIBUTION = {0.0, 0.5, 0.5};    // Relative frequency of each type of vehicle
+    public final static double[] VEHICLE_DISTRIBUTION = {0.3, 0.3, 0.3};    // Relative frequency of each type of vehicle
     public final static double MEAN_ALTRUISTIC_VALUE = 0.5;                 // Mean value of altruistic factor of normal distribution
     public final static double ALTRUISTIC_STANDARD_DEVIATION = 0.5;         // Standard deviation of altruistic factor normal distribution
     public final static double MEAN_PERMISSION_VALUE = 0.5;                 // Mean value of normal distribution for permission to charge grid (lower mean means higher probability of acceptance)

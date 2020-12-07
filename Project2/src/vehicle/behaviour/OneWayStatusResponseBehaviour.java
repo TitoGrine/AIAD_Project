@@ -29,7 +29,7 @@ public class OneWayStatusResponseBehaviour extends AchieveREResponder {
         reply.setPerformative(ACLMessage.INFORM);
 
         try {
-            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity()));
+            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getVehicleType()));
         } catch (IOException e) {
             e.printStackTrace();
         }

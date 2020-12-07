@@ -35,7 +35,7 @@ public class BroadStatusResponseBehaviour extends AchieveREResponder {
         reply.setPerformative(ACLMessage.INFORM);
 
         try {
-            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), altruistFactor, vehicle.allowsV2G()));
+            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getVehicleType(), altruistFactor, vehicle.allowsV2G()));
         } catch (IOException e) {
             e.printStackTrace();
         }

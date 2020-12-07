@@ -6,7 +6,6 @@ import grid.behaviour.TimerBehaviour;
 import grid.behaviour.Vehicle2GridBehaviour;
 import jade.core.AID;
 import sajas.core.Agent;
-import sajas.core.Runtime;
 import sajas.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -27,14 +26,16 @@ public class ChargingHub extends Agent {
     private int occupiedStations;
     private double localTime  = Constants.START_TIME;
     private Map<AID, StatusResponse> systemStatus;
+    private ArrayList<StatusResponse> dataList;
     private Grid grid = new Grid();
     private double chargingPrice = Constants.CHARGING_PRICE;
 
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
 
-    public ChargingHub(ContainerController container, int numStations) {
+    public ChargingHub(ContainerController container, ArrayList<StatusResponse> dataList, int numStations) {
         this.numStations = numStations;
+        this.dataList = dataList;
         this.occupiedStations = 0;
         systemStatus = new HashMap<>();
 
@@ -82,6 +83,9 @@ public class ChargingHub extends Agent {
     }
 
     public void analyzeSystem() {
+        dataList.clear();
+        dataList.addAll(systemStatus.values());
+
         if(grid.getPeakLoad() > 0){
             Utilities.printSystemMessage("starting a V2G round");
             List<AID> vehiclesForV2G = new ArrayList<>();
