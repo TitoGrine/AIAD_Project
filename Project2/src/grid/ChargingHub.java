@@ -5,13 +5,14 @@ import grid.behaviour.SubscriptionBehaviour;
 import grid.behaviour.TimerBehaviour;
 import grid.behaviour.Vehicle2GridBehaviour;
 import jade.core.AID;
-import sajas.core.Agent;
-import sajas.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import javafx.util.Pair;
+import sajas.core.Agent;
+import sajas.domain.DFService;
 import sajas.proto.SubscriptionResponder;
 import sajas.wrapper.ContainerController;
-import javafx.util.Pair;
+import uchicago.src.sim.analysis.OpenSequenceGraph;
 import utils.Constants;
 import utils.Data;
 import utils.Utilities;
@@ -24,18 +25,18 @@ public class ChargingHub extends Agent {
     private int availableLoad; // in kWh
     private int numStations;
     private int occupiedStations;
-    private double localTime  = Constants.START_TIME;
+    private double localTime = Constants.START_TIME;
     private Map<AID, StatusResponse> systemStatus;
     private ArrayList<StatusResponse> dataList;
+    private OpenSequenceGraph plot;
     private Grid grid = new Grid();
     private double chargingPrice = Constants.CHARGING_PRICE;
 
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
 
-    public ChargingHub(ContainerController container, ArrayList<StatusResponse> dataList, int numStations) {
+    public ChargingHub(ContainerController container, int numStations) {
         this.numStations = numStations;
-        this.dataList = dataList;
         this.occupiedStations = 0;
         systemStatus = new HashMap<>();
 
@@ -71,7 +72,7 @@ public class ChargingHub extends Agent {
         addBehaviour(new RequestStatusBehaviour(this, new ACLMessage(ACLMessage.REQUEST)));
     }
 
-    public void removeVehicleFromSystemStatus(AID vehicle){
+    public void removeVehicleFromSystemStatus(AID vehicle) {
         systemStatus.remove(vehicle);
     }
 
@@ -83,36 +84,40 @@ public class ChargingHub extends Agent {
     }
 
     public void analyzeSystem() {
-        dataList.clear();
-        dataList.addAll(systemStatus.values());
+        if (dataList != null) {
+            dataList.clear();
+            dataList.addAll(systemStatus.values());
+        }
 
-        if(grid.getPeakLoad() > 0){
+        if (grid.getPeakLoad() > 0) {
             Utilities.printSystemMessage("starting a V2G round");
             List<AID> vehiclesForV2G = new ArrayList<>();
             StatusResponse status;
 
-            for(AID vehicle : systemStatus.keySet()) {
+            for (AID vehicle : systemStatus.keySet()) {
                 status = systemStatus.get(vehicle);
 
-                if(status.allowsV2G())
+                if (status.allowsV2G())
                     vehiclesForV2G.add(vehicle);
             }
 
-            if(vehiclesForV2G.size() > 0)
+            if (vehiclesForV2G.size() > 0)
                 addBehaviour(new Vehicle2GridBehaviour(this, grid.getPeakLoad(), vehiclesForV2G));
             else {
                 addGridDataPoint(grid.getPeakLoad(), 0);
                 distributeLoad();
+                plotStep();
             }
         } else {
             distributeLoad();
+            plotStep();
         }
     }
 
     public void distributeLoad() {
         Map<AID, Double> loadDistribution = new HashMap<>();
         PriorityQueue<Pair<AID, Double>> priorityQueue = new PriorityQueue<>((a, b) -> {
-            if(a.getValue() > b.getValue()) return -1;
+            if (a.getValue() > b.getValue()) return -1;
             else if (a.getValue() < b.getValue()) return 1;
             return 0;
         });
@@ -122,8 +127,8 @@ public class ChargingHub extends Agent {
         // 1st part: Calculate total missing battery
         int totalMissingBattery = getTotalMissingBattery();
 
-        if(totalMissingBattery == 0) {
-            for(AID vehicle : systemStatus.keySet()) {
+        if (totalMissingBattery == 0) {
+            for (AID vehicle : systemStatus.keySet()) {
                 loadDistribution.put(vehicle, 0.0);
             }
         } else {
@@ -170,19 +175,19 @@ public class ChargingHub extends Agent {
     private int getTotalMissingBattery() {
         int totalMissingBattery = 0;
 
-        for(StatusResponse status : systemStatus.values()) {
+        for (StatusResponse status : systemStatus.values()) {
             totalMissingBattery += status.getMaxCapacity() - status.getCurrentCapacity();
         }
         return totalMissingBattery;
     }
 
-    public void notifyVehicles(Map<AID, Double> loadDistribution, Vector<SubscriptionResponder.Subscription> subscriptions){
+    public void notifyVehicles(Map<AID, Double> loadDistribution, Vector<SubscriptionResponder.Subscription> subscriptions) {
         ACLMessage msg;
 
-        if(loadDistribution.size() > 0){
+        if (loadDistribution.size() > 0) {
             try {
                 for (SubscriptionResponder.Subscription subscription : subscriptions) {
-                    if(systemStatus.containsKey(subscription.getMessage().getSender())){
+                    if (systemStatus.containsKey(subscription.getMessage().getSender())) {
                         msg = new ACLMessage(ACLMessage.INFORM);
                         msg.setContentObject(new ChargingConditions(loadDistribution.get(subscription.getMessage().getSender()).intValue()));
                         subscription.notify(msg);
@@ -194,7 +199,7 @@ public class ChargingHub extends Agent {
         }
     }
 
-    public void addGridDataPoint(int peakLoad, int totalSharedLoad){
+    public void addGridDataPoint(int peakLoad, int totalSharedLoad) {
         Data.submitGridStat(String.valueOf(peakLoad), String.valueOf((int) (100 * totalSharedLoad / peakLoad)));
     }
 
@@ -218,6 +223,10 @@ public class ChargingHub extends Agent {
         occupiedStations--;
     }
 
+    public double getGridLoad() {
+        return grid.getLoad((int) this.localTime, (int) ((this.localTime - (int) this.localTime) * 60));
+    }
+
     public double getChargingPrice() {
         return chargingPrice;
     }
@@ -226,9 +235,22 @@ public class ChargingHub extends Agent {
         return chargingPrice * 0.5;
     }
 
+    public void setDataList(ArrayList<StatusResponse> dataList) {
+        this.dataList = dataList;
+    }
+
+    public void setPlot(OpenSequenceGraph plot) {
+        this.plot = plot;
+    }
+
+    public void plotStep() {
+        if (plot != null)
+            plot.step();
+    }
+
     public void closeSubscription(AID sender) {
         Vector subs = this.chargingSubscription.getSubscriptions(sender);
-        for(Object sub : subs) {
+        for (Object sub : subs) {
             ((SubscriptionResponder.Subscription) sub).close();
         }
         removeVehicle();

@@ -1,13 +1,14 @@
 import grid.ChargingHub;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
-import sajas.core.Agent;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
 import uchicago.src.sim.analysis.BinDataSource;
 import uchicago.src.sim.analysis.Histogram;
+import uchicago.src.sim.analysis.OpenSequenceGraph;
+import uchicago.src.sim.analysis.Sequence;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
 import utils.Constants;
@@ -20,6 +21,8 @@ import java.util.Timer;
 public class RepastLauncher extends Repast3Launcher {
     private static boolean runInBatchMode = false;
     private Histogram vehiclePlot;
+    private OpenSequenceGraph gridDemandPlot;
+    private ChargingHub chub;
     private ArrayList<StatusResponse> vehicles = new ArrayList<>();
 
     @Override
@@ -36,6 +39,35 @@ public class RepastLauncher extends Repast3Launcher {
     }
 
     private void buildPlots() {
+        buildHistogram();
+        buildSequenceGraph();
+    }
+
+    private void buildSequenceGraph() {
+        // graph
+        if (gridDemandPlot != null) gridDemandPlot.dispose();
+        gridDemandPlot = new OpenSequenceGraph("Peak demand", this);
+        gridDemandPlot.setAxisTitles("time", "demand");
+        gridDemandPlot.addSequence("Grid demand (kWh)", new Sequence() {
+            public double getSValue() {
+                return chub.getGridLoad();
+            }
+        });
+        gridDemandPlot.addSequence("Max demand (kWh)", new Sequence() {
+            private double maxDemand = 0;
+
+            public double getSValue() {
+                double currentDemand = chub.getGridLoad();
+                if (currentDemand > maxDemand)
+                    maxDemand = currentDemand;
+
+                return maxDemand;
+            }
+        });
+        gridDemandPlot.display();
+    }
+
+    private void buildHistogram() {
         if (vehiclePlot != null) vehiclePlot.dispose();
         vehiclePlot = new Histogram("Agent Type Distribution", new double[]{-0.5, 0.0, 1.0, 2.0, 3.0}, this);
         // 0 - OneWay - 1); 1 - TwoWay - 2); 2 - Broad - 3
@@ -64,7 +96,11 @@ public class RepastLauncher extends Repast3Launcher {
 
         try {
             AgentController acHub;
-            Agent chub = new ChargingHub(mainContainer, vehicles, Constants.CHARGING_STATIONS);
+            chub = new ChargingHub(mainContainer, Constants.CHARGING_STATIONS);
+            if (!runInBatchMode) {
+                chub.setDataList(vehicles);
+                chub.setPlot(gridDemandPlot);
+            }
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
 
