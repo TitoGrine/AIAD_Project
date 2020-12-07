@@ -6,11 +6,11 @@ import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
+import uchicago.src.sim.engine.BasicAction;
+import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
 import utils.Constants;
 import utils.Data;
-
-import java.util.Timer;
 
 public class RepastLauncher extends Repast3Launcher {
 
@@ -24,13 +24,14 @@ public class RepastLauncher extends Repast3Launcher {
     private String SEASON = "SUMMER";
 
     private static final boolean BATCH_MODE = true;
+    Schedule schedule;
+    ContainerController mainContainer;
 
     public static void main(String[] args) {
         boolean runMode = BATCH_MODE; // BATCH_MODE or !BATCH_MODE
         SimInit init = new SimInit();
-        init.setNumRuns(1);
-        init.loadModel(new RepastLauncher(), "src\\parameters.txt", runMode);
-
+        init.setNumRuns(10);
+        init.loadModel(new RepastLauncher(), "src/parameters.txt", runMode);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class RepastLauncher extends Repast3Launcher {
 
         Profile p1 = new ProfileImpl();
 
-        ContainerController mainContainer = rt.createMainContainer(p1);
+        mainContainer = rt.createMainContainer(p1);
 
         Data.createFiles();
 
@@ -48,10 +49,29 @@ public class RepastLauncher extends Repast3Launcher {
             Agent chub =  new ChargingHub(mainContainer, Constants.CHARGING_STATIONS);
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
-
-            new Timer().scheduleAtFixedRate(new VehicleTrafficTask(mainContainer), 0, Constants.TRAFFIC_FREQUENCY);
+            buildSchedule();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setup() {
+        super.setup();
+
+        schedule = new Schedule();
+    }
+
+    private void buildSchedule() {
+        System.out.println("LAUNCH");
+        schedule.scheduleActionBeginning(0, new MainAction());
+//        schedule.scheduleActionAtInterval(5, new VehicleTrafficTask(mainContainer));
+    }
+
+    class MainAction extends BasicAction {
+
+        public void execute() {
+            System.out.println("EXECUTED");
         }
     }
 
@@ -128,7 +148,6 @@ public class RepastLauncher extends Repast3Launcher {
     public String getName() {
         return "Vehicle to grid";
     }
-
 
     public String getSEASON() {
         return SEASON;

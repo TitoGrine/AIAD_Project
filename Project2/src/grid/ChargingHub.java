@@ -6,7 +6,6 @@ import grid.behaviour.TimerBehaviour;
 import grid.behaviour.Vehicle2GridBehaviour;
 import jade.core.AID;
 import sajas.core.Agent;
-import sajas.core.Runtime;
 import sajas.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
