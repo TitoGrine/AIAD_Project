@@ -50,6 +50,10 @@ public class StatusResponse implements Serializable {
         return allowsV2G;
     }
 
+    public Double getBatteryPercentage() {
+        return (double) currentCapacity / maxCapacity * 100;
+    }
+
     @Override
     public String toString() {
         String result = "\n  Vehicle Status: \n";

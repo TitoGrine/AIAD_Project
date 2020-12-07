@@ -5,10 +5,7 @@ import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
-import uchicago.src.sim.analysis.BinDataSource;
-import uchicago.src.sim.analysis.Histogram;
-import uchicago.src.sim.analysis.OpenSequenceGraph;
-import uchicago.src.sim.analysis.Sequence;
+import uchicago.src.sim.analysis.*;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
 import utils.Constants;
@@ -53,15 +50,20 @@ public class RepastLauncher extends Repast3Launcher {
                 return chub.getGridLoad();
             }
         });
-        gridDemandPlot.addSequence("Max demand (kWh)", new Sequence() {
-            private double maxDemand = 0;
-
+        gridDemandPlot.addSequence("Max available load (kWh)", new Sequence() {
             public double getSValue() {
-                double currentDemand = chub.getGridLoad();
-                if (currentDemand > maxDemand)
-                    maxDemand = currentDemand;
+                return 0.8 * Constants.MAX_AVAILABLE_LOAD;
+            }
+        });
+        gridDemandPlot.addSequence("Average Battery (%)", new Sequence() {
+            public double getSValue() {
+                double sum = 0;
 
-                return maxDemand;
+                for(StatusResponse vehicle : vehicles) {
+                    sum += vehicle.getBatteryPercentage();
+                }
+
+                return vehicles.size() == 0 ? sum : sum / vehicles.size();
             }
         });
         gridDemandPlot.display();

@@ -105,12 +105,12 @@ public class ChargingHub extends Agent {
                 addBehaviour(new Vehicle2GridBehaviour(this, grid.getPeakLoad(), vehiclesForV2G));
             else {
                 addGridDataPoint(grid.getPeakLoad(), 0);
-                distributeLoad();
                 plotStep();
+                distributeLoad();
             }
         } else {
-            distributeLoad();
             plotStep();
+            distributeLoad();
         }
     }
 
