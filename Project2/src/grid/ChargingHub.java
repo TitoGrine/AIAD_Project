@@ -237,7 +237,7 @@ public class ChargingHub extends Agent {
     }
 
     public double getGridLoad() {
-        return grid.getLoad((int) this.localTime, (int) ((this.localTime - (int) this.localTime) * 60));
+        return grid.getCurrentLoad((int) this.localTime, (int) ((this.localTime - (int) this.localTime) * 60));
     }
 
     public double getChargingPrice() {
