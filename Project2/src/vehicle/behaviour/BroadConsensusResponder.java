@@ -35,15 +35,15 @@ public class BroadConsensusResponder extends ContractNetResponder {
             e.printStackTrace();
         }
 
-        // For timeout purposes; sets the timeout as 100 ms
-        reply.setReplyByDate(new Date(new Date().getTime() + 3 * Constants.TIMEOUT));
+        if (Constants.TIMEOUTS_ON)
+            reply.setReplyByDate(new Date(new Date().getTime() + Constants.RESPONDER_TIMEOUT));
 
         return reply;
     }
 
     @Override
     protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
-        if(reject == null) {
+        if (reject == null) {
             Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), " keeping my altruist factor due to timeout");
             vehicle.replyToChub();
         } else {
@@ -63,7 +63,7 @@ public class BroadConsensusResponder extends ContractNetResponder {
     }
 
     @Override
-    protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)  {
+    protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept) {
         Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "altruistic factor proposal was accepted. Keeping altruist factor as " + vehicle.getAltruistFactor());
         vehicle.replyToChub();
 

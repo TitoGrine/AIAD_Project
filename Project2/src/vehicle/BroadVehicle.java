@@ -66,12 +66,12 @@ public class BroadVehicle extends SmartVehicle {
         }
     }
 
-    public void startConsensusProposal(ACLMessage request) {
+    public boolean startConsensusProposal(ACLMessage request) {
         this.request = request;
 
         if(!registered) {
-            replyToChub();
-            return;
+            agreeAndReplyToChub();
+            return false;
         }
 
         DFAgentDescription[] agents = Utilities.getService(this, Constants.BROAD_SERVICE);
@@ -79,12 +79,16 @@ public class BroadVehicle extends SmartVehicle {
 
         if (agents.length <= 1) {
             Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "there are no other broad vehicles on the system. Canceling consensus");
-            replyToChub();
-        } else if (amILeader(agents)) {
+            agreeAndReplyToChub();
+            return false;
+        }
+        if (amILeader(agents)) {
             Utilities.printVehicleMessage(getLocalName(), getVehicleType(), "I am the leader!");
             result = new BroadConsensusInitiator(this, agents);
             addBehaviour(result);
         }
+
+        return true;
     }
 
     private boolean amILeader(DFAgentDescription[] agents) {
@@ -97,6 +101,11 @@ public class BroadVehicle extends SmartVehicle {
         }
 
         return true;
+    }
+
+    public void agreeAndReplyToChub() {
+        responseBehaviour.agreeToChub(this.request);
+        responseBehaviour.replyToChub(this.request, this.altruistFactor);
     }
 
     public void replyToChub() {

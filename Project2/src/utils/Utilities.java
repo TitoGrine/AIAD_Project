@@ -1,10 +1,10 @@
 package utils;
 
-import sajas.core.Agent;
-import sajas.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import sajas.core.Agent;
+import sajas.domain.DFService;
 
 import java.util.Random;
 
@@ -61,17 +61,14 @@ public class Utilities {
         }
     }
 
-    public static DFAgentDescription[] getService(Agent agent, String service)
-    {
+    public static DFAgentDescription[] getService(Agent agent, String service) {
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setType(service);
         dfd.addServices(sd);
-        try
-        {
+        try {
             return DFService.search(agent, dfd);
-        }
-        catch (FIPAException fe) {
+        } catch (FIPAException fe) {
             fe.printStackTrace();
             return null;
         }
