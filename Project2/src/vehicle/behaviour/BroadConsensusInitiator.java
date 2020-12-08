@@ -38,8 +38,8 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
             propose = new ACLMessage(ACLMessage.CFP);
             propose.setContent("Requesting altruistic factor proposals.");
             propose.addReceiver(agent.getName());
-            // For timeout purposes; sets the timeout as 100 ms
-            propose.setReplyByDate(new Date(new Date().getTime() + Constants.TIMEOUT));
+            if (Constants.TIMEOUTS_ON)
+                propose.setReplyByDate(new Date(new Date().getTime() + Constants.LEADER_TIMEOUT));
             msgs.add(propose);
         }
 
