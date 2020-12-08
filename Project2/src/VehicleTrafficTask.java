@@ -49,7 +49,6 @@ public class VehicleTrafficTask extends BasicAction {
     }
 
     public void execute() {
-        System.out.println("EXECUTED");
         int numberNewCars = Utilities.randomNumber(0, Constants.CAR_TRAFFIC);
 
         Utilities.printSystemMessage(numberNewCars + " vehicles attempted to connect to the charging hub.");

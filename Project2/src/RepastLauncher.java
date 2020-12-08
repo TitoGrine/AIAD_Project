@@ -24,7 +24,6 @@ public class RepastLauncher extends Repast3Launcher {
     private String SEASON = "SUMMER";
 
     private static final boolean BATCH_MODE = true;
-    Schedule schedule;
     ContainerController mainContainer;
 
     public static void main(String[] args) {
@@ -55,24 +54,8 @@ public class RepastLauncher extends Repast3Launcher {
         }
     }
 
-    @Override
-    public void setup() {
-        super.setup();
-
-        schedule = new Schedule();
-    }
-
     private void buildSchedule() {
-        System.out.println("LAUNCH");
-        schedule.scheduleActionBeginning(0, new MainAction());
-//        schedule.scheduleActionAtInterval(5, new VehicleTrafficTask(mainContainer));
-    }
-
-    class MainAction extends BasicAction {
-
-        public void execute() {
-            System.out.println("EXECUTED");
-        }
+        getSchedule().scheduleActionAtInterval(100, new VehicleTrafficTask(mainContainer));
     }
 
     public double getONE_WAY_VEHICLE_DISTRIBUTION() {
