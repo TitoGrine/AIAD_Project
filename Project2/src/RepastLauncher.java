@@ -23,14 +23,17 @@ public class RepastLauncher extends Repast3Launcher {
     private double PERMISSION_STANDARD_DEVIATION = Constants.PERMISSION_STANDARD_DEVIATION;
     private String SEASON = "SUMMER";
 
-    private static final boolean BATCH_MODE = true;
+    private static final boolean BATCH_MODE = false;
     ContainerController mainContainer;
 
     public static void main(String[] args) {
-        boolean runMode = BATCH_MODE; // BATCH_MODE or !BATCH_MODE
         SimInit init = new SimInit();
         init.setNumRuns(10);
-        init.loadModel(new RepastLauncher(), "src/parameters.txt", runMode);
+
+        if(BATCH_MODE)
+            init.loadModel(new RepastLauncher(), "src/parameters.txt", true);
+        else
+            init.loadModel(new RepastLauncher(), null, false);
     }
 
     @Override
