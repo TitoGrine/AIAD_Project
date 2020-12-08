@@ -6,8 +6,6 @@ import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
-import uchicago.src.sim.engine.BasicAction;
-import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
 import utils.Constants;
 import utils.Data;
@@ -48,7 +46,7 @@ public class RepastLauncher extends Repast3Launcher {
 
         try {
             AgentController acHub;
-            Agent chub =  new ChargingHub(mainContainer, Constants.CHARGING_STATIONS);
+            Agent chub =  new ChargingHub(mainContainer, Constants.CHARGING_STATIONS, this);
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
             buildSchedule();

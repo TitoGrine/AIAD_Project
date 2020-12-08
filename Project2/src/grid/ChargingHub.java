@@ -10,6 +10,7 @@ import sajas.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import sajas.proto.SubscriptionResponder;
+import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.ContainerController;
 import javafx.util.Pair;
 import utils.Constants;
@@ -32,14 +33,14 @@ public class ChargingHub extends Agent {
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
 
-    public ChargingHub(ContainerController container, int numStations) {
+    public ChargingHub(ContainerController container, int numStations, Repast3Launcher launcher) {
         this.numStations = numStations;
         this.occupiedStations = 0;
         systemStatus = new HashMap<>();
 
         MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.CANCEL), MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
         this.chargingSubscription = new SubscriptionBehaviour(this, mt);
-        this.timerBehaviour = new TimerBehaviour(container, this, Constants.TICK_FREQUENCY);
+        this.timerBehaviour = new TimerBehaviour(container, launcher, this, Constants.TICK_FREQUENCY);
     }
 
     public void setup() {
