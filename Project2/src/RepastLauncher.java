@@ -26,12 +26,14 @@ public class RepastLauncher extends Repast3Launcher {
 
     public static void main(String[] args) {
         SimInit init = new SimInit();
-        init.setNumRuns(10);
 
-        if(BATCH_MODE)
+        if(BATCH_MODE){
             init.loadModel(new RepastLauncher(), "src/parameters.txt", true);
-        else
+        }
+        else{
+            init.setNumRuns(10);
             init.loadModel(new RepastLauncher(), null, false);
+        }
     }
 
     @Override
