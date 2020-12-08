@@ -31,7 +31,7 @@ public class Constants {
 
     // System characteristics
     public final static double START_TIME = 0.0;                            // Time of day when the simulation starts
-    public final static long TICK_FREQUENCY = 1000;                         // How many (real time) milliseconds each tick is worth
+    public final static long TICK_FREQUENCY = 1300;                         // How many (real time) milliseconds each tick is worth
     public final static int CYCLE_TICKS = 95;                               // How many ticks are done in one simulation
     public final static double TICK_RATIO = 0.25;                           // How many minutes (simulation time) each tick is worth (0.25 is a 15 minutes)
     public final static int TRAFFIC_FREQUENCY = 300;                        // Frequency to which vehicles can enter the system in (realtime) milliseconds
