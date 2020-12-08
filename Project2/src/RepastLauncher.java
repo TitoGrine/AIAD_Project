@@ -45,13 +45,24 @@ public class RepastLauncher extends Repast3Launcher {
     private void buildHubPlot() {
         if (hubPlot != null) hubPlot.dispose();
         hubPlot = new OpenSequenceGraph("Charging Hub metrics", this);
-        hubPlot.setAxisTitles("time", "%");
+        hubPlot.setAxisTitles("time", " ");
         hubPlot.addSequence("Average Battery (%)", new Sequence() {
             public double getSValue() {
                 double sum = 0;
 
                 for(StatusResponse vehicle : vehicles) {
                     sum += vehicle.getBatteryPercentage();
+                }
+
+                return vehicles.size() == 0 ? sum : sum / vehicles.size();
+            }
+        });
+        hubPlot.addSequence("Average Charging Price (€)", new Sequence() {
+            public double getSValue() {
+                double sum = 0;
+
+                for(StatusResponse vehicle : vehicles) {
+                    sum += vehicle.getPriceToPay();
                 }
 
                 return vehicles.size() == 0 ? sum : sum / vehicles.size();

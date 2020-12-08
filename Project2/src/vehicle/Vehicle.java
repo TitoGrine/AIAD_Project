@@ -54,6 +54,8 @@ public abstract class Vehicle extends Agent {
         this.chargingPrice = chargingPrice;
     }
 
+    public double getPriceToPay(){ return priceToPay; }
+
     public void setup(){
         DFAgentDescription[] chubs = new DFAgentDescription[0];
         while (chubs.length <= 0) {
