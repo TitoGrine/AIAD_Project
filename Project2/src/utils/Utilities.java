@@ -1,10 +1,10 @@
 package utils;
 
-import sajas.core.Agent;
-import sajas.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import sajas.core.Agent;
+import sajas.domain.DFService;
 
 import java.util.Random;
 
@@ -78,14 +78,17 @@ public class Utilities {
     }
 
     public static void printTime(final int hours, int minutes) {
+        if (!Constants.SHOW_MESSAGES) return;
         System.out.println(Constants.WHITE_BOLD_BRIGHT + String.format("\n ⌚ Local Time: %02d:%02d", hours, minutes) + Constants.RESET);
     }
 
     public static void printChargingHubMessage(final String message) {
+        if (!Constants.SHOW_MESSAGES) return;
         System.out.println(Constants.PURPLE_BOLD + "\n ⚡ Charging Hub - " + Constants.RESET + message);
     }
 
     public static void printVehicleMessage(final String id, final int type, final String message) {
+        if (!Constants.SHOW_MESSAGES) return;
         switch (type) {
             case Constants.ONEWAY_VEHICLE:
                 System.out.println(Constants.CYAN_BOLD + "\n ✇ One Way Vehicle " + id + " - " + Constants.RESET + message);
@@ -102,6 +105,7 @@ public class Utilities {
     }
 
     public static void printSystemMessage(final String message) {
+        if (!Constants.SHOW_MESSAGES) return;
         System.out.println(Constants.YELLOW_BOLD + "\n ⚠ System - " + Constants.RESET + message);
     }
 }

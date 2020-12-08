@@ -1,7 +1,7 @@
 import grid.ChargingHub;
-import sajas.core.Agent;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
+import sajas.core.Agent;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
@@ -19,6 +19,7 @@ public class RepastLauncher extends Repast3Launcher {
     private double ALTRUISTIC_STANDARD_DEVIATION = Constants.ALTRUISTIC_STANDARD_DEVIATION;
     private double MEAN_PERMISSION_VALUE = Constants.MEAN_PERMISSION_VALUE;
     private double PERMISSION_STANDARD_DEVIATION = Constants.PERMISSION_STANDARD_DEVIATION;
+    private boolean SHOW_MESSAGES = Constants.SHOW_MESSAGES;
     private String SEASON = "SUMMER";
 
     private static final boolean BATCH_MODE = false;
@@ -27,11 +28,10 @@ public class RepastLauncher extends Repast3Launcher {
     public static void main(String[] args) {
         SimInit init = new SimInit();
 
-        if(BATCH_MODE){
+        if (BATCH_MODE) {
             init.loadModel(new RepastLauncher(), "src/parameters.txt", true);
-        }
-        else{
-            init.setNumRuns(10);
+        } else {
+            init.setNumRuns(1);
             init.loadModel(new RepastLauncher(), null, false);
         }
     }
@@ -48,7 +48,7 @@ public class RepastLauncher extends Repast3Launcher {
 
         try {
             AgentController acHub;
-            Agent chub =  new ChargingHub(mainContainer, Constants.CHARGING_STATIONS, this);
+            Agent chub = new ChargingHub(mainContainer, Constants.CHARGING_STATIONS, this);
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();
             buildSchedule();
@@ -124,10 +124,18 @@ public class RepastLauncher extends Repast3Launcher {
         Constants.PERMISSION_STANDARD_DEVIATION = this.PERMISSION_STANDARD_DEVIATION;
     }
 
+    public boolean getSHOW_MESSAGES() {
+        return SHOW_MESSAGES;
+    }
+
+    public void setSHOW_MESSAGES(boolean SHOW_MESSAGES) {
+        this.SHOW_MESSAGES = SHOW_MESSAGES;
+        Constants.SHOW_MESSAGES = this.SHOW_MESSAGES;
+    }
+
     @Override
     public String[] getInitParam() {
-
-        return new String[]{"ONE_WAY_VEHICLE_DISTRIBUTION", "TWO_WAY_VEHICLE_DISTRIBUTION", "BROAD_VEHICLE_DISTRIBUTION", "MEAN_ALTRUISTIC_VALUE", "ALTRUISTIC_STANDARD_DEVIATION", "MEAN_PERMISSION_VALUE", "PERMISSION_STANDARD_DEVIATION", "SEASON"};
+        return new String[]{"ONE_WAY_VEHICLE_DISTRIBUTION", "TWO_WAY_VEHICLE_DISTRIBUTION", "BROAD_VEHICLE_DISTRIBUTION", "MEAN_ALTRUISTIC_VALUE", "ALTRUISTIC_STANDARD_DEVIATION", "MEAN_PERMISSION_VALUE", "PERMISSION_STANDARD_DEVIATION", "SHOW_MESSAGES", "SEASON"};
     }
 
     @Override
@@ -141,7 +149,7 @@ public class RepastLauncher extends Repast3Launcher {
 
     public void setSEASON(String season) {
         this.SEASON = season;
-        switch(season){
+        switch (season) {
             case "WINTER":
                 Constants.CURRENT_DEMAND = Constants.WINTER_GRID_DEMAND;
                 Constants.MAX_AVAILABLE_LOAD = Constants.WINTER_MAX_AVAILABLE_LOAD;

@@ -32,7 +32,7 @@ public class Constants {
     // System characteristics
     public final static double START_TIME = 0.0;                            // Time of day when the simulation starts
     public final static long TICK_FREQUENCY = 500;                          // How many (real time) milliseconds each tick is worth
-    public final static int CYCLE_TICKS = 10;                               // How many ticks are done in one simulation
+    public final static int CYCLE_TICKS = 95;                               // How many ticks are done in one simulation
     public final static double TICK_RATIO = 0.25;                           // How many minutes (simulation time) each tick is worth (0.25 is a 15 minutes)
     public final static int TRAFFIC_FREQUENCY = 300;                        // Frequency to which vehicles can enter the system in (realtime) milliseconds
     public final static int CAR_TRAFFIC = 5;                                // Maximum number of vehicles that can attempt to charge at each interval
@@ -42,6 +42,7 @@ public class Constants {
     public final static int[] CAPACITY_DISTRIBUTION = {30, 100};            // Range of maximum capacities of vehicles in kWh
     public final static double CHARGING_PRICE = 1.0;                        // Price to charge vehicle per kWh
 
+    public static boolean SHOW_MESSAGES = true;                      // Flag that sets the message printing on or off
     public static double[] VEHICLE_DISTRIBUTION = {0.0, 0.5, 0.5};    // Relative frequency of each type of vehicle
     public static double MEAN_ALTRUISTIC_VALUE = 0.5;                 // Mean value of altruistic factor of normal distribution
     public static double ALTRUISTIC_STANDARD_DEVIATION = 0.5;         // Standard deviation of altruistic factor normal distribution
