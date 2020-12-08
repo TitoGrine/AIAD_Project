@@ -5,11 +5,13 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import sajas.proto.ContractNetInitiator;
+import utils.Constants;
 import utils.Utilities;
 import vehicle.BroadCarInfo;
 import vehicle.BroadVehicle;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -17,6 +19,7 @@ import java.util.Vector;
 public class BroadConsensusInitiator extends ContractNetInitiator {
     BroadVehicle vehicle;
     DFAgentDescription[] agents;
+    int sentMessages;
 
     public BroadConsensusInitiator(BroadVehicle vehicle, DFAgentDescription[] agents) {
         super(vehicle, new ACLMessage(ACLMessage.PROPOSE));
@@ -35,10 +38,14 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
             propose = new ACLMessage(ACLMessage.CFP);
             propose.setContent("Requesting altruistic factor proposals.");
             propose.addReceiver(agent.getName());
+            // For timeout purposes; sets the timeout as 100 ms
+            propose.setReplyByDate(new Date(new Date().getTime() + Constants.TIMEOUT));
             msgs.add(propose);
         }
 
-        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "sending call for proposals");
+        this.sentMessages = (agents.length - 1);
+
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "sending " + (agents.length - 1) + " calls for proposals");
         return msgs;
     }
 
@@ -47,7 +54,10 @@ public class BroadConsensusInitiator extends ContractNetInitiator {
         Map<AID, BroadCarInfo> proposals = new HashMap<>();
         proposals.put(vehicle.getAID(), new BroadCarInfo(vehicle.getAID(), vehicle.getAltruistFactor(), (double) vehicle.getCurrentCapacity() / vehicle.getMaxCapacity()));
 
-        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "received all proposals!");
+        if(sentMessages != responses.size())
+            Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "consensus timeout!");
+
+        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "received " + responses.size() + " proposals!");
 
         for(Object response : responses) {
             try {

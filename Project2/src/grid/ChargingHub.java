@@ -27,10 +27,13 @@ public class ChargingHub extends Agent {
     private int occupiedStations;
     private double localTime = Constants.START_TIME;
     private Map<AID, StatusResponse> systemStatus;
-    private ArrayList<StatusResponse> dataList;
-    private OpenSequenceGraph plot;
     private Grid grid = new Grid();
     private double chargingPrice = Constants.CHARGING_PRICE;
+    private double sharedLoad = 0;
+
+    private ArrayList<StatusResponse> dataList;
+    private OpenSequenceGraph v2gPlot;
+    private OpenSequenceGraph chubPlot;
 
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
@@ -105,10 +108,12 @@ public class ChargingHub extends Agent {
                 addBehaviour(new Vehicle2GridBehaviour(this, grid.getPeakLoad(), vehiclesForV2G));
             else {
                 addGridDataPoint(grid.getPeakLoad(), 0);
+                this.sharedLoad = 0;
                 plotStep();
                 distributeLoad();
             }
         } else {
+            this.sharedLoad = 0;
             plotStep();
             distributeLoad();
         }
@@ -203,6 +208,14 @@ public class ChargingHub extends Agent {
         Data.submitGridStat(String.valueOf(peakLoad), String.valueOf((int) (100 * totalSharedLoad / peakLoad)));
     }
 
+    public void setSharedLoad(double sharedLoad) {
+        this.sharedLoad = sharedLoad;
+    }
+
+    public double getSharedLoad() {
+        return sharedLoad;
+    }
+
     public int getOccupiedStations() {
         return occupiedStations;
     }
@@ -239,13 +252,16 @@ public class ChargingHub extends Agent {
         this.dataList = dataList;
     }
 
-    public void setPlot(OpenSequenceGraph plot) {
-        this.plot = plot;
+    public void setPlots(OpenSequenceGraph v2gPlot, OpenSequenceGraph chubPlot) {
+        this.v2gPlot = v2gPlot;
+        this.chubPlot = chubPlot;
     }
 
     public void plotStep() {
-        if (plot != null)
-            plot.step();
+        if (v2gPlot != null)
+            v2gPlot.step();
+        if (chubPlot != null)
+            chubPlot.step();
     }
 
     public void closeSubscription(AID sender) {

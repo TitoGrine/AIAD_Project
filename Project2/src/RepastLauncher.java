@@ -18,7 +18,8 @@ import java.util.Timer;
 public class RepastLauncher extends Repast3Launcher {
     private static boolean runInBatchMode = false;
     private Histogram vehiclePlot;
-    private OpenSequenceGraph gridDemandPlot;
+    private OpenSequenceGraph v2gPlot;
+    private OpenSequenceGraph hubPlot;
     private ChargingHub chub;
     private ArrayList<StatusResponse> vehicles = new ArrayList<>();
 
@@ -37,25 +38,15 @@ public class RepastLauncher extends Repast3Launcher {
 
     private void buildPlots() {
         buildHistogram();
-        buildSequenceGraph();
+        buildV2GPlot();
+        buildHubPlot();
     }
 
-    private void buildSequenceGraph() {
-        // graph
-        if (gridDemandPlot != null) gridDemandPlot.dispose();
-        gridDemandPlot = new OpenSequenceGraph("Peak demand", this);
-        gridDemandPlot.setAxisTitles("time", "demand");
-        gridDemandPlot.addSequence("Grid demand (kWh)", new Sequence() {
-            public double getSValue() {
-                return chub.getGridLoad();
-            }
-        });
-        gridDemandPlot.addSequence("Max available load (kWh)", new Sequence() {
-            public double getSValue() {
-                return 0.8 * Constants.MAX_AVAILABLE_LOAD;
-            }
-        });
-        gridDemandPlot.addSequence("Average Battery (%)", new Sequence() {
+    private void buildHubPlot() {
+        if (hubPlot != null) hubPlot.dispose();
+        hubPlot = new OpenSequenceGraph("Charging Hub metrics", this);
+        hubPlot.setAxisTitles("time", "%");
+        hubPlot.addSequence("Average Battery (%)", new Sequence() {
             public double getSValue() {
                 double sum = 0;
 
@@ -66,7 +57,29 @@ public class RepastLauncher extends Repast3Launcher {
                 return vehicles.size() == 0 ? sum : sum / vehicles.size();
             }
         });
-        gridDemandPlot.display();
+        hubPlot.display();
+    }
+
+    private void buildV2GPlot() {
+        if (v2gPlot != null) v2gPlot.dispose();
+        v2gPlot = new OpenSequenceGraph("Vehicle to Grid metrics", this);
+        v2gPlot.setAxisTitles("time", "energy");
+        v2gPlot.addSequence("Grid demand (kWh)", new Sequence() {
+            public double getSValue() {
+                return chub.getGridLoad();
+            }
+        });
+        v2gPlot.addSequence("Peak threshold (kWh)", new Sequence() {
+            public double getSValue() {
+                return 0.8 * Constants.MAX_AVAILABLE_LOAD;
+            }
+        });
+        v2gPlot.addSequence("Suppressed demand (kWh)", new Sequence() {
+            public double getSValue() {
+                return chub.getSharedLoad();
+            }
+        });
+        v2gPlot.display();
     }
 
     private void buildHistogram() {
@@ -101,7 +114,7 @@ public class RepastLauncher extends Repast3Launcher {
             chub = new ChargingHub(mainContainer, Constants.CHARGING_STATIONS);
             if (!runInBatchMode) {
                 chub.setDataList(vehicles);
-                chub.setPlot(gridDemandPlot);
+                chub.setPlots(v2gPlot, hubPlot);
             }
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();

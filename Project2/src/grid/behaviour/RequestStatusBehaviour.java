@@ -5,13 +5,16 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import sajas.proto.AchieveREInitiator;
 import sajas.proto.SubscriptionResponder;
+import utils.Constants;
 import utils.Utilities;
 import vehicle.StatusResponse;
 
+import java.util.Date;
 import java.util.Vector;
 
 public class RequestStatusBehaviour extends AchieveREInitiator {
     private ChargingHub chub;
+    private int sentRequests;
 
     public RequestStatusBehaviour(ChargingHub chub, ACLMessage msg) {
         super(chub, msg);
@@ -26,9 +29,13 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
             request = new ACLMessage((ACLMessage.REQUEST));
             request.setContent("Requesting car status.");
             request.addReceiver(subscription.getMessage().getSender());
+            // For timeout purposes; sets the timeout as 100 ms
+            request.setReplyByDate(new Date(new Date().getTime() + Constants.TIMEOUT));
 
             msgs.add(request);
         }
+
+        sentRequests = chub.getChargingVehicles().size();
 
         return msgs;
     }
@@ -56,6 +63,9 @@ public class RequestStatusBehaviour extends AchieveREInitiator {
 
     @Override
     protected void handleAllResultNotifications(Vector resultNotifications) {
+        if(sentRequests != resultNotifications.size())
+            Utilities.printChargingHubMessage("chub timeout!");
+
         try {
             for (Object response : resultNotifications) {
                 chub.updateVehicleStatus(((ACLMessage) response).getSender(), (StatusResponse) ((ACLMessage) response).getContentObject());

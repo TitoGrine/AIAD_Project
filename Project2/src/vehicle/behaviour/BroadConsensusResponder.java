@@ -4,11 +4,13 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import sajas.proto.ContractNetResponder;
+import utils.Constants;
 import utils.Utilities;
 import vehicle.BroadCarInfo;
 import vehicle.BroadVehicle;
 
 import java.io.IOException;
+import java.util.Date;
 
 public class BroadConsensusResponder extends ContractNetResponder {
     BroadVehicle vehicle;
@@ -33,21 +35,29 @@ public class BroadConsensusResponder extends ContractNetResponder {
             e.printStackTrace();
         }
 
+        // For timeout purposes; sets the timeout as 100 ms
+        reply.setReplyByDate(new Date(new Date().getTime() + 3 * Constants.TIMEOUT));
+
         return reply;
     }
 
     @Override
     protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
-        double tempAltruistFactor;
+        if(reject == null) {
+            Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), " keeping my altruist factor due to timeout");
+            vehicle.replyToChub();
+        } else {
+            double tempAltruistFactor;
 
-        try {
-             tempAltruistFactor = (double) reject.getContentObject();
-        } catch (UnreadableException e) {
-            tempAltruistFactor = vehicle.getAltruistFactor();
+            try {
+                tempAltruistFactor = (double) reject.getContentObject();
+            } catch (UnreadableException e) {
+                tempAltruistFactor = vehicle.getAltruistFactor();
+            }
+
+            Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "altruistic factor proposal was rejected. Old altruist factor was  " + vehicle.getAltruistFactor() + ", new one is " + tempAltruistFactor);
+            vehicle.replyToChub(tempAltruistFactor);
         }
-
-        Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "altruistic factor proposal was rejected. Old altruist factor was  " + vehicle.getAltruistFactor() + ", new one is " + tempAltruistFactor);
-        vehicle.replyToChub(tempAltruistFactor);
 
         super.reset();
     }
