@@ -18,8 +18,14 @@ public class OneWayStatusResponseBehaviour extends AchieveREResponder {
 
     public ACLMessage handleRequest(ACLMessage request){
         ACLMessage reply = request.createReply();
-        reply.setPerformative(ACLMessage.AGREE);
-        reply.setContent("Connected.");
+        if(this.vehicle.isLeaving()){
+            reply.setPerformative(ACLMessage.REFUSE);
+            reply.setContent("Leaving the charging hub");
+            this.vehicle.leaveHub();
+        } else{
+            reply.setPerformative(ACLMessage.AGREE);
+            reply.setContent("Connected.");
+        }
 
         return reply;
     }
