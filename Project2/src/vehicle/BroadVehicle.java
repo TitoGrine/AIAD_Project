@@ -22,7 +22,6 @@ public class BroadVehicle extends SmartVehicle {
     private BroadStatusResponseBehaviour responseBehaviour;
     private ACLMessage request;
     private boolean registered;
-    private boolean leaving = false;
 
     public BroadVehicle(int currentCapacity, int maxCapacity, double altruistFactor, boolean chargeGrid) {
         super(currentCapacity, maxCapacity, altruistFactor, chargeGrid);
@@ -45,15 +44,6 @@ public class BroadVehicle extends SmartVehicle {
         } catch (FIPAException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean isLeaving() {
-        if(leaving) {
-            return true;
-        }
-        leaving = super.isLeaving();
-        return leaving;
     }
 
     @Override
