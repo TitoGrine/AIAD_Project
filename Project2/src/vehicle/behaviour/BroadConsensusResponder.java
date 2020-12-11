@@ -26,6 +26,12 @@ public class BroadConsensusResponder extends ContractNetResponder {
 
         Utilities.printVehicleMessage(vehicle.getLocalName(), vehicle.getVehicleType(), "received call for proposals of broad consensus");
 
+        if(vehicle.isLeaving()){
+            reply.setPerformative(ACLMessage.REFUSE);
+            reply.setContent("Leaving the charging hub");
+            return reply;
+        }
+
         try {
             reply.setPerformative(ACLMessage.PROPOSE);
             reply.setContentObject(new BroadCarInfo(vehicle.getAID(), vehicle.getAltruistFactor(), (double) vehicle.getCurrentCapacity() / vehicle.getMaxCapacity()));
