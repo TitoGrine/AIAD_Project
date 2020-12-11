@@ -29,7 +29,7 @@ public class TwoWayStatusResponseBehaviour extends AchieveREResponder {
         reply.setPerformative(ACLMessage.INFORM);
 
         try {
-            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getAltruistFactor(), vehicle.allowsV2G()));
+            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getVehicleType(), vehicle.getPriceToPay(), vehicle.getAltruistFactor(), vehicle.allowsV2G()));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -68,8 +68,11 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
             }
         }
 
-        if(priorityQueue.isEmpty() || !acceptedProposal)
+        if(priorityQueue.isEmpty() || !acceptedProposal) {
             chub.addGridDataPoint(peakLoad, 0);
+            chub.setSharedLoad(0);
+            chub.plotStep();
+        }
 
         ACLMessage msg;
         int remainingLoad = peakLoad;
@@ -121,6 +124,8 @@ public class Vehicle2GridBehaviour extends ContractNetInitiator {
         }
 
         chub.addGridDataPoint(peakLoad, totalSharedLoad);
+        chub.setSharedLoad(totalSharedLoad);
+        chub.plotStep();
         chub.distributeLoad();
     }
 }
