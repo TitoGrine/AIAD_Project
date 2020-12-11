@@ -32,21 +32,34 @@ public class ChargingHub extends Agent {
 
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
+    private TimerTask task = null;
 
-    public ChargingHub(ContainerController container, int numStations, Repast3Launcher launcher) {
+    public ChargingHub(int numStations) {
         this.numStations = numStations;
         this.occupiedStations = 0;
         systemStatus = new HashMap<>();
 
         MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.CANCEL), MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
         this.chargingSubscription = new SubscriptionBehaviour(this, mt);
-        this.timerBehaviour = new TimerBehaviour(container, launcher, this, Constants.TICK_FREQUENCY);
+        this.timerBehaviour = new TimerBehaviour(this, Constants.TICK_FREQUENCY);
+    }
+
+    public ChargingHub(int numStations, TimerTask task) {
+        this.numStations = numStations;
+        this.occupiedStations = 0;
+        systemStatus = new HashMap<>();
+
+        MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.CANCEL), MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
+        this.chargingSubscription = new SubscriptionBehaviour(this, mt);
+        this.timerBehaviour = new TimerBehaviour(this, Constants.TICK_FREQUENCY);
+        this.task = task;
     }
 
     public void setup() {
         Utilities.registerService(this, Constants.CHUB_SERVICE);
         addBehaviour(chargingSubscription);
         addBehaviour(timerBehaviour);
+        System.out.println(Constants.GREEN_BOLD_BRIGHT + "WE IN SETUP BOYYYY" + Constants.RESET);
     }
 
     @Override
@@ -58,12 +71,16 @@ public class ChargingHub extends Agent {
         }
     }
 
+    public void stopTask(){
+        if(task != null) this.task.cancel();
+    }
+
     public void updateVehicleStatus(AID vehicle, StatusResponse status) {
         systemStatus.put(vehicle, status);
     }
 
     public void updateSystemStatus() {
-        this.localTime += Constants.TICK_RATIO % 24;
+        this.localTime = (this.localTime + Constants.TICK_RATIO) % 24;
         this.availableLoad = grid.getLoad((int) this.localTime, (int) ((this.localTime - (int) this.localTime) * 60));
         Utilities.printTime(((int) this.localTime), (int) ((this.localTime - (int) this.localTime) * 60));
         systemStatus.clear();

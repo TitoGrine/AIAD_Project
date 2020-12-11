@@ -61,51 +61,48 @@ public class Utilities {
         }
     }
 
-    public static DFAgentDescription[] getService(Agent agent, String service)
-    {
+    public static DFAgentDescription[] getService(Agent agent, String service) {
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setType(service);
         dfd.addServices(sd);
-        try
-        {
+        try {
             return DFService.search(agent, dfd);
-        }
-        catch (FIPAException fe) {
+        } catch (FIPAException fe) {
             fe.printStackTrace();
             return null;
         }
     }
 
     public static void printTime(final int hours, int minutes) {
-        if (!Constants.SHOW_MESSAGES) return;
-        System.out.println(Constants.WHITE_BOLD_BRIGHT + String.format("\n ⌚ Local Time: %02d:%02d", hours, minutes) + Constants.RESET);
+        if (Constants.SHOW_MESSAGES)
+            System.out.println(Constants.WHITE_BOLD_BRIGHT + String.format("\n ⌚ Local Time: %02d:%02d", hours, minutes) + Constants.RESET);
     }
 
     public static void printChargingHubMessage(final String message) {
-        if (!Constants.SHOW_MESSAGES) return;
-        System.out.println(Constants.PURPLE_BOLD + "\n ⚡ Charging Hub - " + Constants.RESET + message);
+        if (Constants.SHOW_MESSAGES)
+            System.out.println(Constants.PURPLE_BOLD + "\n ⚡ Charging Hub - " + Constants.RESET + message);
     }
 
     public static void printVehicleMessage(final String id, final int type, final String message) {
-        if (!Constants.SHOW_MESSAGES) return;
-        switch (type) {
-            case Constants.ONEWAY_VEHICLE:
-                System.out.println(Constants.CYAN_BOLD + "\n ✇ One Way Vehicle " + id + " - " + Constants.RESET + message);
-                break;
+        if (Constants.SHOW_MESSAGES)
+            switch (type) {
+                case Constants.ONEWAY_VEHICLE:
+                    System.out.println(Constants.CYAN_BOLD + "\n ✇ One Way Vehicle " + id + " - " + Constants.RESET + message);
+                    break;
 
-            case Constants.TWOWAY_VEHICLE:
-                System.out.println(Constants.BLUE_BOLD + "\n ✇ Two Way Vehicle " + id + " - " + Constants.RESET + message);
-                break;
+                case Constants.TWOWAY_VEHICLE:
+                    System.out.println(Constants.BLUE_BOLD + "\n ✇ Two Way Vehicle " + id + " - " + Constants.RESET + message);
+                    break;
 
-            case Constants.BROAD_VEHICLE:
-                System.out.println(Constants.GREEN_BOLD + "\n ✇ Broad Vehicle " + id + " - " + Constants.RESET + message);
-                break;
-        }
+                case Constants.BROAD_VEHICLE:
+                    System.out.println(Constants.GREEN_BOLD + "\n ✇ Broad Vehicle " + id + " - " + Constants.RESET + message);
+                    break;
+            }
     }
 
     public static void printSystemMessage(final String message) {
-        if (!Constants.SHOW_MESSAGES) return;
-        System.out.println(Constants.YELLOW_BOLD + "\n ⚠ System - " + Constants.RESET + message);
+        if (Constants.SHOW_MESSAGES)
+            System.out.println(Constants.YELLOW_BOLD + "\n ⚠ System - " + Constants.RESET + message);
     }
 }

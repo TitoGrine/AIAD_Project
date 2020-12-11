@@ -1,6 +1,7 @@
 package grid.behaviour;
 
 import grid.ChargingHub;
+import jade.wrapper.ControllerException;
 import sajas.core.Runtime;
 import sajas.core.behaviours.TickerBehaviour;
 import sajas.sim.repast3.Repast3Launcher;
@@ -11,14 +12,10 @@ import utils.Utilities;
 
 public class TimerBehaviour extends TickerBehaviour {
     private ChargingHub chub;
-    private ContainerController container;
-    private Repast3Launcher launcher;
 
-    public TimerBehaviour(ContainerController container, Repast3Launcher launcher, ChargingHub chub, long period) {
+    public TimerBehaviour(ChargingHub chub, long period) {
         super(chub, period);
         this.chub = chub;
-        this.container = container;
-        this.launcher = launcher;
     }
 
     @Override
@@ -26,10 +23,10 @@ public class TimerBehaviour extends TickerBehaviour {
         Utilities.printSystemMessage("round " + this.getTickCount());
         if(this.getTickCount() > Constants.CYCLE_TICKS){
             this.stop();
+            chub.stopTask();
             try {
-                container.kill();
-                launcher.stop();
-            } catch (StaleProxyException e) {
+                chub.getContainerController().getPlatformController().kill();
+            } catch (ControllerException e) {
                 e.printStackTrace();
             }
         }

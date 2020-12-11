@@ -10,6 +10,9 @@ import uchicago.src.sim.engine.SimInit;
 import utils.Constants;
 import utils.Data;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class RepastLauncher extends Repast3Launcher {
 
     private double ONE_WAY_VEHICLE_DISTRIBUTION = Constants.VEHICLE_DISTRIBUTION[0];
@@ -22,7 +25,7 @@ public class RepastLauncher extends Repast3Launcher {
     private boolean SHOW_MESSAGES = Constants.SHOW_MESSAGES;
     private String SEASON = "SUMMER";
 
-    private static final boolean BATCH_MODE = false;
+    private static final boolean BATCH_MODE = true;
     ContainerController mainContainer;
 
     public static void main(String[] args) {
@@ -31,7 +34,6 @@ public class RepastLauncher extends Repast3Launcher {
         if (BATCH_MODE) {
             init.loadModel(new RepastLauncher(), "src/parameters.txt", true);
         } else {
-            init.setNumRuns(1);
             init.loadModel(new RepastLauncher(), null, false);
         }
     }
@@ -48,17 +50,24 @@ public class RepastLauncher extends Repast3Launcher {
 
         try {
             AgentController acHub;
-            Agent chub = new ChargingHub(mainContainer, Constants.CHARGING_STATIONS, this);
-            acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
-            acHub.start();
-            buildSchedule();
+
+            if(BATCH_MODE){
+                TimerTask task = new VehicleTrafficTask(mainContainer);
+                Agent chub = new ChargingHub(Constants.CHARGING_STATIONS, task);
+                acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
+                System.out.println(chub.toString());
+                acHub.start();
+                new Timer().scheduleAtFixedRate(task, 0, Constants.TRAFFIC_FREQUENCY);
+            } else {
+                Agent chub = new ChargingHub(Constants.CHARGING_STATIONS);
+                acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
+                acHub.start();
+                getSchedule().scheduleActionAtInterval(100, new VehicleTrafficAction(mainContainer));
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
-    }
-
-    private void buildSchedule() {
-        getSchedule().scheduleActionAtInterval(100, new VehicleTrafficTask(mainContainer));
     }
 
     public double getONE_WAY_VEHICLE_DISTRIBUTION() {
