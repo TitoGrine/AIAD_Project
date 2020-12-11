@@ -46,14 +46,14 @@ public class Constants {
     public final static long RESPONDER_TIMEOUT = TICK_FREQUENCY * 3/4;      // Timeout for the consensus responders to receive the altruist factor message
     public final static long CHUB_TIMEOUT = TICK_FREQUENCY * 3/2;           // Timeout for the chub to receive all informs
 
-    public final static double[] VEHICLE_DISTRIBUTION = {0.3, 0.3, 0.3};    // Relative frequency of each type of vehicle
-    public final static double MEAN_ALTRUISTIC_VALUE = 0.5;                 // Mean value of altruistic factor of normal distribution
-    public final static double ALTRUISTIC_STANDARD_DEVIATION = 0.5;         // Standard deviation of altruistic factor normal distribution
-    public final static double MEAN_PERMISSION_VALUE = 0.5;                 // Mean value of normal distribution for permission to charge grid (lower mean means higher probability of acceptance)
-    public final static double PERMISSION_STANDARD_DEVIATION = 0.2;         // Standard deviation of normal distribution for permission to charge grid
+    public static double[] VEHICLE_DISTRIBUTION = {0.0, 0.5, 0.5};    // Relative frequency of each type of vehicle
+    public static double MEAN_ALTRUISTIC_VALUE = 0.5;                 // Mean value of altruistic factor of normal distribution
+    public static double ALTRUISTIC_STANDARD_DEVIATION = 0.5;         // Standard deviation of altruistic factor normal distribution
+    public static double MEAN_PERMISSION_VALUE = 0.5;                 // Mean value of normal distribution for permission to charge grid (lower mean means higher probability of acceptance)
+    public static double PERMISSION_STANDARD_DEVIATION = 0.2;         // Standard deviation of normal distribution for permission to charge grid
 
-    public final static int[] CURRENT_DEMAND = SUMMER_GRID_DEMAND;          // The demand simulation (choose from one of the four seasons)
-    public final static int MAX_AVAILABLE_LOAD = SUMMER_MAX_AVAILABLE_LOAD; // The max available load to the system (choose the same season as the one above)
+    public static int[] CURRENT_DEMAND = SUMMER_GRID_DEMAND;          // The demand simulation (choose from one of the four seasons)
+    public static int MAX_AVAILABLE_LOAD = SUMMER_MAX_AVAILABLE_LOAD; // The max available load to the system (choose the same season as the one above)
 
     // Colors
     public static final String RESET = "\u001B[0m";
