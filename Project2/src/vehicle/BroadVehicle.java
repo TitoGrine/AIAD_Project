@@ -4,7 +4,7 @@ import jade.core.AID;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import javafx.util.Pair;
+import utils.Pair;
 import sajas.core.behaviours.Behaviour;
 import sajas.domain.DFService;
 import utils.Constants;
