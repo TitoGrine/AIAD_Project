@@ -1,6 +1,9 @@
 package utils;
 
 public class Constants {
+    // Constants
+    public final static int DISPLAY_WIDTH  = 120;
+    public final static int DISPLAY_HEIGHT = 120;
     public final static int MIN = 0;
     public final static int MAX = 1;
 
@@ -11,6 +14,9 @@ public class Constants {
     public final static double NO_FACTOR = -1.0;
     public final static String BROAD_SERVICE = "broad-service";
     public final static String CHUB_SERVICE = "chub-service";
+
+    // Misc
+    public final static boolean PRINT_MESSAGES = false;
 
     // Grid simulation
     public final static int[] SPRING_GRID_DEMAND = {65, 58, 57, 57, 62, 57, 58, 49, 72, 81, 187, 165, 28, 100, 111, 187, 57, 21, 26, 21, 57, 58, 57, 58};

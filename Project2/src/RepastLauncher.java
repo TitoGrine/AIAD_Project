@@ -11,11 +11,15 @@ import uchicago.src.sim.analysis.OpenSequenceGraph;
 import uchicago.src.sim.analysis.Sequence;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
+import uchicago.src.sim.gui.Network2DDisplay;
+import uchicago.src.sim.network.DefaultDrawableNode;
 import utils.Constants;
+import utils.CustomDisplaySurface;
 import utils.Data;
 import vehicle.StatusResponse;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 
 public class RepastLauncher extends Repast3Launcher {
@@ -29,11 +33,13 @@ public class RepastLauncher extends Repast3Launcher {
     private String SEASON = "SUMMER";
 
     private static boolean runInBatchMode = false;
+    private CustomDisplaySurface displaySurface;
     private Histogram vehiclePlot;
     private OpenSequenceGraph v2gPlot;
     private OpenSequenceGraph hubPlot;
     private ChargingHub chub;
     private ArrayList<StatusResponse> vehicles = new ArrayList<>();
+    private static List<DefaultDrawableNode> agents = new ArrayList<>();
 
     public double getONE_WAY_VEHICLE_DISTRIBUTION() {
         return ONE_WAY_VEHICLE_DISTRIBUTION;
@@ -138,6 +144,7 @@ public class RepastLauncher extends Repast3Launcher {
     public void begin() {
         if (!runInBatchMode) {
             buildPlots();
+            buildNetworkGraph();
             buildSchedule();
         }
         super.begin();
@@ -151,6 +158,32 @@ public class RepastLauncher extends Repast3Launcher {
         buildHistogram();
         buildV2GPlot();
         buildHubPlot();
+    }
+
+    private Network2DDisplay display;
+
+    private void buildNetworkGraph() {
+        if(displaySurface != null) displaySurface.dispose();
+
+        displaySurface = new CustomDisplaySurface(this, "Charging Station Display");
+        registerDisplaySurface("Charging Station Display", displaySurface);
+
+        display = new Network2DDisplay(agents, Constants.DISPLAY_WIDTH, Constants.DISPLAY_HEIGHT);
+        displaySurface.addDisplayableProbeable(display, "Network Display");
+        displaySurface.addZoomable(display);
+        addSimEventListener(displaySurface);
+        displaySurface.display();
+    }
+
+    public void updateNetworkGraph(){
+        displaySurface.removeProbeableDisplayable(display);
+
+        display = new Network2DDisplay(agents, Constants.DISPLAY_WIDTH, Constants.DISPLAY_HEIGHT);
+        displaySurface.addDisplayableProbeable(display, "Network Display: " + display.hashCode());
+        displaySurface.addZoomable(display);
+        addSimEventListener(displaySurface);
+
+        displaySurface.updateDisplay();
     }
 
     private void buildHubPlot() {
@@ -237,6 +270,8 @@ public class RepastLauncher extends Repast3Launcher {
             if (!runInBatchMode) {
                 chub.setDataList(vehicles);
                 chub.setPlots(v2gPlot, hubPlot);
+                chub.setAgents(agents);
+                chub.setUpdateCall(this, RepastLauncher.class.getMethod("updateNetworkGraph"));
             }
             acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
             acHub.start();

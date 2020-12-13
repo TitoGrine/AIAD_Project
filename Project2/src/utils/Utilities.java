@@ -75,15 +75,18 @@ public class Utilities {
     }
 
     public static void printTime(final int hours, int minutes) {
-        System.out.println(Constants.WHITE_BOLD_BRIGHT + String.format("\n ⌚ Local Time: %02d:%02d", hours, minutes) + Constants.RESET);
+        if(Constants.PRINT_MESSAGES)
+            System.out.println(Constants.WHITE_BOLD_BRIGHT + String.format("\n ⌚ Local Time: %02d:%02d", hours, minutes) + Constants.RESET);
     }
 
     public static void printChargingHubMessage(final String message) {
-        System.out.println(Constants.PURPLE_BOLD + "\n ⚡ Charging Hub - " + Constants.RESET + message);
+        if(Constants.PRINT_MESSAGES)
+            System.out.println(Constants.PURPLE_BOLD + "\n ⚡ Charging Hub - " + Constants.RESET + message);
     }
 
     public static void printVehicleMessage(final String id, final int type, final String message) {
-        switch (type) {
+        if(Constants.PRINT_MESSAGES)
+            switch (type) {
             case Constants.ONEWAY_VEHICLE:
                 System.out.println(Constants.CYAN_BOLD + "\n ✇ One Way Vehicle " + id + " - " + Constants.RESET + message);
                 break;
@@ -99,6 +102,7 @@ public class Utilities {
     }
 
     public static void printSystemMessage(final String message) {
-        System.out.println(Constants.YELLOW_BOLD + "\n ⚠ System - " + Constants.RESET + message);
+        if(Constants.PRINT_MESSAGES)
+            System.out.println(Constants.YELLOW_BOLD + "\n ⚠ System - " + Constants.RESET + message);
     }
 }
