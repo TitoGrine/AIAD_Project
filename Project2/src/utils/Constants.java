@@ -1,6 +1,9 @@
 package utils;
 
 public class Constants {
+    // Constants
+    public final static int DISPLAY_WIDTH  = 120;
+    public final static int DISPLAY_HEIGHT = 120;
     public final static int MIN = 0;
     public final static int MAX = 1;
 
@@ -11,6 +14,9 @@ public class Constants {
     public final static double NO_FACTOR = -1.0;
     public final static String BROAD_SERVICE = "broad-service";
     public final static String CHUB_SERVICE = "chub-service";
+
+    // Misc
+    public static boolean SHOW_MESSAGES = false;                      // Flag that sets the message printing on or off
 
     // Grid simulation
     public final static int[] SPRING_GRID_DEMAND = {65, 58, 57, 57, 62, 57, 58, 49, 72, 81, 187, 165, 28, 100, 111, 187, 57, 21, 26, 21, 57, 58, 57, 58};
@@ -31,8 +37,10 @@ public class Constants {
 
     // System characteristics
     public final static double START_TIME = 0.0;                            // Time of day when the simulation starts
-    public final static long TICK_FREQUENCY = 500;                          // How many (real time) milliseconds each tick is worth
-    public final static int CYCLE_TICKS = 20;                               // How many ticks are done in one simulation
+
+    public final static long TICK_FREQUENCY = 1300;                         // How many (real time) milliseconds each tick is worth
+    public final static int CYCLE_TICKS = 95;                               // How many ticks are done in one simulation
+
     public final static double TICK_RATIO = 0.25;                           // How many minutes (simulation time) each tick is worth (0.25 is a 15 minutes)
     public final static int TRAFFIC_FREQUENCY = 300;                        // Frequency to which vehicles can enter the system in (realtime) milliseconds
     public final static int CAR_TRAFFIC = 5;                                // Maximum number of vehicles that can attempt to charge at each interval
@@ -41,8 +49,11 @@ public class Constants {
     public final static int CHARGING_STATIONS = 15;                         // Number of charging stations the charging hub has. Recommended between [5, 15]
     public final static int[] CAPACITY_DISTRIBUTION = {30, 100};            // Range of maximum capacities of vehicles in kWh
     public final static double CHARGING_PRICE = 1.0;                        // Price to charge vehicle per kWh
+    public final static boolean TIMEOUTS_ON = true;                         // Flag that sets timeouts on or off
+    public final static long LEADER_TIMEOUT = TICK_FREQUENCY / 2;           // Timeout for the consensus leader to receive responses
+    public final static long RESPONDER_TIMEOUT = TICK_FREQUENCY * 3/4;      // Timeout for the consensus responders to receive the altruist factor message
+    public final static long CHUB_TIMEOUT = TICK_FREQUENCY * 3/2;           // Timeout for the chub to receive all informs
 
-    public static boolean SHOW_MESSAGES = false;                      // Flag that sets the message printing on or off
     public static double[] VEHICLE_DISTRIBUTION = {0.0, 0.5, 0.5};    // Relative frequency of each type of vehicle
     public static double MEAN_ALTRUISTIC_VALUE = 0.5;                 // Mean value of altruistic factor of normal distribution
     public static double ALTRUISTIC_STANDARD_DEVIATION = 0.5;         // Standard deviation of altruistic factor normal distribution

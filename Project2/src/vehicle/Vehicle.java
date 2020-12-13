@@ -1,9 +1,9 @@
 package vehicle;
 
 import jade.core.AID;
-import sajas.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
+import sajas.core.Agent;
 import utils.Constants;
 import utils.Data;
 import utils.Utilities;
@@ -21,11 +21,11 @@ public abstract class Vehicle extends Agent {
     private AID service;
     protected SubscriptionBehaviour subscription;
 
-    private void updatePriceToPay(double load, double price, boolean toGrid){
+    private void updatePriceToPay(double load, double price, boolean toGrid) {
         this.priceToPay += load * Constants.TICK_RATIO * price * (toGrid ? -1 : 1);
     }
 
-    private int updateCapacity(double load, boolean toGrid){
+    private int updateCapacity(double load, boolean toGrid) {
         int chargedLoad = (int) (load * Constants.TICK_RATIO);
         currentCapacity = Math.max(0, Math.min(this.maxCapacity, chargedLoad * (toGrid ? -1 : 1) + this.currentCapacity));
 
@@ -54,7 +54,11 @@ public abstract class Vehicle extends Agent {
         this.chargingPrice = chargingPrice;
     }
 
-    public void setup(){
+    public double getPriceToPay() {
+        return priceToPay;
+    }
+
+    public void setup() {
         DFAgentDescription[] chubs = new DFAgentDescription[0];
         while (chubs.length <= 0) {
             chubs = Utilities.getService(this, Constants.CHUB_SERVICE);
@@ -72,24 +76,35 @@ public abstract class Vehicle extends Agent {
         this.updatePriceToPay(newLoad, chargingPrice, false);
         this.updateCapacity(newLoad, false);
 
-        double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
-
-        if(battery_percentage > 0.2){
-            double leave = Constants.EXIT_PROBABILITY + Constants.EXIT_FACTOR * battery_percentage;
-
-            if(Math.random() < leave){
-                Data.submitVehicleStat(Arrays.asList(String.valueOf(this.getVehicleType()), String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.3g", battery_percentage), String.valueOf(this.priceToPay)));
-                subscription.cancel(service, false);
-            }
-        }
     }
 
-    public int chargeGrid(int sharedLoad, double discountPrice){
+    public boolean isLeaving() {
+        double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
+
+        if (battery_percentage > 0.2) {
+            double leave = Constants.EXIT_PROBABILITY + Constants.EXIT_FACTOR * battery_percentage;
+
+            if (Math.random() < leave) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void leaveHub() {
+        double battery_percentage = (double) this.currentCapacity / this.maxCapacity;
+        Data.submitVehicleStat(Arrays.asList(String.valueOf(this.getVehicleType()), String.valueOf(this.currentCapacity - this.initCapacity), String.format("%.3g", battery_percentage), String.valueOf(this.priceToPay)));
+        subscription.cancel(service, false);
+
+    }
+
+    public int chargeGrid(int sharedLoad, double discountPrice) {
         this.updatePriceToPay(sharedLoad, discountPrice, true);
         return this.updateCapacity(sharedLoad, true);
     }
 
-    public void exit(){
+    public void exit() {
         Utilities.printSystemMessage("vehicle " + Constants.RED_BOLD + this.getLocalName() + Constants.RESET + " left the charging hub.");
         this.doDelete();
     }

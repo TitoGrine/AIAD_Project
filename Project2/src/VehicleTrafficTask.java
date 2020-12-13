@@ -1,7 +1,7 @@
+import jade.wrapper.StaleProxyException;
 import sajas.core.Agent;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
-import jade.wrapper.StaleProxyException;
 import utils.Constants;
 import utils.Utilities;
 import vehicle.BroadVehicle;

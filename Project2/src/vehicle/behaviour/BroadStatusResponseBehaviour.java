@@ -18,11 +18,20 @@ public class BroadStatusResponseBehaviour extends AchieveREResponder {
 
     public ACLMessage handleRequest(ACLMessage request){
         ACLMessage reply = request.createReply();
-        reply.setPerformative(ACLMessage.AGREE);
-        reply.setContent("Connected.");
+        if(this.vehicle.isLeaving()){
+            reply.setPerformative(ACLMessage.REFUSE);
+            reply.setContent("Leaving the charging hub");
+            this.vehicle.leaveHub();
+            return reply;
+        }
 
-        vehicle.startConsensusProposal(request);
-        return reply;
+        if(vehicle.startConsensusProposal(request)) {
+            reply.setPerformative(ACLMessage.AGREE);
+            reply.setContent("Connected.");
+            return reply;
+        }
+
+        return null;
     }
 
     @Override
@@ -35,10 +44,18 @@ public class BroadStatusResponseBehaviour extends AchieveREResponder {
         reply.setPerformative(ACLMessage.INFORM);
 
         try {
-            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), altruistFactor, vehicle.allowsV2G()));
+            reply.setContentObject(new StatusResponse(vehicle.getCurrentCapacity(), vehicle.getMaxCapacity(), vehicle.getVehicleType(), vehicle.getPriceToPay(), altruistFactor, vehicle.allowsV2G()));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        vehicle.send(reply);
+    }
+
+    public void agreeToChub(ACLMessage request) {
+        ACLMessage reply = request.createReply();
+        reply.setPerformative(ACLMessage.AGREE);
+        reply.setContent("Connected.");
 
         vehicle.send(reply);
     }

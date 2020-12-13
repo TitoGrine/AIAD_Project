@@ -1,8 +1,7 @@
+import jade.wrapper.StaleProxyException;
 import sajas.core.Agent;
-import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
-import jade.wrapper.StaleProxyException;
 import uchicago.src.sim.engine.BasicAction;
 import utils.Constants;
 import utils.Utilities;
@@ -10,7 +9,6 @@ import vehicle.BroadVehicle;
 import vehicle.OneWayVehicle;
 import vehicle.TwoWayVehicle;
 
-import java.util.TimerTask;
 import java.util.UUID;
 
 public class VehicleTrafficAction extends BasicAction {

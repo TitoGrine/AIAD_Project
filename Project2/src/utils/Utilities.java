@@ -80,7 +80,7 @@ public class Utilities {
     }
 
     public static void printChargingHubMessage(final String message) {
-        if (Constants.SHOW_MESSAGES)
+        if(Constants.SHOW_MESSAGES)
             System.out.println(Constants.PURPLE_BOLD + "\n ⚡ Charging Hub - " + Constants.RESET + message);
     }
 
