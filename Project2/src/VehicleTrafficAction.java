@@ -2,19 +2,19 @@ import jade.wrapper.StaleProxyException;
 import sajas.core.Agent;
 import sajas.wrapper.AgentController;
 import sajas.wrapper.ContainerController;
+import uchicago.src.sim.engine.BasicAction;
 import utils.Constants;
 import utils.Utilities;
 import vehicle.BroadVehicle;
 import vehicle.OneWayVehicle;
 import vehicle.TwoWayVehicle;
 
-import java.util.TimerTask;
 import java.util.UUID;
 
-public class VehicleTrafficTask extends TimerTask {
+public class VehicleTrafficAction extends BasicAction {
     ContainerController mainContainer;
 
-    public VehicleTrafficTask(ContainerController mainContainer) {
+    public VehicleTrafficAction(ContainerController mainContainer) {
         this.mainContainer = mainContainer;
     }
 
@@ -47,8 +47,7 @@ public class VehicleTrafficTask extends TimerTask {
         agent.start();
     }
 
-    @Override
-    public void run() {
+    public void execute() {
         int numberNewCars = Utilities.randomNumber(0, Constants.CAR_TRAFFIC);
 
         Utilities.printSystemMessage(numberNewCars + " vehicles attempted to connect to the charging hub.");
@@ -60,7 +59,6 @@ public class VehicleTrafficTask extends TimerTask {
             }
         } catch (StaleProxyException e) {
             e.printStackTrace();
-            this.cancel();
         }
     }
 }

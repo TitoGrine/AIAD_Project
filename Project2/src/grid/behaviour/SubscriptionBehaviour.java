@@ -6,6 +6,7 @@ import jade.domain.FIPAAgentManagement.FailureException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import sajas.proto.SubscriptionResponder;
+
 import java.io.IOException;
 
 public class SubscriptionBehaviour extends SubscriptionResponder {

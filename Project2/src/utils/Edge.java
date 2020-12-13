@@ -1,10 +1,11 @@
 package utils;
 
-import java.awt.Color;
 import uchicago.src.sim.gui.DrawableEdge;
 import uchicago.src.sim.gui.SimGraphics;
 import uchicago.src.sim.network.DefaultEdge;
 import uchicago.src.sim.network.Node;
+
+import java.awt.*;
 
 public class Edge extends DefaultEdge implements DrawableEdge {
     private Color color = Color.WHITE;

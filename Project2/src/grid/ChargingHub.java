@@ -11,12 +11,9 @@ import javafx.util.Pair;
 import sajas.core.Agent;
 import sajas.domain.DFService;
 import sajas.proto.SubscriptionResponder;
-import sajas.wrapper.ContainerController;
 import uchicago.src.sim.analysis.OpenSequenceGraph;
-import uchicago.src.sim.gui.DisplaySurface;
 import uchicago.src.sim.gui.RectNetworkItem;
 import uchicago.src.sim.network.DefaultDrawableNode;
-import uchicago.src.sim.network.DefaultEdge;
 import uchicago.src.sim.network.EdgeFactory;
 import utils.Constants;
 import utils.Data;
@@ -28,8 +25,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class ChargingHub extends Agent {
     private int availableLoad; // in kWh
@@ -51,15 +48,27 @@ public class ChargingHub extends Agent {
 
     private SubscriptionBehaviour chargingSubscription;
     private TimerBehaviour timerBehaviour;
+    private TimerTask task = null;
 
-    public ChargingHub(ContainerController container, int numStations) {
+    public ChargingHub(int numStations) {
         this.numStations = numStations;
         this.occupiedStations = 0;
         systemStatus = new HashMap<>();
 
         MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.CANCEL), MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
         this.chargingSubscription = new SubscriptionBehaviour(this, mt);
-        this.timerBehaviour = new TimerBehaviour(container, this, Constants.TICK_FREQUENCY);
+        this.timerBehaviour = new TimerBehaviour(this, Constants.TICK_FREQUENCY);
+    }
+
+    public ChargingHub(int numStations, TimerTask task) {
+        this.numStations = numStations;
+        this.occupiedStations = 0;
+        systemStatus = new HashMap<>();
+
+        MessageTemplate mt = MessageTemplate.or(MessageTemplate.MatchPerformative(ACLMessage.CANCEL), MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE));
+        this.chargingSubscription = new SubscriptionBehaviour(this, mt);
+        this.timerBehaviour = new TimerBehaviour(this, Constants.TICK_FREQUENCY);
+        this.task = task;
     }
 
     public void setup() {
@@ -77,12 +86,16 @@ public class ChargingHub extends Agent {
         }
     }
 
+    public void stopTask(){
+        if(task != null) this.task.cancel();
+    }
+
     public void updateVehicleStatus(AID vehicle, StatusResponse status) {
         systemStatus.put(vehicle, status);
     }
 
     public void updateSystemStatus() {
-        this.localTime += Constants.TICK_RATIO % 24;
+        this.localTime = (this.localTime + Constants.TICK_RATIO) % 24;
         this.availableLoad = grid.getLoad((int) this.localTime, (int) ((this.localTime - (int) this.localTime) * 60));
         Utilities.printTime(((int) this.localTime), (int) ((this.localTime - (int) this.localTime) * 60));
         systemStatus.clear();

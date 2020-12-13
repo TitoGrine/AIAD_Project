@@ -16,7 +16,8 @@ public class Constants {
     public final static String CHUB_SERVICE = "chub-service";
 
     // Misc
-    public final static boolean PRINT_MESSAGES = false;
+    public static boolean SHOW_MESSAGES = true;                            // Flag that sets the message printing on or off
+    public static final boolean BATCH_MODE = false;                          // Runs type
 
     // Grid simulation
     public final static int[] SPRING_GRID_DEMAND = {65, 58, 57, 57, 62, 57, 58, 49, 72, 81, 187, 165, 28, 100, 111, 187, 57, 21, 26, 21, 57, 58, 57, 58};
@@ -37,8 +38,10 @@ public class Constants {
 
     // System characteristics
     public final static double START_TIME = 0.0;                            // Time of day when the simulation starts
+
     public final static long TICK_FREQUENCY = 1300;                         // How many (real time) milliseconds each tick is worth
     public final static int CYCLE_TICKS = 95;                               // How many ticks are done in one simulation
+
     public final static double TICK_RATIO = 0.25;                           // How many minutes (simulation time) each tick is worth (0.25 is a 15 minutes)
     public final static int TRAFFIC_FREQUENCY = 300;                        // Frequency to which vehicles can enter the system in (realtime) milliseconds
     public final static int CAR_TRAFFIC = 5;                                // Maximum number of vehicles that can attempt to charge at each interval

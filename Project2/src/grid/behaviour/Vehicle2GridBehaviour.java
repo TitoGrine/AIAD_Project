@@ -3,9 +3,9 @@ package grid.behaviour;
 import grid.ChargingHub;
 import grid.Vehicle2GridConditions;
 import jade.core.AID;
-import sajas.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
+import sajas.core.Agent;
 import sajas.proto.ContractNetInitiator;
 import utils.Utilities;
 

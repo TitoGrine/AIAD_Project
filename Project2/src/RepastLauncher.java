@@ -1,6 +1,7 @@
 import grid.ChargingHub;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
+import sajas.core.Agent;
 import sajas.core.Runtime;
 import sajas.sim.repast3.Repast3Launcher;
 import sajas.wrapper.AgentController;
@@ -21,6 +22,7 @@ import vehicle.StatusResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class RepastLauncher extends Repast3Launcher {
     private double ONE_WAY_VEHICLE_DISTRIBUTION = Constants.VEHICLE_DISTRIBUTION[0];
@@ -30,9 +32,12 @@ public class RepastLauncher extends Repast3Launcher {
     private double ALTRUISTIC_STANDARD_DEVIATION = Constants.ALTRUISTIC_STANDARD_DEVIATION;
     private double MEAN_PERMISSION_VALUE = Constants.MEAN_PERMISSION_VALUE;
     private double PERMISSION_STANDARD_DEVIATION = Constants.PERMISSION_STANDARD_DEVIATION;
+    private boolean SHOW_MESSAGES = Constants.SHOW_MESSAGES;
     private String SEASON = "SUMMER";
 
-    private static boolean runInBatchMode = false;
+    ContainerController mainContainer;
+
+
     private CustomDisplaySurface displaySurface;
     private Histogram vehiclePlot;
     private OpenSequenceGraph v2gPlot;
@@ -104,6 +109,15 @@ public class RepastLauncher extends Repast3Launcher {
         Constants.PERMISSION_STANDARD_DEVIATION = this.PERMISSION_STANDARD_DEVIATION;
     }
 
+    public boolean getSHOW_MESSAGES() {
+        return SHOW_MESSAGES;
+    }
+
+    public void setSHOW_MESSAGES(boolean SHOW_MESSAGES) {
+        this.SHOW_MESSAGES = SHOW_MESSAGES;
+        Constants.SHOW_MESSAGES = this.SHOW_MESSAGES;
+    }
+
     public String getSEASON() {
         return SEASON;
     }
@@ -142,7 +156,7 @@ public class RepastLauncher extends Repast3Launcher {
 
     @Override
     public void begin() {
-        if (!runInBatchMode) {
+        if (!Constants.BATCH_MODE) {
             buildPlots();
             buildNetworkGraph();
             buildSchedule();
@@ -163,7 +177,7 @@ public class RepastLauncher extends Repast3Launcher {
     private Network2DDisplay display;
 
     private void buildNetworkGraph() {
-        if(displaySurface != null) displaySurface.dispose();
+        if (displaySurface != null) displaySurface.dispose();
 
         displaySurface = new CustomDisplaySurface(this, "Charging Station Display");
         registerDisplaySurface("Charging Station Display", displaySurface);
@@ -175,7 +189,7 @@ public class RepastLauncher extends Repast3Launcher {
         displaySurface.display();
     }
 
-    public void updateNetworkGraph(){
+    public void updateNetworkGraph() {
         displaySurface.removeProbeableDisplayable(display);
 
         display = new Network2DDisplay(agents, Constants.DISPLAY_WIDTH, Constants.DISPLAY_HEIGHT);
@@ -254,37 +268,48 @@ public class RepastLauncher extends Repast3Launcher {
         vehiclePlot.display();
     }
 
+    public static void main(String[] args) {
+        SimInit init = new SimInit();
+
+        if (Constants.BATCH_MODE) {
+            init.loadModel(new RepastLauncher(), "src/parameters.txt", true);
+        } else {
+            init.loadModel(new RepastLauncher(), null, false);
+        }
+    }
+
     @Override
     protected void launchJADE() {
         Runtime rt = Runtime.instance();
 
         Profile p1 = new ProfileImpl();
 
-        ContainerController mainContainer = rt.createMainContainer(p1);
+        mainContainer = rt.createMainContainer(p1);
 
         Data.createFiles();
 
         try {
             AgentController acHub;
-            chub = new ChargingHub(mainContainer, Constants.CHARGING_STATIONS);
-            if (!runInBatchMode) {
+
+            if (Constants.BATCH_MODE) {
+                TimerTask task = new VehicleTrafficTask(mainContainer);
+                Agent chub = new ChargingHub(Constants.CHARGING_STATIONS, task);
+                acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
+                acHub.start();
+                new Timer().scheduleAtFixedRate(task, 0, Constants.TRAFFIC_FREQUENCY);
+            } else {
+                chub = new ChargingHub(Constants.CHARGING_STATIONS);
                 chub.setDataList(vehicles);
                 chub.setPlots(v2gPlot, hubPlot);
                 chub.setAgents(agents);
                 chub.setUpdateCall(this, RepastLauncher.class.getMethod("updateNetworkGraph"));
+                acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
+                acHub.start();
+                getSchedule().scheduleActionAtInterval(100, new VehicleTrafficAction(mainContainer));
             }
-            acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
-            acHub.start();
-
-            new Timer().scheduleAtFixedRate(new VehicleTrafficTask(mainContainer), 0, Constants.TRAFFIC_FREQUENCY);
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
-    }
-
-    public static void main(String[] args) {
-        SimInit init = new SimInit();
-        init.setNumRuns(1);
-        init.loadModel(new RepastLauncher(), null, runInBatchMode);
     }
 }

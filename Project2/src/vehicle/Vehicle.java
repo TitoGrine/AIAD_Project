@@ -1,9 +1,9 @@
 package vehicle;
 
 import jade.core.AID;
-import sajas.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
+import sajas.core.Agent;
 import utils.Constants;
 import utils.Data;
 import utils.Utilities;
