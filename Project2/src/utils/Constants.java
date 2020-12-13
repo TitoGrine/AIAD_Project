@@ -16,7 +16,8 @@ public class Constants {
     public final static String CHUB_SERVICE = "chub-service";
 
     // Misc
-    public static boolean SHOW_MESSAGES = false;                      // Flag that sets the message printing on or off
+    public static boolean SHOW_MESSAGES = true;                            // Flag that sets the message printing on or off
+    public static final boolean BATCH_MODE = false;                          // Runs type
 
     // Grid simulation
     public final static int[] SPRING_GRID_DEMAND = {65, 58, 57, 57, 62, 57, 58, 49, 72, 81, 187, 165, 28, 100, 111, 187, 57, 21, 26, 21, 57, 58, 57, 58};

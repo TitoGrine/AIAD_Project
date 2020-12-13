@@ -35,7 +35,6 @@ public class RepastLauncher extends Repast3Launcher {
     private boolean SHOW_MESSAGES = Constants.SHOW_MESSAGES;
     private String SEASON = "SUMMER";
 
-    private static final boolean BATCH_MODE = true;
     ContainerController mainContainer;
 
 
@@ -157,7 +156,7 @@ public class RepastLauncher extends Repast3Launcher {
 
     @Override
     public void begin() {
-        if (!BATCH_MODE) {
+        if (!Constants.BATCH_MODE) {
             buildPlots();
             buildNetworkGraph();
             buildSchedule();
@@ -272,7 +271,7 @@ public class RepastLauncher extends Repast3Launcher {
     public static void main(String[] args) {
         SimInit init = new SimInit();
 
-        if (BATCH_MODE) {
+        if (Constants.BATCH_MODE) {
             init.loadModel(new RepastLauncher(), "src/parameters.txt", true);
         } else {
             init.loadModel(new RepastLauncher(), null, false);
@@ -292,7 +291,7 @@ public class RepastLauncher extends Repast3Launcher {
         try {
             AgentController acHub;
 
-            if (BATCH_MODE) {
+            if (Constants.BATCH_MODE) {
                 TimerTask task = new VehicleTrafficTask(mainContainer);
                 Agent chub = new ChargingHub(Constants.CHARGING_STATIONS, task);
                 acHub = mainContainer.acceptNewAgent("Charging_Hub", chub);
