@@ -12,21 +12,14 @@ Agentes e Inteligência Artificial Distribuída - Grupo 43
  The purpose of this project is to simulate the usage of these smart grid systems in the real world, trying to prove that
  with more advanced electrical vehicles and full vehicle-to-grid capabilities we can improve a city's electrical efficiency.
  
- ### Dependencies
- In order to compile and run our code, you need to install JavaFX. You can follow the [OpenJFX docs](https://openjfx.io/openjfx-docs/) on how you can get started.
- 
  ### Compile & Run
- Make sure you have installed OpenJFX and that you have exported the path to fx. Something like this:
- ```
-    export PATH_TO_FX=path/to/javafx-sdk-15.0.1/lib
-```
  To compile the code, run the following command on the root of the project:
  ```
-    javac --module-path $PATH_TO_FX --add-modules javafx.controls -cp "jade/lib/jade.jar:src" -d out src/JADELauncher.java
+    javac -cp "lib/*:src" -d out src/RepastLauncher.java
 ```
 Afterwards, run it by executing:
  ```
-    java -cp "jade/lib/jade.jar:out" JADELauncher
+    java -cp "lib/*:out" RepastLauncher
 ```
 ### Running our simulations
 To mimic the simulations that we performed, choose a test from the `simulation_tests.txt` and change the variables in `utils/Constants.java` to match the ones writen in the test. Compile and run to view simulation.

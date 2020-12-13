@@ -7,7 +7,7 @@ import grid.behaviour.Vehicle2GridBehaviour;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import javafx.util.Pair;
+import utils.Pair;
 import sajas.core.Agent;
 import sajas.domain.DFService;
 import sajas.proto.SubscriptionResponder;
