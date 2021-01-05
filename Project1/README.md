@@ -1,7 +1,7 @@
 ## Load balancing and peak shaving on multi-vehicle electric charging systems
  
  ### Description
- A JADE implementation of a electrical vehicle charging station.  
+ A JADE implementation of an electrical vehicle charging station.  
  This charging station is capable of balancing its load between the vehicles, according to their needs, and also reducing
  peak hours energy demand by using the vehicles' batteries.  
  There are three types of vehicles implemented with increasingly more complex communication protocols and attributes.  
