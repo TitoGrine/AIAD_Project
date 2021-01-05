@@ -1,11 +1,7 @@
 ## Load balancing and peak shaving on multi-vehicle electric charging systems
-Agentes e Inteligência Artificial Distribuída - Grupo 43  
- - Carlos Jorge Direito Albuquerque - up201706735   
- - Maria Inês Fernandes Alves - up201605335   
- - Tito Alexandre Trindade Griné - up201706732  
  
  ### Description
- A JADE + Repast + Sajas implementation of a electrical vehicle charging station.  
+ A JADE + Repast + Sajas implementation of an electrical vehicle charging station.  
  This charging station is capable of balancing its load between the vehicles, according to their needs, and also reducing
  peak hours energy demand by using the vehicles' batteries.  
  There are three types of vehicles implemented with increasingly more complex communication protocols and attributes.  
@@ -24,3 +20,13 @@ Afterwards, run it by executing:
 ```
 ### Running our simulations
 To mimic the simulations that we performed, choose a test from the `simulation_tests.txt` and change the variables in `utils/Constants.java`, in the `src/parameters.txt` or in the GUI settings to match the ones written in the test. Compile and run to view the simulation.
+
+### Authors
+
+* **Carlos Albuquerque** - [CajoAlbuquerque](https://github.com/CajoAlbuquerque)
+* **Maria Inês Alves** - [inesfalves](https://github.com/inesfalves)
+* **Tito Griné** - [TitoGrine](https://github.com/TitoGrine)
+
+### Evaluation
+
+**Project Grade:** 20.00
